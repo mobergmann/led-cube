@@ -10,9 +10,10 @@
 #define RASPI_GPIO_CHIP "gpiochip0"
 
 
-struct Frame {
+struct Frame
+{
     double frame_time;
-    std::array<std::array<bool, 5>, 5> data{};
+    std::array<std::array<bool, 5>, 5> data;
 };
 
 std::vector<Frame> get_layout()
@@ -20,7 +21,7 @@ std::vector<Frame> get_layout()
     std::vector<Frame> frames;
 
     // load from file
-    std::ifstream stream("data.json");
+    std::ifstream stream("data.json"); // todo proper/ dynamic file loading
 
     nlohmann::json file;
     stream >> file;
@@ -28,14 +29,17 @@ std::vector<Frame> get_layout()
 
     // parse json
     auto _frames = file["frames"];
-    for (auto &_frame: _frames) {
-        Frame frame;
+    for (auto &_frame: _frames)
+    {
+        Frame frame{};
+
+        // frame time
         frame.frame_time = _frame["frame-time"];
 
-        frame.data = std::array<std::array<bool, 5>, 5>();
-
+        // frame data
         auto iter = std::string(_frame["data"]);
-        for (int i = 0; i < iter.length(); ++i) {
+        for (int i = 0; i < iter.length(); ++i)
+        {
             auto c = iter[i];
 
             // 0 for false and any other char for true
@@ -50,12 +54,26 @@ std::vector<Frame> get_layout()
     return frames;
 }
 
+void reset()
+{
+    throw std::runtime_error("Not Implemented");
+}
+
+void shift()
+{
+    throw std::runtime_error("Not Implemented");
+}
+
+void store()
+{
+    throw std::runtime_error("Not Implemented");
+}
+
 int main()
 {
-    get_layout();
-//    return 0;
-
 #pragma region init
+    // parse input data
+    auto frames = get_layout();
 
     // init chip
     gpiod::chip chip(RASPI_GPIO_CHIP, gpiod::chip::OPEN_BY_NAME);
@@ -109,4 +127,46 @@ int main()
     pin_special.request({"GPIO13", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
     std::cout << "Special pin acquired" << std::endl;
 #pragma endregion
+
+    // todo implement delay check, for proper timing
+    while (true)
+    {
+        for (auto &frame: frames)
+        {
+            // reset all leds for next frame
+            reset();
+
+            // each layer
+            for (int _ = 0; _ < frame.data.size(); ++_) {
+                auto x = frame.data[_];
+
+                // turn all layers off
+                for (auto &layer: layers)
+                {
+                    layer.set_value(0);
+                }
+                // activate current layer
+                auto layer = layers[_];
+                layer.set_value(1);
+
+                // shift all values into the leds/ registerst
+                for (auto &i: x)
+                {
+                    if (i)
+                    {
+                        pin_datain.set_value(1);
+                    }
+                    else
+                    {
+                        pin_datain.set_value(0);
+                    }
+
+                    shift();
+                }
+
+                // store data, to display result
+                store();
+            }
+        }
+    }
 }
