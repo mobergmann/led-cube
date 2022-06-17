@@ -1,47 +1,67 @@
-#include <gpiod.hpp>
-
+#include <map>
 #include <array>
 #include <iostream>
+#include <gpiod.hpp>
 
 #define RASPI_GPIO_CHIP "gpiochip0"
-#define SPECIAL_PIN_NUMBER 13
-#define SPECIAL_PIN_NAME "GPIO13"
-#define LAYER_NUMBER 20
-#define LAYER_NAME "GPIO20"
+
+
+std::array<std::array<bool, 5>, 5> get_layout()
+{
+    std::array<std::array<bool, 5>, 5> layouts{false};
+
+    // init all to false
+    for (auto &layer: layouts)
+    {
+        for (auto &led: layer)
+        {
+            led = false;
+        }
+    }
+
+    // load from file
+}
 
 int main()
 {
     // init chip
     gpiod::chip chip(RASPI_GPIO_CHIP, gpiod::chip::OPEN_BY_NAME);
-    
-    // init layer
-    gpiod::line layer1;
-    layer1 = chip.get_line(LAYER_NUMBER);
-    layer1.request({LAYER_NAME, gpiod::line_request::DIRECTION_OUTPUT, 0},0);
-    std::cout << "Layer aquired" << std::endl;
 
-    // init test LED
-    gpiod::line ln_led;
-    ln_led = chip.get_line(SPECIAL_PIN_NUMBER);
-    ln_led.request({SPECIAL_PIN_NAME, gpiod::line_request::DIRECTION_OUTPUT, 0},0);
-    std::cout << "Led aquired" << std::endl;
+#pragma region layers
+    // save layers to array
+    std::array<gpiod::line, 5> layers{
+        chip.get_line(20),
+        chip.get_line(21),
+        chip.get_line(23),
+        chip.get_line(24),
+        chip.get_line(25)
+    };
 
-    // set layer on
-    layer1.set_value(1);
-    
-    while (true) {
-        // set to on
-        ln_led.set_value(1);
-
-        // wait
-        std::cout << "(Currently on) Press to Continue" << std::endl;
-        std::cin.ignore();
-
-        // set to off
-        ln_led.set_value(0);
-        
-        // wait
-        std::cout << "(Currently off) Press to Continue" << std::endl;
-        std::cin.ignore();
+    // initialize layers
+    for (auto &layer: layers)
+    {
+        // todo name maybe has to be set explicitly
+        layer.request({layer.name(), gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
     }
+    std::cout << "All Layers acquired" << std::endl;
+#pragma endregion
+
+    // reset pin setup
+    gpiod::line pin_reset;
+    pin_reset = chip.get_line(12);
+    pin_reset.request({"GPIO12", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
+    std::cout << "Reset pin acquired" << std::endl;
+
+
+    // datain pin setup
+    gpiod::line pin_datain;
+    pin_datain = chip.get_line(12);
+    pin_datain.request({"GPIO12", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
+    std::cout << "Datain pin acquired" << std::endl;
+
+    // special pin setup
+    gpiod::line pin_special;
+    pin_special = chip.get_line(13);
+    pin_special.request({"GPIO13", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
+    std::cout << "Special pin acquired" << std::endl;
 }
