@@ -1,29 +1,62 @@
 #include <map>
 #include <array>
 #include <iostream>
+#include <fstream>
+
 #include <gpiod.hpp>
+#include <nlohmann/json.hpp>
+
 
 #define RASPI_GPIO_CHIP "gpiochip0"
 
 
-std::array<std::array<bool, 5>, 5> get_layout()
-{
-    std::array<std::array<bool, 5>, 5> layouts{false};
+struct Frame {
+    double frame_time;
+    std::array<std::array<bool, 5>, 5> data{};
+};
 
-    // init all to false
-    for (auto &layer: layouts)
-    {
-        for (auto &led: layer)
-        {
-            led = false;
-        }
-    }
+std::vector<Frame> get_layout()
+{
+    std::vector<Frame> frames;
 
     // load from file
+    std::ifstream stream("data.json");
+
+    nlohmann::json file;
+    stream >> file;
+    stream.close();
+
+    // parse json
+    auto _frames = file["frames"];
+    for (auto &_frame: _frames) {
+        Frame frame;
+        frame.frame_time = _frame["frame-time"];
+
+        frame.data = std::array<std::array<bool, 5>, 5>();
+
+        auto iter = std::string(_frame["data"]);
+        for (int i = 0; i < iter.length(); ++i) {
+            auto c = iter[i];
+
+            // 0 for false and any other char for true
+            int column = i / 5;
+            int row = i % 5;
+            frame.data[column][row] = c != '0';
+        }
+
+        frames.push_back(frame);
+    }
+
+    return frames;
 }
 
 int main()
 {
+    get_layout();
+    return 0;
+
+#pragma region init
+
     // init chip
     gpiod::chip chip(RASPI_GPIO_CHIP, gpiod::chip::OPEN_BY_NAME);
 
@@ -64,4 +97,5 @@ int main()
     pin_special = chip.get_line(13);
     pin_special.request({"GPIO13", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
     std::cout << "Special pin acquired" << std::endl;
+#pragma endregion
 }
