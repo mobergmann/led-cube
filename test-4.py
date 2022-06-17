@@ -11,6 +11,9 @@ pin_store_clock = LED(27) # grün
 layer_1 = LED(18)
 layer_2 = LED(23)
 reset_pin = LED(24)
+reset_pin2 = LED(25)
+reset_pin3 = LED(8)
+special = LED(22)
 
 
 
@@ -29,7 +32,7 @@ def store():
 def reset():
     global NUM_PINS
     for i in range(NUM_PINS):
-        pin_datain.off()
+        pin_datain.on()
         shift()
 
 
@@ -45,9 +48,37 @@ def apply(sequence: list[str]):
 
 
 if __name__ == "__main__":
-    layer_1.on()
+    # layer_1.on()
+    # for i in range(NUM_PINS):
+    #     pin_datain.on()
+    #     shift()
+    #     store()
+
+    # special.on()
+    
+    # input()
+
+    # reset_pin.off()
+    # store()
+    # reset_pin.on()
+
+    # input()
+    # reset_pin2.off()
+    # store()
+    # reset_pin2.on()
+
+    # input()
+    # reset_pin3.off()
+    # store()
+    # reset_pin3.on()
+
+    # input()
+
+    # reset()
+    special.on()
     reset_pin.on()
-    reset()
+    layer_1.on()
+
     sequence = input("enter sequence: (format: [01]*): ")
     apply(sequence)
     reset_pin.on()
@@ -55,7 +86,7 @@ if __name__ == "__main__":
     reset_pin.off()
     store()
     input()
-    # layer_1.on()
+    layer_1.on()
 
 
     reset_pin.on()
@@ -69,31 +100,31 @@ if __name__ == "__main__":
     input()
     # layer
 
-    # pin_datain.on()
-    # shift()
-    # shift()
-    # shift()
-    # shift()
-    # pin_datain.off()
-    # store()
+    pin_datain.on()
+    shift()
+    shift()
+    shift()
+    shift()
+    pin_datain.off()
+    store()
 
 
-    # reset_pin.off()
-    # while True:
-    #     layer_2.off()
-    #     layer_1.on()
-    #     time.sleep(0.5)
-    #     layer_1.off()
-    #     time.sleep(0.5)
-    #     layer_2.on()
-    #     time.sleep(0.5)
-    #     # layer_2.off()
-    #     # time.sleep(0.02)
+    reset_pin.off()
+    while True:
+        layer_2.off()
+        layer_1.on()
+        time.sleep(0.5)
+        layer_1.off()
+        time.sleep(0.5)
+        layer_2.on()
+        time.sleep(0.5)
+        # layer_2.off()
+        # time.sleep(0.02)
 
-    #     # # check input valid
-    #     # if not re.match("[01]{1,"+str(NUM_PINS)+"}", sequence):
-    #     #     print("Wrong format")
-    #     #     continue
+        # # check input valid
+        # if not re.match("[01]{1,"+str(NUM_PINS)+"}", sequence):
+        #     print("Wrong format")
+        #     continue
         
         
 
