@@ -53,7 +53,7 @@ std::vector<Frame> get_layout()
 int main()
 {
     get_layout();
-    return 0;
+//    return 0;
 
 #pragma region init
 
@@ -85,6 +85,17 @@ int main()
     pin_reset.request({"GPIO12", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
     std::cout << "Reset pin acquired" << std::endl;
 
+    // shift pin setup
+    gpiod::line pin_shift;
+    pin_shift = chip.get_line(14);
+    pin_shift.request({"GPIO14", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
+    std::cout << "Reset pin acquired" << std::endl;
+
+    // reset pin setup
+    gpiod::line pin_store;
+    pin_store = chip.get_line(15);
+    pin_store.request({"GPIO15", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
+    std::cout << "Reset pin acquired" << std::endl;
 
     // datain pin setup
     gpiod::line pin_datain;
