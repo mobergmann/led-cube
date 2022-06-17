@@ -91,7 +91,7 @@ int main()
     pin_shift.request({"GPIO14", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
     std::cout << "Reset pin acquired" << std::endl;
 
-    // reset pin setup
+    // store pin setup
     gpiod::line pin_store;
     pin_store = chip.get_line(15);
     pin_store.request({"GPIO15", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
