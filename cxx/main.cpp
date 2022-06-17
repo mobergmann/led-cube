@@ -6,13 +6,14 @@
 #include <thread>
 
 #define RASPI_GPIO_CHIP "gpiochip0"
-#define SPECIAL_PIN "GPIO25"
+#define SPECIAL_PIN_NUMBER 25
+#define SPECIAL_PIN_NAME "GPIO25"
 
 int main()
 {
     // init chip
     gpiod::chip chip(RASPI_GPIO_CHIP, gpiod::chip::OPEN_BY_NAME);
-    auto lines = chip.get_lines(offsets);
+    auto lines = chip.get_line(SPECIAL_PIN_NUMBER);
 
     // init test LED
     gpiod::line ln_led;
