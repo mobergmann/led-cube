@@ -5,15 +5,19 @@ import re
 NUM_PINS = 24
 
 
-pin_datain = LED(5)
-pin_shift_clock = LED(17) # lila
-pin_store_clock = LED(27) # grün
-layer_1 = LED(18)
-layer_2 = LED(23)
-reset_pin = LED(24)
-reset_pin2 = LED(25)
-reset_pin3 = LED(8)
-special = LED(22)
+pin_datain = LED(12)
+special = LED(13)
+
+pin_shift_clock = LED(14) # lila
+pin_store_clock = LED(15) # grün
+
+reset_pin = LED(18)
+
+layer_1 = LED(20)
+layer_2 = LED(21)
+layer_3 = LED(23)
+layer_4 = LED(24)
+layer_5 = LED(25)
 
 
 
