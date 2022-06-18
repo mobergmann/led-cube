@@ -6,12 +6,16 @@ class Cube:
     
     def __init__(self):
 
+        self._leds = list()
         self.leds = list()
 
         # mouse pressed states
         self._mouse_pressed = False
         self.mouse_last_pos = Vec3(0, 0, 0)
         self.led_clicked = False
+
+        for i in range(125):
+            self.leds.append(0)
 
         camera.x = 4
         camera.y = -1.5
@@ -35,10 +39,10 @@ class Cube:
                     led = Entity(
                         model="sphere", 
                         color=color.black50, 
-                        scale=.4, 
+                        scale=.5, 
                         position=(x*2, y*2, z*2))
 
-                    self.leds.append(led)
+                    self._leds.append(led)
 
 
         for x in range(-2, 3):
@@ -65,9 +69,8 @@ class Cube:
 
                 self.wires.append(e)
         
-        self.leds[0].color = color.yellow
-        self.leds[-1].color = color.orange
-
+        self._leds[0].color = color.yellow
+        self._leds[-1].color = color.orange
 
     def update(self):
 
@@ -76,10 +79,11 @@ class Cube:
 
             self.mouse_last_pos = mouse.position
 
-            for led in self.leds:
+            for i, led in enumerate(self._leds):
 
                 if distance(mouse.position, led.screen_position) < 0.02:
                     self.toggle_led(led)
+                    self.leds[i] = -self.leds[i] + 1
                     self.led_clicked = True
         
         if mouse.left and self.led_clicked == False:
@@ -90,15 +94,46 @@ class Cube:
         if mouse.left == False:
             self.led_clicked = False
 
+    def apply(self, leds):
+        self.leds = leds
+
+        for i, led in enumerate(self._leds):
+            if leds[i] == 0:
+                led.color = color.black50
+            else:
+                led.color = color.blue
+
+    def invisible(self):
+        
+        for i in self.wires:
+            i.enabled = False
+
+        for i in self._leds:
+            i.enabled = False
+
+        self.bottom.enabled = False
+
+
+    def visible(self):
+
+        for i in self.wires:
+            i.enabled = True
+
+        for i in self._leds:
+            i.enabled = True
+
+        self.bottom.enabled = True
+
+
     def rotate_cube(self):
 
+        # region rotations matrix
         vec = self.mouse_last_pos - mouse.position
         
         self.mouse_last_pos = mouse.position
 
         drag_vec = np.array(list(vec))
 
-        # region rotations matrix
         angleX = -drag_vec[1]
         angleY = drag_vec[0]
         # angleZ = math.acos(drag_vec.dot(self.last_drag)/self.abs(drag_vec) * self.abs(self.last_drag))/1000
@@ -125,7 +160,7 @@ class Cube:
 
         # endregion
 
-        for led in self.leds:
+        for led in self._leds:
 
             new_pos = rot.dot(np.array(list(led.position)))
 
