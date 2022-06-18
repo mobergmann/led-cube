@@ -1,19 +1,36 @@
 #include <map>
 #include <array>
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
 #include <gpiod.hpp>
 #include <nlohmann/json.hpp>
 
 
-#define RASPI_GPIO_CHIP "gpiochip0"
+/// pins for each layer toggle
+std::array<gpiod::line, 5> layers;
 
+/// reset pin
+gpiod::line pin_reset;
+
+/// shift clock pin
+gpiod::line pin_shift;
+
+/// store clock pin
+gpiod::line pin_store;
+
+/// datain pin
+gpiod::line pin_datain;
+
+/// special pin, which cannot be accessed by shifting
+gpiod::line pin_special;
 
 struct Frame
 {
+    /// the time in seconds, how long the frame should be visible
     double frame_time;
-    std::array<std::array<bool, 5>, 5> data;
+    /// for each layer a stream of bools, encoding which led is on
+    std::array<std::array<bool, 25>, 5> data;
 };
 
 std::vector<Frame> get_layout()
@@ -56,17 +73,20 @@ std::vector<Frame> get_layout()
 
 void reset()
 {
-    throw std::runtime_error("Not Implemented");
+    pin_reset.set_value(0);
+    pin_reset.set_value(1);
 }
 
 void shift()
 {
-    throw std::runtime_error("Not Implemented");
+    pin_shift.set_value(0);
+    pin_shift.set_value(1);
 }
 
 void store()
 {
-    throw std::runtime_error("Not Implemented");
+    pin_store.set_value(0);
+    pin_store.set_value(1);
 }
 
 int main()
@@ -76,11 +96,11 @@ int main()
     auto frames = get_layout();
 
     // init chip
-    gpiod::chip chip(RASPI_GPIO_CHIP, gpiod::chip::OPEN_BY_NAME);
+    gpiod::chip chip("gpiochip0", gpiod::chip::OPEN_BY_NAME);
 
 #pragma region layers
     // save layers to array
-    std::array<gpiod::line, 5> layers{
+    layers = {
         chip.get_line(20),
         chip.get_line(21),
         chip.get_line(23),
@@ -98,35 +118,32 @@ int main()
 #pragma endregion
 
     // reset pin setup
-    gpiod::line pin_reset;
     pin_reset = chip.get_line(12);
     pin_reset.request({"GPIO12", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
     std::cout << "Reset pin acquired" << std::endl;
 
     // shift pin setup
-    gpiod::line pin_shift;
     pin_shift = chip.get_line(14);
     pin_shift.request({"GPIO14", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
     std::cout << "Reset pin acquired" << std::endl;
 
     // store pin setup
-    gpiod::line pin_store;
     pin_store = chip.get_line(15);
     pin_store.request({"GPIO15", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
     std::cout << "Reset pin acquired" << std::endl;
 
     // datain pin setup
-    gpiod::line pin_datain;
     pin_datain = chip.get_line(12);
     pin_datain.request({"GPIO12", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
     std::cout << "Datain pin acquired" << std::endl;
 
     // special pin setup
-    gpiod::line pin_special;
     pin_special = chip.get_line(13);
     pin_special.request({"GPIO13", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
     std::cout << "Special pin acquired" << std::endl;
 #pragma endregion
+
+    pin_reset.set_value(1);
 
     // todo implement delay check, for proper timing
     while (true)
@@ -136,36 +153,35 @@ int main()
             // reset all leds for next frame
             reset();
 
-            // each layer
-            for (int _ = 0; _ < frame.data.size(); ++_) {
-                auto x = frame.data[_];
+            for (int i = 0; i < frame.data.size(); ++i)
+            {
+                auto layer_data = frame.data[i];
 
-                // turn all layers off
+                // disable all previous layer, to ensure that only one layer is turned on
                 for (auto &layer: layers)
                 {
                     layer.set_value(0);
                 }
-                // activate current layer
-                auto layer = layers[_];
-                layer.set_value(1);
+                layers[i].set_value(1); // enable current layer
 
-                // shift all values into the leds/ registerst
-                for (auto &i: x)
+                // set each led pin
+                for (int j = 0; j < layer_data.size(); ++j)
                 {
-                    if (i)
+                    bool led_value = layer_data[j];
+
+                    // turn on special pin if end of shift register reached (layer 5 and pin 25)
+                    if (i == 5 && j == 24)
                     {
-                        pin_datain.set_value(1);
+                        pin_special.set_value(led_value);
                     }
                     else
                     {
-                        pin_datain.set_value(0);
+                        pin_datain.set_value(led_value);
+                        shift(); // only shift, when not the last pin
                     }
-
-                    shift();
                 }
 
-                // store data, to display result
-                store();
+                store(); // store each layer
             }
         }
     }
