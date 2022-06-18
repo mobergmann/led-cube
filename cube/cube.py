@@ -8,24 +8,70 @@ class Cube:
 
         self.leds = list()
 
+        # mouse pressed states
         self._mouse_pressed = False
-
         self.mouse_last_pos = Vec3(0, 0, 0)
+        self.led_clicked = False
 
+        camera.x = 4
+        camera.y = -1.5
+        camera.z = -35
 
-        self.bottom = Entity(model="cube", color=color.black90, scale_x = 8, scale_z = 8, scale_y = 0.1, position=(0, -4.2, 3))
+        self.wires = list()
+
+        self.bottom = Entity(model=Mesh(vertices = [
+            (4.5, -4.5, 4.5),
+            (4.5, -4.5, -4.5),
+            (-4.5, -4.5, -4.5),
+            (-4.5, -4.5, 4.5),
+            (4.5, -4.5, 4.5),
+            ], mode='line', colors=(color.gray, color.gray, color.gray, color.gray, color.gray)))
+
+        # create spheres
+        for x in range(-2, 3):
+            for y in range(-2, 3):
+                for z in range(-2, 3):
+
+                    led = Entity(
+                        model="sphere", 
+                        color=color.black50, 
+                        scale=.4, 
+                        position=(x*2, y*2, z*2))
+
+                    self.leds.append(led)
+
 
         for x in range(-2, 3):
             for y in range(-2, 3):
-                for z in range(5):
 
-                    e = Entity(model="sphere", color=color.black50, scale=.4, position=(x*2, y*2, z*2))
+                pos1 = (x*2, y*2, -2*2)
+                pos2 = (x*2, y*2, 2*2)
 
-                    self.leds.append(e)
+                e = Entity(model=Mesh(vertices = [pos1, pos2], mode='line', colors=(color.green, color.green)))
+
+                self.wires.append(e)
+
+                pos1 = (-2*2, x*2, y*2)
+                pos2 = (2*2, x*2, y*2)
+
+                e = Entity(model=Mesh(vertices = [pos1, pos2], mode='line', colors=(color.green, color.green)))
+
+                self.wires.append(e)
+
+                pos1 = (x*2, -2*2, y*2)
+                pos2 = (x*2, 2*2, y*2)
+
+                e = Entity(model=Mesh(vertices = [pos1, pos2], mode='line', colors=(color.green, color.green)))
+
+                self.wires.append(e)
+        
+        self.leds[0].color = color.yellow
+        self.leds[-1].color = color.orange
+
 
     def update(self):
 
-
+        # led clicked
         if self.mouse_pressed():
 
             self.mouse_last_pos = mouse.position
@@ -34,61 +80,78 @@ class Cube:
 
                 if distance(mouse.position, led.screen_position) < 0.02:
                     self.toggle_led(led)
+                    self.led_clicked = True
         
-        if (mouse.left):
+        if mouse.left and self.led_clicked == False:
 
-            vec = self.mouse_last_pos - mouse.position
-            
-            self.mouse_last_pos = mouse.position
+            self.rotate_cube()
 
-            drag_vec = np.array(list(vec))
 
-            angleX = -drag_vec[1]
-            angleY = drag_vec[0]
-            # angleZ = math.acos(drag_vec.dot(self.last_drag)/self.abs(drag_vec) * self.abs(self.last_drag))/1000
-            
+        if mouse.left == False:
+            self.led_clicked = False
 
-            rotX = np.array([
-                [1, 0, 0],
-                [0, math.cos(angleX), -math.sin(angleX)],
-                [0, math.sin(angleX), math.cos(angleX)]
-                ])
+    def rotate_cube(self):
 
-            rotY = np.array([
-                [math.cos(angleY), 0, math.sin(angleY)],
-                [0, 1, 0],
-                [-math.sin(angleY), 0, math.cos(angleY)]
-                ])
+        vec = self.mouse_last_pos - mouse.position
+        
+        self.mouse_last_pos = mouse.position
 
-            # rotZ = np.array([
-            #     [math.cos(angleZ), -math.sin(angleZ), 0],
-            #     [math.sin(angleZ), math.cos(angleZ), 0],
-            #     [0, 0, 1]
-            #     ])
-            
-            rot = rotX.dot(rotY)
+        drag_vec = np.array(list(vec))
 
-            for led in self.leds:
+        # region rotations matrix
+        angleX = -drag_vec[1]
+        angleY = drag_vec[0]
+        # angleZ = math.acos(drag_vec.dot(self.last_drag)/self.abs(drag_vec) * self.abs(self.last_drag))/1000
+        
+        rotX = np.array([
+            [1, 0, 0],
+            [0, math.cos(angleX), -math.sin(angleX)],
+            [0, math.sin(angleX), math.cos(angleX)]
+            ])
 
-                led.z -= 3
+        rotY = np.array([
+            [math.cos(angleY), 0, math.sin(angleY)],
+            [0, 1, 0],
+            [-math.sin(angleY), 0, math.cos(angleY)]
+            ])
 
-                new_pos = rot.dot(np.array(list(led.position)))
+        # rotZ = np.array([
+        #     [math.cos(angleZ), -math.sin(angleZ), 0],
+        #     [math.sin(angleZ), math.cos(angleZ), 0],
+        #     [0, 0, 1]
+        #     ])
+        
+        rot = rotX.dot(rotY)
 
-                led.x = new_pos[0]
-                led.y = new_pos[1]
-                led.z = new_pos[2] + 3
-            
-            self.bottom.z -= 3
+        # endregion
 
-            new_pos = rot.dot(np.array(list(self.bottom.position)))
+        for led in self.leds:
 
-            self.bottom.x = new_pos[0]
-            self.bottom.y = new_pos[1]
-            self.bottom.z = new_pos[2] + 3
+            new_pos = rot.dot(np.array(list(led.position)))
 
-            self.bottom.world_rotation_x = angleX
-            self.bottom.world_rotation_y = angleY
-            # self.bottom.rotation_Z += angleZ
+            led.x = new_pos[0]
+            led.y = new_pos[1]
+            led.z = new_pos[2]
+
+        vertices = []
+
+        for vertice in self.bottom.model.vertices:
+
+            new_pos = rot.dot(np.array(list(vertice)))
+
+            vertices.append(new_pos)
+
+        self.bottom.model = Mesh(vertices = vertices, mode='line', colors=(color.gray, color.gray, color.gray, color.gray, color.gray))
+
+        for wire in self.wires:
+
+            new_pos1 = rot.dot(np.array(list(wire.model.vertices[0])))
+            new_pos2 = rot.dot(np.array(list(wire.model.vertices[1])))
+
+            wire.model = Mesh(vertices = [
+                Vec3(new_pos1[0], new_pos1[1], new_pos1[2]), 
+                Vec3(new_pos2[0], new_pos2[1], new_pos2[2])
+                ], mode='line', colors=(color.gray, color.gray))
 
                 
     def abs(self, np_array):
