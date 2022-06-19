@@ -2,6 +2,7 @@ import json
 from ursina import *
 from cube import Cube
 import os
+import numpy as np
 
 
 window.title = "3D LED CUBE"
@@ -13,12 +14,10 @@ frames = [cube.leds]
 
 selected = 0
 
-model_names = ['Frame_0']
-
 def select_frame(frame):
     print(frame)
 
-model_dict = {name : Func(select_frame, name) for name in model_names}
+model_dict = {name : Func(select_frame, name) for name in ['Frame_0']}
 
 bl = None
 
@@ -35,8 +34,11 @@ def add_frame():
 
     n = list()
 
-    for i in range(125):
-        n.append(0)
+    for i in frames[-1]:
+        if i == 1:
+            n.append(0.5)
+        else:
+            n.append(0)
 
     cube.leds = n
     selected = len(frames)
@@ -48,12 +50,42 @@ def delete_frame():
 
 def save_frames():
     global frames
+    global deltaTime
 
     path = f"../files/{fileName.text}.json"
 
+    json_frames = list()
+    json_frame = {}
+
+
+    for key in list(frame_selection.options):
+        for value in frames:
+            if (deltaTime.text == "Delta Time" or deltaTime.text == ''):
+                json_frame["frame-time"] = 1
+            else:
+                json_frame["frame-time"] = float(deltaTime.text)
+
+            tmp_list = list()
+            tmp = np.array_split(value, 5)
+
+            for i in tmp:
+
+                sub = []
+
+                for j in i:
+                    sub.append(bool(j == 1))
+                    print(j)
+
+                tmp_list.append(sub)
+
+            json_frame["data"] = tmp_list
+
+        json_frames.append(json_frame)
+
+    meta = {"frames": json_frames}
+
     with open(path, 'w') as f:
-        for frame in frames:
-            f.write(json.dumps(frame))
+        f.write(json.dumps(meta, indent=4,))
 
 
 def update():

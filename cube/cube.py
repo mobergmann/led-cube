@@ -69,9 +69,12 @@ class Cube:
                 e = Entity(model=Mesh(vertices = [pos1, pos2], mode='line', colors=(color.green, color.green)))
 
                 self.wires.append(e)
+
+        self.YELLOW = color.rgb(255, 255, 0, 128)
+        self.ORANGE = color.rgb(255, 128, 0, 128)
         
-        self._leds[0].color = color.yellow
-        self._leds[-1].color = color.orange
+        self._leds[0].color = self.YELLOW
+        self._leds[-1].color = self.ORANGE
 
     def update(self):
 
@@ -99,13 +102,16 @@ class Cube:
         self.leds = leds
 
         for i, led in enumerate(self._leds):
-            if leds[i] == 0:
+            if leds[i] == 0.5:
+                led.color = color.rgb(0, 0, 255, 128)
+
+            elif leds[i] == 0:
                 led.color = color.black50
                 if i == 0:
-                    led.color = color.yellow
+                    led.color = self.YELLOW
 
                 if i == len(self.leds) - 1:
-                    led.color = color.orange
+                    led.color = self.ORANGE
 
             else:
                 led.color = color.blue
