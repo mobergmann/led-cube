@@ -1,4 +1,5 @@
 #include <array>
+#include <chrono>
 #include <fstream>
 #include <iostream>
 
@@ -158,38 +159,55 @@ public:
             // todo implement delay check, for proper timing
             for (auto &frame: frames)
             {
-                // reset all leds for next frame
-                reset();
+                // timer is used to determine if we should switch to next frame
+                auto starting_time = std::chrono::steady_clock::now();
 
-                for (int i = 0; i < frame.data.size(); ++i)
+                // replay current frame as fast as possible, as often as possible and only at the end of the
+                // current frame duration continue to next frame
+                while (true)
                 {
-                    auto layer_data = frame.data[i];
+                    // reset all leds for next frame
+                    reset();
 
-                    // disable all previous layer, to ensure that only one layer is turned on
-                    for (auto &layer: layers)
+                    for (int i = 0; i < frame.data.size(); ++i)
                     {
-                        layer.set_value(0);
-                    }
-                    layers[i].set_value(1); // enable current layer
+                        auto layer_data = frame.data[i];
 
-                    // set each led pin
-                    for (int j = 0; j < layer_data.size(); ++j)
+                        // disable all previous layer, to ensure that only one layer is turned on
+                        for (auto &layer: layers)
+                        {
+                            layer.set_value(0);
+                        }
+                        layers[i].set_value(1); // enable current layer
+
+                        // set each led pin
+                        for (int j = 0; j < layer_data.size(); ++j)
+                        {
+                            bool led_value = layer_data[j];
+
+                            // turn on special pin if end of shift register reached (layer 5 and pin 25)
+                            if (i == 5 && j == 24)
+                            {
+                                pin_special.set_value(led_value);
+                            }
+                            else
+                            {
+                                pin_datain.set_value(led_value);
+                                shift(); // only shift, when not the last pin
+                            }
+                        }
+
+                        store(); // store each layer
+                    }
+
+                    // break loop, only if the elapsed time is larger than the max frame time
+                    auto current_time = std::chrono::steady_clock::now();
+                    auto elapsed_time = std::chrono::duration_cast<std::chrono::seconds>(current_time - starting_time);
+                    auto max_frame_time = std::chrono::nanoseconds((int)(frame.frame_time / 1000000000)); // converts the frame time to chrono nanoseconds
+                    if (elapsed_time >= max_frame_time)
                     {
-                        bool led_value = layer_data[j];
-
-                        // turn on special pin if end of shift register reached (layer 5 and pin 25)
-                        if (i == 5 && j == 24)
-                        {
-                            pin_special.set_value(led_value);
-                        }
-                        else
-                        {
-                            pin_datain.set_value(led_value);
-                            shift(); // only shift, when not the last pin
-                        }
+                        break;
                     }
-
-                    store(); // store each layer
                 }
             }
         }
