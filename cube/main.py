@@ -74,7 +74,6 @@ def save_frames():
 
                 for j in i:
                     sub.append(bool(j == 1))
-                    print(j)
 
                 tmp_list.append(sub)
 
