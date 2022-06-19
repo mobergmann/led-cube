@@ -1,3 +1,4 @@
+from turtle import position
 import numpy as np
 import math
 from ursina import *
@@ -100,6 +101,12 @@ class Cube:
         for i, led in enumerate(self._leds):
             if leds[i] == 0:
                 led.color = color.black50
+                if i == 0:
+                    led.color = color.yellow
+
+                if i == len(self.leds) - 1:
+                    led.color = color.orange
+
             else:
                 led.color = color.blue
 
@@ -204,7 +211,7 @@ class Cube:
 
     def toggle_led(self, led):
         
-        if led.color == color.black50:
-            led.color = color.blue
-        else:
+        if led.color == color.blue:
             led.color = color.black50
+        else:
+            led.color = color.blue
