@@ -48,6 +48,16 @@ def add_frame():
 def delete_frame():
     pass
 
+play_sequence = False
+
+def play():
+    global play_sequence
+    global selected
+
+    selected = 0
+
+    play_sequence = not play_sequence
+
 def save_frames():
     global frames
     global deltaTime
@@ -60,10 +70,7 @@ def save_frames():
 
     for key in list(frame_selection.options):
         for value in frames:
-            if (deltaTime.text == "Delta Time" or deltaTime.text == ''):
-                json_frame["frame-time"] = 1
-            else:
-                json_frame["frame-time"] = float(deltaTime.text)
+            json_frame["frame-time"] = get_delta_time()
 
             tmp_list = list()
             tmp = np.array_split(value, 5)
@@ -86,12 +93,37 @@ def save_frames():
     with open(path, 'w') as f:
         f.write(json.dumps(meta, indent=4,))
 
+def open_frames():
+    pass
+
+def get_delta_time():
+    if (deltaTime.text == "Delta Time" or deltaTime.text == ''):
+        return 1
+    else:
+        return float(deltaTime.text)
+
+count = 0
 
 def update():
+    global count
+    global selected
+
+    count += 1
+
     window.size = (1250,750)
 
     cube.update()
-    frames[selected] = cube.leds
+    # frames[selected] = cube.leds
+
+    if play_sequence:
+        if count%math.floor(60*get_delta_time()) == 0:
+            selected += 1
+            selected = selected%len(frames)
+
+            cube.apply(frames[selected])
+
+            print("selected", selected)
+
 
 frame_selection = ButtonGroup(("Frame 0",), position=(.88, .454))
 frame_selection.add_script(Scrollable(target_value=0, min=-.05, max=.05)) # TODO ???
@@ -112,6 +144,12 @@ b.on_click = delete_frame # assign a function to the button.
 
 b = Button(text='Save', color=color.blue, scale_x=.2, scale_y=.05, text_origin=(0,0), position = (.75, .17))
 b.on_click = save_frames # assign a function to the button.
+
+b = Button(text='Open', color=color.blue, scale_x=.2, scale_y=.05, text_origin=(0,0), position = (.75, .11))
+b.on_click = open_frames # assign a function to the button.
+
+b = Button(text='Play', color=color.blue, scale_x=.1, scale_y=.05, text_origin=(0,0), position = (.55, .43))
+b.on_click = play # assign a function to the button.
 
 deltaTime = InputField(default_value="Delta Time", position=(.57, .3), limit_content_to='0123456789.')
 fileName = InputField(default_value="File Name", position=(.57, .24))
