@@ -1,5 +1,9 @@
 # led-cube
 
+# Wiki
+See the Wiki for a documentation of the Programs, and a documentation for the file inteface.<br>
+https://github.com/mobergmann/led-cube/wiki
+
 # pins die wir verwenden
 
 ```
