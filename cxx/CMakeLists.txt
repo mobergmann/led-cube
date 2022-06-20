@@ -18,3 +18,6 @@ target_link_libraries(led_cube ${GPIOD_LIBRARY} nlohmann_json::nlohmann_json)
 
 add_executable(test test.cpp)
 target_link_libraries(test)
+
+add_executable(test2 test2.cpp)
+target_link_libraries(test2)

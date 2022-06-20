@@ -9,9 +9,9 @@
 
 struct Frame
 {
-    /// the time in seconds, how long the frame should be visible
-    double frame_time;
-    /// for each layer a stream of bools, encoding which led is on
+    /// the time in milliseconds, how long the frame should be visible
+    unsigned int frame_time;
+    /// for each layer a stream of booleans, encoding which led is on
     std::array<std::array<bool, 25>, 5> data;
 };
 
@@ -105,6 +105,7 @@ public:
         // init chip
         gpiod::chip chip("gpiochip0", gpiod::chip::OPEN_BY_NAME);
 
+#pragma region aquire lines
 #pragma region layers
         // save layers to array
         layers = {
@@ -148,66 +149,64 @@ public:
         pin_special = chip.get_line(13);
         pin_special.request({"GPIO13", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
         std::cout << "Special pin acquired" << std::endl;
+#pragma endregion
+
+        // set pin reset initially to off
+        pin_reset.set_value(1);
     }
 
     void loop()
     {
-        pin_reset.set_value(1);
-
-        while (true)
+        for (auto &frame: frames)
         {
-            // todo implement delay check, for proper timing
-            for (auto &frame: frames)
+            // timer is used to determine if we should switch to next frame
+            const auto starting_time = std::chrono::steady_clock::now();
+            const auto max_frame_time = std::chrono::milliseconds(frame.frame_time); // convert the frame time to milliseconds
+
+            // replay current frame as fast as possible, as often as possible and only at the end of the
+            // current frame duration continue to next frame
+            while (true)
             {
-                // timer is used to determine if we should switch to next frame
-                auto starting_time = std::chrono::steady_clock::now();
+                // reset all leds for next frame
+                reset();
 
-                // replay current frame as fast as possible, as often as possible and only at the end of the
-                // current frame duration continue to next frame
-                while (true)
+                for (int i = 0; i < frame.data.size(); ++i)
                 {
-                    // reset all leds for next frame
-                    reset();
+                    const auto layer_data = frame.data[i];
 
-                    for (int i = 0; i < frame.data.size(); ++i)
+                    // disable all previous layer, to ensure that only one layer is turned on
+                    for (auto &layer: layers)
                     {
-                        auto layer_data = frame.data[i];
+                        layer.set_value(0);
+                    }
+                    layers[i].set_value(1); // enable current layer
 
-                        // disable all previous layer, to ensure that only one layer is turned on
-                        for (auto &layer: layers)
+                    // set each led pin to either on or off
+                    for (int j = 0; j < layer_data.size(); ++j)
+                    {
+                        bool led_value = layer_data[j];
+
+                        // turn on special pin if end of shift register reached (layer 5 and pin 25)
+                        if (i == 5 && j == 24)
                         {
-                            layer.set_value(0);
+                            pin_special.set_value(led_value);
                         }
-                        layers[i].set_value(1); // enable current layer
-
-                        // set each led pin
-                        for (int j = 0; j < layer_data.size(); ++j)
+                        else
                         {
-                            bool led_value = layer_data[j];
-
-                            // turn on special pin if end of shift register reached (layer 5 and pin 25)
-                            if (i == 5 && j == 24)
-                            {
-                                pin_special.set_value(led_value);
-                            }
-                            else
-                            {
-                                pin_datain.set_value(led_value);
-                                shift(); // only shift, when not the last pin
-                            }
+                            pin_datain.set_value(led_value);
+                            shift(); // only shift, when not the last pin
                         }
-
-                        store(); // store each layer
                     }
 
-                    // break loop, only if the elapsed time is larger than the max frame time
-                    auto current_time = std::chrono::steady_clock::now();
-                    auto elapsed_time = std::chrono::duration_cast<std::chrono::seconds>(current_time - starting_time);
-                    auto max_frame_time = std::chrono::nanoseconds((int)(frame.frame_time / 1000000000)); // converts the frame time to chrono nanoseconds
-                    if (elapsed_time >= max_frame_time)
-                    {
-                        break;
-                    }
+                    store(); // store each layer
+                }
+
+                // break loop, only if the elapsed time is larger than the max frame time
+                auto current_time = std::chrono::steady_clock::now();
+                auto elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(current_time - starting_time);
+                if (elapsed_time >= max_frame_time)
+                {
+                    break;
                 }
             }
         }
@@ -217,5 +216,8 @@ public:
 int main()
 {
     Main m;
-    m.loop();
+    while (true)
+    {
+        m.loop();
+    }
 }
