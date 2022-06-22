@@ -73,9 +73,6 @@ def save_frames():
 
         count = 0
 
-        print(len(tmp))
-
-
         for i in tmp:
             sub = []
 
@@ -83,7 +80,7 @@ def save_frames():
                 sub.append(bool(j == 1))
 
             tmp_list2.append(sub)
-            
+
             if count%5 == 4:
 
                 tmp_list.append(tmp_list2)
@@ -91,7 +88,7 @@ def save_frames():
                 tmp_list2 = list()
             count += 1
 
-        json_frame["data"] = tmp_list
+        json_frame["layers"] = tmp_list
 
         json_frames.append(json_frame)
 
@@ -127,9 +124,10 @@ def open_frames():
                 data_raw = []
                 data = []
 
-                for line in json_frame["data"]:
+                for layer in json_frame["layers"]:
+                    for line in layer:
 
-                    data_raw += line
+                        data_raw += line
 
                 for d in data_raw:
                     if (d):
@@ -146,7 +144,6 @@ def open_frames():
 
                 i += 1
 
-            # print(frames)
             frame_selection.options = tuple(a)
             
             cube.apply(frames[selected])
