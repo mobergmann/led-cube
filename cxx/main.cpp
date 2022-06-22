@@ -2,6 +2,7 @@
 #include <array>
 #include <iostream>
 #include <fstream>
+#include <typeinfo>
 
 #include <gpiod.hpp>
 #include <nlohmann/json.hpp>
@@ -10,14 +11,12 @@
 #define RASPI_GPIO_CHIP "gpiochip0"
 
 
-struct Frame
-{
+struct Frame {
     double frame_time;
-    std::array<std::array<bool, 5>, 5> data;
+    std::array<std::array<std::array<bool, 5>, 5>, 5> data;
 };
 
-std::vector<Frame> get_layout()
-{
+std::vector<Frame> get_layout() {
     std::vector<Frame> frames;
 
     // load from file
@@ -29,23 +28,20 @@ std::vector<Frame> get_layout()
 
     // parse json
     auto _frames = file["frames"];
-    for (auto &_frame: _frames)
-    {
+    for (auto &_frame: _frames) {
         Frame frame{};
 
         // frame time
         frame.frame_time = _frame["frame-time"];
 
-        // frame data
-        auto iter = std::string(_frame["data"]);
-        for (int i = 0; i < iter.length(); ++i)
-        {
-            auto c = iter[i];
-
-            // 0 for false and any other char for true
-            int column = i / 5;
-            int row = i % 5;
-            frame.data[column][row] = c != '0';
+        // layer data
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                for (int k = 0; k < 5; k++) {
+                    const auto &value = _frame["layers"][i][j][k];
+                    frame.data[i][j][k] = value;
+                }
+            }
         }
 
         frames.push_back(frame);
@@ -54,23 +50,19 @@ std::vector<Frame> get_layout()
     return frames;
 }
 
-void reset()
-{
+void reset() {
     throw std::runtime_error("Not Implemented");
 }
 
-void shift()
-{
+void shift() {
     throw std::runtime_error("Not Implemented");
 }
 
-void store()
-{
+void store() {
     throw std::runtime_error("Not Implemented");
 }
 
-int main()
-{
+int main() {
 #pragma region init
     // parse input data
     auto frames = get_layout();
@@ -81,16 +73,15 @@ int main()
 #pragma region layers
     // save layers to array
     std::array<gpiod::line, 5> layers{
-        chip.get_line(20),
-        chip.get_line(21),
-        chip.get_line(23),
-        chip.get_line(24),
-        chip.get_line(25)
+            chip.get_line(20),
+            chip.get_line(21),
+            chip.get_line(23),
+            chip.get_line(24),
+            chip.get_line(25)
     };
 
     // initialize layers
-    for (auto &layer: layers)
-    {
+    for (auto &layer: layers) {
         // todo name maybe has to be set explicitly
         layer.request({layer.name(), gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
     }
@@ -129,10 +120,8 @@ int main()
 #pragma endregion
 
     // todo implement delay check, for proper timing
-    while (true)
-    {
-        for (auto &frame: frames)
-        {
+    while (true) {
+        for (auto &frame: frames) {
             // reset all leds for next frame
             reset();
 
@@ -141,8 +130,7 @@ int main()
                 auto x = frame.data[_];
 
                 // turn all layers off
-                for (auto &layer: layers)
-                {
+                for (auto &layer: layers) {
                     layer.set_value(0);
                 }
                 // activate current layer
@@ -150,18 +138,18 @@ int main()
                 layer.set_value(1);
 
                 // shift all values into the leds/ registerst
-                for (auto &i: x)
-                {
-                    if (i)
-                    {
-                        pin_datain.set_value(1);
+                for (const auto &__layer: frame.data) {
+                    for (const auto &__line: __layer) {
+                        for (const auto &__value: __line) {
+                            if (__value) {
+                                pin_datain.set_value(1);
+                            } else {
+                                pin_datain.set_value(0);
+                            }
+                            // pin_datain.set_value(__value);
+                            shift();
+                        }
                     }
-                    else
-                    {
-                        pin_datain.set_value(0);
-                    }
-
-                    shift();
                 }
 
                 // store data, to display result
@@ -169,4 +157,3 @@ int main()
             }
         }
     }
-}
