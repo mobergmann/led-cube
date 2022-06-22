@@ -46,7 +46,7 @@ private:
         std::vector<Frame> frames;
 
         // load from file
-        std::ifstream stream("data.json"); // todo proper/ dynamic file loading
+        std::ifstream stream("count-up-layer-1.json"); // todo proper/ dynamic file loading
 
         nlohmann::json file;
         stream >> file;
