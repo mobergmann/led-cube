@@ -33,15 +33,15 @@ class Cube:
             ], mode='line', colors=(color.gray, color.gray, color.gray, color.gray, color.gray)))
 
         # create spheres
-        for x in range(-2, 3):
+        for z in range(-2, 3):
             for y in range(-2, 3):
-                for z in range(-2, 3):
+                for x in range(-2, 3):
 
                     led = Entity(
                         model="sphere", 
                         color=color.black50, 
                         scale=.5, 
-                        position=(x*2, y*2, z*2))
+                        position=(x*2, z*2, y*2))
 
                     self._leds.append(led)
 
@@ -90,12 +90,12 @@ class Cube:
                     self.leds[i] = -self.leds[i] + 1
                     self.led_clicked = True
         
-        if mouse.left and self.led_clicked == False:
+        if (mouse.left or mouse.right) and self.led_clicked == False:
 
             self.rotate_cube()
 
 
-        if mouse.left == False:
+        if mouse.left == False and mouse.right == False:
             self.led_clicked = False
 
     def apply(self, leds):
@@ -149,6 +149,8 @@ class Cube:
 
         angleX = -drag_vec[1]
         angleY = drag_vec[0]
+        angleZ = drag_vec[0]
+
         # angleZ = math.acos(drag_vec.dot(self.last_drag)/self.abs(drag_vec) * self.abs(self.last_drag))/1000
         
         rotX = np.array([
@@ -163,13 +165,16 @@ class Cube:
             [-math.sin(angleY), 0, math.cos(angleY)]
             ])
 
-        # rotZ = np.array([
-        #     [math.cos(angleZ), -math.sin(angleZ), 0],
-        #     [math.sin(angleZ), math.cos(angleZ), 0],
-        #     [0, 0, 1]
-        #     ])
+        rotZ = np.array([
+            [math.cos(angleZ), -math.sin(angleZ), 0],
+            [math.sin(angleZ), math.cos(angleZ), 0],
+            [0, 0, 1]
+            ])
         
-        rot = rotX.dot(rotY)
+        if (mouse.left):
+            rot = rotX.dot(rotY)
+        else:
+            rot = rotZ
 
         # endregion
 

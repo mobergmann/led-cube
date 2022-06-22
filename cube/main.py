@@ -14,11 +14,6 @@ frames = [cube.leds]
 
 selected = 0
 
-def select_frame(frame):
-    print(frame)
-
-model_dict = {name : Func(select_frame, name) for name in ['Frame_0']}
-
 bl = None
 
 def add_frame():
@@ -65,26 +60,25 @@ def save_frames():
     path = f"../files/{fileName.text}.json"
 
     json_frames = list()
-    json_frame = {}
 
+    for value in frames:
+        json_frame = {}
 
-    for key in list(frame_selection.options):
-        for value in frames:
-            json_frame["frame-time"] = get_delta_time()
+        json_frame["frame-time"] = int(get_delta_time()*1000)
 
-            tmp_list = list()
-            tmp = np.array_split(value, 5)
+        tmp_list = list()
+        tmp = np.array_split(value, 5)
 
-            for i in tmp:
+        for i in tmp:
 
-                sub = []
+            sub = []
 
-                for j in i:
-                    sub.append(bool(j == 1))
+            for j in i:
+                sub.append(bool(j == 1))
 
-                tmp_list.append(sub)
+            tmp_list.append(sub)
 
-            json_frame["data"] = tmp_list
+        json_frame["data"] = tmp_list
 
         json_frames.append(json_frame)
 
@@ -94,7 +88,57 @@ def save_frames():
         f.write(json.dumps(meta, indent=4,))
 
 def open_frames():
-    pass
+
+    fb = FileBrowser(file_types=('.json'), start_path = Path('../files').resolve() , enabled=True, position=(-0.25, 0.4))
+
+    def on_submit(paths):
+        global frames
+        global deltaTime
+        global cube
+        global frame_selection
+        global fileName
+
+        fileName.text = os.path.basename(paths[0]).split(".")[0]
+
+        with open(paths[0], 'r') as f:
+
+            json_frames = json.loads(f.read())["frames"]
+            frames.clear()
+
+            a = []
+            i = 0
+
+            for json_frame in json_frames:
+                deltaTime.text = str(json_frame["frame-time"]/1000)
+
+                data_raw = []
+                data = []
+
+                for line in json_frame["data"]:
+
+                    data_raw += line
+
+                for d in data_raw:
+                    if (d):
+                        data.append(1)
+                    else:
+                        data.append(0)
+
+                a.append(f"Frame {i}")
+
+
+                cube.leds = data
+                selected = len(frames)
+                frames.append(data)
+
+                i += 1
+
+            # print(frames)
+            frame_selection.options = tuple(a)
+            
+            cube.apply(frames[selected])
+
+    fb.on_submit = on_submit
 
 def get_delta_time():
     if (deltaTime.text == "Delta Time" or deltaTime.text == ''):
@@ -116,17 +160,20 @@ def update():
     # frames[selected] = cube.leds
 
     if play_sequence:
-        if count%math.floor(60*get_delta_time()) == 0:
-            selected += 1
-            selected = selected%len(frames)
+        try:
 
-            cube.apply(frames[selected])
+            if count%math.floor(60*get_delta_time()) == 0:
+                selected += 1
+                selected = selected%len(frames)
 
-            print("selected", selected)
+                cube.apply(frames[selected])
+        except:
+            print("Delta Time Error")
 
 
 frame_selection = ButtonGroup(("Frame 0",), position=(.88, .454))
-frame_selection.add_script(Scrollable(target_value=0, min=-.05, max=.05)) # TODO ???
+frame_selection.add_script(Scrollable()) # TODO ???
+# frame_selection.add_script(Scrollable(target_value=0, min=-.05, max=.05)) # TODO ???
 
 def on_value_changed():
     global selected
@@ -151,8 +198,8 @@ b.on_click = open_frames # assign a function to the button.
 b = Button(text='Play', color=color.blue, scale_x=.1, scale_y=.05, text_origin=(0,0), position = (.55, .43))
 b.on_click = play # assign a function to the button.
 
-deltaTime = InputField(default_value="Delta Time", position=(.57, .3), limit_content_to='0123456789.')
-fileName = InputField(default_value="File Name", position=(.57, .24))
+deltaTime = InputField(position=(.57, .3), limit_content_to='0123456789.')
+fileName = InputField(position=(.57, .24))
 
 window.color = color._32
 app.run()
