@@ -126,12 +126,12 @@ public:
         // shift pin setup
         pin_shift = chip.get_line(14);
         pin_shift.request({"GPIO14", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
-        std::cout << "Reset pin acquired" << std::endl;
+        std::cout << "Shift pin acquired" << std::endl;
 
         // store pin setup
         pin_store = chip.get_line(15);
         pin_store.request({"GPIO15", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
-        std::cout << "Reset pin acquired" << std::endl;
+        std::cout << "Store pin acquired" << std::endl;
 
         // datain pin setup
         pin_datain = chip.get_line(12);
