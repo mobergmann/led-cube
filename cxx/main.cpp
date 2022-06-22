@@ -46,7 +46,7 @@ private:
         std::vector<Frame> frames;
 
         // load from file
-        std::ifstream stream("data.json"); // todo proper/ dynamic file loading
+        std::ifstream stream("count-up-layer-1.json"); // todo proper/ dynamic file loading
 
         nlohmann::json file;
         stream >> file;
@@ -64,7 +64,7 @@ private:
             for (int i = 0; i < 5; i++) {
                 for (int j = 0; j < 5; j++) {
                     for (int k = 0; k < 5; k++) {
-                        const auto &value = _frame["layers"][i][j][k];
+                        const auto &value = _frame["data"][i][j][k];
                         frame.data[i][j][k] = value;
                     }
                 }
@@ -119,7 +119,7 @@ public:
 #pragma endregion
 
         // reset pin setup
-        pin_reset = chip.get_line(12);
+        pin_reset = chip.get_line(18);
         pin_reset.request({"GPIO12", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
         std::cout << "Reset pin acquired" << std::endl;
 
@@ -161,6 +161,7 @@ public:
             // reset all leds for next frame
             reset();
 
+            while (true) {
             for (int i = 0; i < frame.data.size(); ++i) {
                 const auto layer_data = frame.data[i];
 
@@ -210,6 +211,7 @@ public:
             if (elapsed_time >= max_frame_time) {
                 break;
             }
+        }
         }
     }
 };
