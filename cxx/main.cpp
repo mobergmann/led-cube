@@ -46,7 +46,7 @@ private:
         std::vector<Frame> frames;
 
         // load from file
-        std::ifstream stream("count-up-layer-1.json"); // todo proper/ dynamic file loading
+        std::ifstream stream("count-up-layer-5.json"); // todo proper/ dynamic file loading
 
         nlohmann::json file;
         stream >> file;
@@ -64,7 +64,7 @@ private:
             for (int i = 0; i < 5; i++) {
                 for (int j = 0; j < 5; j++) {
                     for (int k = 0; k < 5; k++) {
-                        const auto &value = _frame["data"][i][j][k];
+                        const auto &value = _frame["layers"][i][j][k];
                         frame.data[i][j][k] = value;
                     }
                 }
@@ -189,14 +189,24 @@ public:
 //                    }
                 // shift all values into the leds/ registerst
                 for (const auto &__layer: frame.data) {
+                    // int i = 0;
                     for (const auto &__line: __layer) {
+                        // int j = 0;
                         for (const auto &__value: __line) {
-                            if (__value) {
-                                pin_datain.set_value(1);
-                            } else {
-                                pin_datain.set_value(0);
-                            }
-                            // pin_datain.set_value(__value);
+                            // bool led_value = layer_data[j];
+
+                            // // turn on special pin if end of shift register reached (layer 5 and pin 25)
+                            // if (i == 5 && j == 24)
+                            // {
+                            //     pin_special.set_value(led_value);
+                            // }
+                            // else
+                            // {
+                            //     pin_datain.set_value(led_value);
+                            //     shift(); // only shift, when not the last pin
+                            // }
+
+                            pin_datain.set_value(__value);
                             shift();
                         }
                     }
