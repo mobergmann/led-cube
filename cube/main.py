@@ -39,6 +39,7 @@ def add_frame():
     selected = len(frames)
     frames.append(n)
     frame_selection.options = tuple(a)
+    cube.apply(frames[selected])
 
 def delete_frame():
     pass
