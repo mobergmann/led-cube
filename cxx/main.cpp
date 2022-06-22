@@ -7,13 +7,17 @@
 #include <nlohmann/json.hpp>
 
 
+#define RASPI_GPIO_CHIP "gpiochip0"
+
+
 struct Frame
 {
     /// the time in milliseconds, how long the frame should be visible
     unsigned int frame_time;
     /// for each layer a stream of booleans, encoding which led is on
-    std::array<std::array<bool, 25>, 5> data;
+    std::array<std::array<std::array<bool, 5>, 5>, 5> data;
 };
+
 
 class Main
 {
@@ -52,24 +56,21 @@ private:
         stream.close();
 
         // parse json
-        auto parsed_frames = file["frames"];
-        for (auto &_frame: parsed_frames)
-        {
+        auto _frames = file["frames"];
+        for (auto &_frame: _frames) {
             Frame frame{};
 
             // frame time
-            frame.frame_time = parsed_frames["frame-time"];
+            frame.frame_time = _frame["frame-time"];
 
-            // frame data
-            auto iter = std::string(parsed_frames["data"]);
-            for (int i = 0; i < iter.length(); ++i)
-            {
-                auto c = iter[i];
-
-                // 0 for false and any other char for true
-                int column = i / 5;
-                int row = i % 5;
-                frame.data[column][row] = c != '0';
+            // layer data
+            for (int i = 0; i < 5; i++) {
+                for (int j = 0; j < 5; j++) {
+                    for (int k = 0; k < 5; k++) {
+                        const auto &value = _frame["layers"][i][j][k];
+                        frame.data[i][j][k] = value;
+                    }
+                }
             }
 
             frames.push_back(frame);
@@ -109,11 +110,11 @@ public:
 #pragma region layers
         // save layers to array
         layers = {
-            chip.get_line(20),
-            chip.get_line(21),
-            chip.get_line(23),
-            chip.get_line(24),
-            chip.get_line(25)
+                chip.get_line(20),
+                chip.get_line(21),
+                chip.get_line(23),
+                chip.get_line(24),
+                chip.get_line(25)
         };
 
         // initialize layers
@@ -165,10 +166,9 @@ public:
 
             // replay current frame as fast as possible, as often as possible and only at the end of the
             // current frame duration continue to next frame
-            while (true)
-            {
-                // reset all leds for next frame
-                reset();
+
+            // reset all leds for next frame
+            reset();
 
                 for (int i = 0; i < frame.data.size(); ++i)
                 {
@@ -181,20 +181,34 @@ public:
                     }
                     layers[i].set_value(1); // enable current layer
 
-                    // set each led pin to either on or off
-                    for (int j = 0; j < layer_data.size(); ++j)
-                    {
-                        bool led_value = layer_data[j];
-
-                        // turn on special pin if end of shift register reached (layer 5 and pin 25)
-                        if (i == 5 && j == 24)
-                        {
-                            pin_special.set_value(led_value);
-                        }
-                        else
-                        {
-                            pin_datain.set_value(led_value);
-                            shift(); // only shift, when not the last pin
+//                    // set each led pin to either on or off
+//                    for (int j = 0; j < layer_data.size(); ++j)
+//                    {
+//                        bool led_value = layer_data[j];
+//
+//                        // turn on special pin if end of shift register reached (layer 5 and pin 25)
+//                        if (i == 5 && j == 24)
+//                        {
+//                            pin_special.set_value(led_value);
+//                        }
+//                        else
+//                        {
+//                            pin_datain.set_value(led_value);
+//                            shift(); // only shift, when not the last pin
+//                        }
+//                    }
+                    // shift all values into the leds/ registerst
+                    for (const auto &__layer: frame.data) {
+                        for (const auto &__line: __layer) {
+                            for (const auto &__value: __line) {
+                                if (__value) {
+                                    pin_datain.set_value(1);
+                                } else {
+                                    pin_datain.set_value(0);
+                                }
+                                // pin_datain.set_value(__value);
+                                shift();
+                            }
                         }
                     }
 
