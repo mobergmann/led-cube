@@ -2,6 +2,7 @@
 #include <chrono>
 #include <fstream>
 #include <iostream>
+#include <algorithm>
 
 #include <gpiod.hpp>
 #include <nlohmann/json.hpp>
@@ -72,6 +73,19 @@ private:
                     {
                         const auto &value = _frame["layers"][i][j][k];
                         frame.data[i][j][k] = value;
+                    }
+                }
+            }
+
+            // reverse each lain and each
+            for (const auto &layer: frame.data)
+            {
+                for (const auto &lain: layer)
+                {
+                    std::reverse(std::begin(lain), std::end(lain));
+                    for (const auto &value: lain)
+                    {
+                        std::reverse(std::begin(value), std::end(value));
                     }
                 }
             }
