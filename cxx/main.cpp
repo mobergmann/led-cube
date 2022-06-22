@@ -46,7 +46,7 @@ private:
         std::vector<Frame> frames;
 
         // load from file
-        std::ifstream stream("count-up-layer-1.json"); // todo proper/ dynamic file loading
+        std::ifstream stream("count-up-layer-5.json"); // todo proper/ dynamic file loading
 
         nlohmann::json file;
         stream >> file;
@@ -119,19 +119,19 @@ public:
 #pragma endregion
 
         // reset pin setup
-        pin_reset = chip.get_line(12);
+        pin_reset = chip.get_line(18);
         pin_reset.request({"GPIO12", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
         std::cout << "Reset pin acquired" << std::endl;
 
         // shift pin setup
         pin_shift = chip.get_line(14);
         pin_shift.request({"GPIO14", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
-        std::cout << "Reset pin acquired" << std::endl;
+        std::cout << "Shift pin acquired" << std::endl;
 
         // store pin setup
         pin_store = chip.get_line(15);
         pin_store.request({"GPIO15", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
-        std::cout << "Reset pin acquired" << std::endl;
+        std::cout << "Store pin acquired" << std::endl;
 
         // datain pin setup
         pin_datain = chip.get_line(12);
@@ -161,6 +161,7 @@ public:
             // reset all leds for next frame
             reset();
 
+            while (true) {
             for (int i = 0; i < frame.data.size(); ++i) {
                 const auto layer_data = frame.data[i];
 
@@ -188,14 +189,24 @@ public:
 //                    }
                 // shift all values into the leds/ registerst
                 for (const auto &__layer: frame.data) {
+                    // int i = 0;
                     for (const auto &__line: __layer) {
+                        // int j = 0;
                         for (const auto &__value: __line) {
-                            if (__value) {
-                                pin_datain.set_value(1);
-                            } else {
-                                pin_datain.set_value(0);
-                            }
-                            // pin_datain.set_value(__value);
+                            // bool led_value = layer_data[j];
+
+                            // // turn on special pin if end of shift register reached (layer 5 and pin 25)
+                            // if (i == 5 && j == 24)
+                            // {
+                            //     pin_special.set_value(led_value);
+                            // }
+                            // else
+                            // {
+                            //     pin_datain.set_value(led_value);
+                            //     shift(); // only shift, when not the last pin
+                            // }
+
+                            pin_datain.set_value(__value);
                             shift();
                         }
                     }
@@ -210,6 +221,7 @@ public:
             if (elapsed_time >= max_frame_time) {
                 break;
             }
+        }
         }
     }
 };
