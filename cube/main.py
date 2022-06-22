@@ -68,16 +68,28 @@ def save_frames():
         json_frame["frame-time"] = int(get_delta_time()*1000)
 
         tmp_list = list()
-        tmp = np.array_split(value, 5)
+        tmp_list2 = list()
+        tmp = np.array_split(value, 25)
+
+        count = 0
+
+        print(len(tmp))
+
 
         for i in tmp:
-
             sub = []
 
             for j in i:
                 sub.append(bool(j == 1))
 
-            tmp_list.append(sub)
+            tmp_list2.append(sub)
+            
+            if count%5 == 4:
+
+                tmp_list.append(tmp_list2)
+
+                tmp_list2 = list()
+            count += 1
 
         json_frame["data"] = tmp_list
 
