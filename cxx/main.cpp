@@ -78,15 +78,11 @@ private:
             }
 
             // reverse each lain and each
-            for (const auto &layer: frame.data)
+            for (auto &layer: frame.data)
             {
-                for (const auto &lain: layer)
+                for (auto &lain: layer)
                 {
                     std::reverse(std::begin(lain), std::end(lain));
-                    for (const auto &value: lain)
-                    {
-                        std::reverse(std::begin(value), std::end(value));
-                    }
                 }
             }
 
