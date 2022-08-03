@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <algorithm>
+#include <exception>
 
 #include <gpiod.hpp>
 #include <nlohmann/json.hpp>
@@ -49,7 +50,7 @@ private:
         std::vector<Frame> frames;
 
         // load from file
-        std::ifstream stream("count-up-layer-5.json"); // todo proper/ dynamic file loading
+        std::ifstream stream("data.json"); // todo proper/ dynamic file loading
 
         nlohmann::json file;
         stream >> file;
@@ -202,7 +203,7 @@ public:
                         for (const auto &led_value: line_data)
                         {
                             // turn on special pin if end of shift register reached (layer 5 and pin 25)
-                            if (i_line == 5 && i_value == 5)
+                            if (i_line == 4 && i_value == 4)
                             {
                                 pin_special.set_value(led_value);
                             }
@@ -226,21 +227,30 @@ public:
                         std::chrono::duration_cast<std::chrono::milliseconds>(current_time - starting_time);
                     if (elapsed_time >= max_frame_time)
                     {
+                        goto break_while;
                         break;
                     }
 
                     ++i_layer;
                 }
             }
+            break_while: true;
         }
     }
 };
 
 int main()
 {
-    Main m;
-    while (true)
+    try 
     {
-        m.loop();
+        Main m;
+        while (true)
+        {
+            m.loop();
+        }
+    }
+    catch(const std::exception& e) 
+    {
+        std::cerr << "failure: " << e.what() << std::endl;
     }
 }
