@@ -176,7 +176,7 @@ public:
         for (auto &frame: frames) {
             std::cout << "STEP: enabling all LEDs" << std::endl;
             std::cout << "Press any button to continue..." << std::endl << std::endl;
-            std::cin;
+            std::cin.get();
 
             // enable each separate
             int i_layer = 0;
@@ -219,13 +219,13 @@ public:
 
                 std::cout << "STEP: Reset Layer: " << i_layer << std::endl;
                 std::cout << "Press any button to continue..." << std::endl << std::endl;
-                std::cin;
+                std::cin.get();
 
                 reset();
 
                 std::cout << "STEP: Current Layer: " << i_layer << std::endl;
                 std::cout << "Press any button to continue..." << std::endl << std::endl;
-                std::cin;
+                std::cin.get();
 
                 ++i_layer;
             }
