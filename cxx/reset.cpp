@@ -96,8 +96,13 @@ private:
 
     void reset()
     {
-        pin_reset.set_value(0);
         pin_reset.set_value(1);
+        pin_reset.set_value(0);
+
+	// todo maybe also store?
+
+	// also reset sepcial pin
+	pin_special.set_value(0);
     }
 
     void shift()
@@ -173,15 +178,19 @@ public:
 
     void loop()
     {
-        for (auto &frame: frames) {
-            std::cout << "STEP: enabling all LEDs" << std::endl;
-            std::cout << "Press any button to continue..." << std::endl << std::endl;
+	int i_frame = 0;
+        for (auto &frame: frames) 
+	{
+            std::cout << "STEP: in frame " << i_frame << ". Enabelin all LEDs" << std::endl;
+            std::cout << "Press any button to continue..." << std::endl;
             std::cin.get();
 
             // enable each separate
             int i_layer = 0;
             for (auto &layer_pin: layers)
             {
+		std::cout << "STEP: in layer" << i_layer  << std::endl;
+		
                 // first disable all layers
                 for (auto &_: layers)
                 {
@@ -191,9 +200,7 @@ public:
                 layers[i_layer].set_value(1);
 
 
-                // enable all pins
-                for (const auto &layer_data: frame.data)
-                {
+                // enable all pins of all layer
                     int i_line = 0;
                     for (const auto &line_data: frame.data[i_layer])
                     {
@@ -215,20 +222,21 @@ public:
                         ++i_line;
                     }
                     store();
-                }
 
-                std::cout << "STEP: Reset Layer: " << i_layer << std::endl;
-                std::cout << "Press any button to continue..." << std::endl << std::endl;
+                std::cout << "STEP: Await reset" << std::endl;
+		// std::cout << "Press any button to continue..." << std::endl;
                 std::cin.get();
 
                 reset();
+		store();
 
-                std::cout << "STEP: Current Layer: " << i_layer << std::endl;
-                std::cout << "Press any button to continue..." << std::endl << std::endl;
+                std::cout << "STEP: reset done" << std::endl;
+		// std::cout << "Press any button to continue..." << std::endl << std::endl;
                 std::cin.get();
 
                 ++i_layer;
             }
+	    ++i_frame;
         }
     }
 };
