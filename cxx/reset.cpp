@@ -1,5 +1,4 @@
 #include <array>
-#include <chrono>
 #include <thread>
 #include <fstream>
 #include <iostream>
@@ -8,9 +7,6 @@
 
 #include <gpiod.hpp>
 #include <nlohmann/json.hpp>
-
-
-#define RASPI_GPIO_CHIP "gpiochip0"
 
 
 struct Frame {
@@ -107,9 +103,6 @@ private:
 
 public:
     Main() {
-        // parse input data
-        frames = parse_layout();
-
         // init chip
         gpiod::chip chip("gpiochip0", gpiod::chip::OPEN_BY_NAME);
 
@@ -164,56 +157,49 @@ public:
 
     void loop() {
         int i_frame = 0;
-        for (auto &frame: frames) {
-            std::cout << "STEP: in frame " << i_frame << ". Enabelin all LEDs" << std::endl;
-            std::cout << "Press any button to continue..." << std::endl;
+
+        // enable each separate
+        int i_layer = 0;
+        for (auto &layer_pin: layers) {
+            std::cout << "STEP: in layer" << i_layer << std::endl;
+
+            // first disable all layers
+            for (auto &_: layers) {
+                _.set_value(0);
+            }
+            // enable current layer
+            layers[i_layer].set_value(1);
+
+
+            // enable all pins of all layer
+            int i_line = 0;
+            for (int i = 0; i_line < 5; ++i) {
+                for (int i_value = 0; i_value < 5; ++i_value) {
+                    // turn on special pin if end of shift register reached (layer 5 and pin 25)
+                    if (i_line == 4 && i_value == 4) {
+                        pin_special.set_value(1);
+                    } else {
+                        pin_datain.set_value(1);
+                        shift(); // only shift, when not the last pin
+                    }
+                    ++i_value;
+                }
+                ++i_line;
+            }
+            store();
+
+            std::cout << "STEP: Await reset" << std::endl;
+            // std::cout << "Press any button to continue..." << std::endl;
             std::cin.get();
 
-            // enable each separate
-            int i_layer = 0;
-            for (auto &layer_pin: layers) {
-                std::cout << "STEP: in layer" << i_layer << std::endl;
+            reset();
+            store();
 
-                // first disable all layers
-                for (auto &_: layers) {
-                    _.set_value(0);
-                }
-                // enable current layer
-                layers[i_layer].set_value(1);
+            std::cout << "STEP: reset done" << std::endl;
+            // std::cout << "Press any button to continue..." << std::endl << std::endl;
+            std::cin.get();
 
-
-                // enable all pins of all layer
-                int i_line = 0;
-                for (const auto &line_data: frame.data[i_layer]) {
-                    int i_value = 0;
-                    for (const auto &led_value: line_data) {
-                        // turn on special pin if end of shift register reached (layer 5 and pin 25)
-                        if (i_line == 4 && i_value == 4) {
-                            pin_special.set_value(led_value);
-                        } else {
-                            pin_datain.set_value(led_value);
-                            shift(); // only shift, when not the last pin
-                        }
-                        ++i_value;
-                    }
-                    ++i_line;
-                }
-                store();
-
-                std::cout << "STEP: Await reset" << std::endl;
-                // std::cout << "Press any button to continue..." << std::endl;
-                std::cin.get();
-
-                reset();
-                store();
-
-                std::cout << "STEP: reset done" << std::endl;
-                // std::cout << "Press any button to continue..." << std::endl << std::endl;
-                std::cin.get();
-
-                ++i_layer;
-            }
-            ++i_frame;
+            ++i_layer;
         }
     }
 };
