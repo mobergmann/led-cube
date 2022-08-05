@@ -21,3 +21,8 @@ Layer_3 := 23
 Layer_4 := 24
 Layer_5 := 25
 ```
+
+# Dependencies
+- libgpiod-dev
+- cmake
+- g++
