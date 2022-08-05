@@ -13,16 +13,14 @@
 #define RASPI_GPIO_CHIP "gpiochip0"
 
 
-struct Frame
-{
+struct Frame {
     /// the time in milliseconds, how long the frame should be visible
     unsigned int frame_time;
     /// for each layer a stream of booleans, encoding which led is on
     std::array<std::array<std::array<bool, 5>, 5>, 5> data;
 };
 
-class Main
-{
+class Main {
 private:
     /// a list of frames, each representing a current state of the cube
     std::vector<Frame> frames;
@@ -46,8 +44,7 @@ private:
     gpiod::line pin_special;
 
 private:
-    static std::vector<Frame> parse_layout()
-    {
+    static std::vector<Frame> parse_layout() {
         std::vector<Frame> frames;
 
         // load from file
@@ -59,20 +56,16 @@ private:
 
         // parse json
         auto _frames = file["frames"];
-        for (auto &_frame: _frames)
-        {
+        for (auto &_frame: _frames) {
             Frame frame{};
 
             // frame time
             frame.frame_time = _frame["frame-time"];
 
             // layer data
-            for (int i = 0; i < 5; i++)
-            {
-                for (int j = 0; j < 5; j++)
-                {
-                    for (int k = 0; k < 5; k++)
-                    {
+            for (int i = 0; i < 5; i++) {
+                for (int j = 0; j < 5; j++) {
+                    for (int k = 0; k < 5; k++) {
                         const auto &value = _frame["layers"][i][j][k];
                         frame.data[i][j][k] = value;
                     }
@@ -80,10 +73,8 @@ private:
             }
 
             // reverse each lain and each
-            for (auto &layer: frame.data)
-            {
-                for (auto &lain: layer)
-                {
+            for (auto &layer: frame.data) {
+                for (auto &lain: layer) {
                     std::reverse(std::begin(lain), std::end(lain));
                 }
             }
@@ -94,32 +85,28 @@ private:
         return frames;
     }
 
-    void reset()
-    {
+    void reset() {
         pin_reset.set_value(1);
         pin_reset.set_value(0);
 
-	// todo maybe also store?
+        // todo maybe also store?
 
-	// also reset sepcial pin
-	pin_special.set_value(0);
+        // also reset sepcial pin
+        pin_special.set_value(0);
     }
 
-    void shift()
-    {
+    void shift() {
         pin_shift.set_value(0);
         pin_shift.set_value(1);
     }
 
-    void store()
-    {
+    void store() {
         pin_store.set_value(0);
         pin_store.set_value(1);
     }
 
 public:
-    Main()
-    {
+    Main() {
         // parse input data
         frames = parse_layout();
 
@@ -138,8 +125,7 @@ public:
         };
 
         // initialize layers
-        for (auto &layer: layers)
-        {
+        for (auto &layer: layers) {
             // todo name maybe has to be set explicitly
             layer.request({layer.name(), gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
         }
@@ -176,24 +162,20 @@ public:
         pin_reset.set_value(1);
     }
 
-    void loop()
-    {
-	int i_frame = 0;
-        for (auto &frame: frames) 
-	{
+    void loop() {
+        int i_frame = 0;
+        for (auto &frame: frames) {
             std::cout << "STEP: in frame " << i_frame << ". Enabelin all LEDs" << std::endl;
             std::cout << "Press any button to continue..." << std::endl;
             std::cin.get();
 
             // enable each separate
             int i_layer = 0;
-            for (auto &layer_pin: layers)
-            {
-		std::cout << "STEP: in layer" << i_layer  << std::endl;
-		
+            for (auto &layer_pin: layers) {
+                std::cout << "STEP: in layer" << i_layer << std::endl;
+
                 // first disable all layers
-                for (auto &_: layers)
-                {
+                for (auto &_: layers) {
                     _.set_value(0);
                 }
                 // enable current layer
@@ -201,58 +183,49 @@ public:
 
 
                 // enable all pins of all layer
-                    int i_line = 0;
-                    for (const auto &line_data: frame.data[i_layer])
-                    {
-                        int i_value = 0;
-                        for (const auto &led_value: line_data)
-                        {
-                            // turn on special pin if end of shift register reached (layer 5 and pin 25)
-                            if (i_line == 4 && i_value == 4)
-                            {
-                                pin_special.set_value(led_value);
-                            }
-                            else
-                            {
-                                pin_datain.set_value(led_value);
-                                shift(); // only shift, when not the last pin
-                            }
-                            ++i_value;
+                int i_line = 0;
+                for (const auto &line_data: frame.data[i_layer]) {
+                    int i_value = 0;
+                    for (const auto &led_value: line_data) {
+                        // turn on special pin if end of shift register reached (layer 5 and pin 25)
+                        if (i_line == 4 && i_value == 4) {
+                            pin_special.set_value(led_value);
+                        } else {
+                            pin_datain.set_value(led_value);
+                            shift(); // only shift, when not the last pin
                         }
-                        ++i_line;
+                        ++i_value;
                     }
-                    store();
+                    ++i_line;
+                }
+                store();
 
                 std::cout << "STEP: Await reset" << std::endl;
-		// std::cout << "Press any button to continue..." << std::endl;
+                // std::cout << "Press any button to continue..." << std::endl;
                 std::cin.get();
 
                 reset();
-		store();
+                store();
 
                 std::cout << "STEP: reset done" << std::endl;
-		// std::cout << "Press any button to continue..." << std::endl << std::endl;
+                // std::cout << "Press any button to continue..." << std::endl << std::endl;
                 std::cin.get();
 
                 ++i_layer;
             }
-	    ++i_frame;
+            ++i_frame;
         }
     }
 };
 
-int main()
-{
-    try
-    {
+int main() {
+    try {
         Main m;
-        while (true)
-        {
+        while (true) {
             m.loop();
         }
     }
-    catch(const std::exception& e)
-    {
+    catch (const std::exception &e) {
         std::cerr << "failure: " << e.what() << std::endl;
     }
 }
