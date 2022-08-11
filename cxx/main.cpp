@@ -29,6 +29,8 @@ private:
     /// pins for each layer toggle
     std::array<gpiod::line, 5> layers;
 
+#pragma region lines
+#pragma region led
     /// reset pin
     gpiod::line pin_reset;
 
@@ -43,8 +45,47 @@ private:
 
     /// special pin, which cannot be accessed by shifting
     gpiod::line pin_special;
+#pragma endregion
+
+#pragma region I/O
+    /// led for showing if the cube is in pairing mode
+    gpiod::line line_pairing_mode;
+
+    /// button for enabling pairing mode
+    gpiod::line line_bluetooth;
+    bool _bluetooth_edge = false;
+
+    /// button for iterating to next led setting
+    gpiod::line line_next;
+    bool _next_edge = false;
+
+    /// button for iterating to previous led setting
+    gpiod::line line_previous;
+    bool _previous_edge = false;
+
+    /// button for enabling/ disabling the cube
+    gpiod::line line_power;
+    bool _power_edge = false;
+#pragma endregion
 
 private:
+    static bool is_falling_edge(const gpiod::line& line, bool& edge)
+    {
+        if (line.get_value() != edge)
+        {
+            if (edge)
+            {
+                edge = false;
+                return true;
+            }
+        }
+        else
+        {
+            return false;
+        }
+        edge = true;
+    }
+
     static std::vector<Frame> parse_layout()
     {
         std::vector<Frame> frames;
@@ -140,6 +181,7 @@ public:
         std::cout << "All Layers acquired" << std::endl;
 #pragma endregion
 
+#pragma region led
         // reset pin setup
         pin_reset = chip.get_line(18);
         pin_reset.request({"GPIO12", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
@@ -164,10 +206,67 @@ public:
         pin_special = chip.get_line(13);
         pin_special.request({"GPIO13", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
         std::cout << "Special pin acquired" << std::endl;
-#pragma endregion
 
         // set pin reset initially to off
         pin_reset.set_value(1);
+#pragma endregion
+
+#pragma region I/O
+        // Pairing Mode LED
+        line_pairing_mode = chip.get_line();
+        line_pairing_mode.request({"GPIO", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
+        std::cout << "Pairing Mode LED acquired" << std::endl;
+
+        // bluetooth pairing button
+        line_bluetooth = chip.get_line();
+        line_bluetooth.request({"GPIO", gpiod::line_request::DIRECTION_INPUT, 0}, 0);
+        std::cout << "bluetooth pairing pin acquired" << std::endl;
+
+        // next setting button
+        line_next = chip.get_line();
+        line_next.request({"GPIO", gpiod::line_request::DIRECTION_INPUT, 0}, 0);
+        std::cout << "Next setting pin acquired" << std::endl;
+
+        // previous setting button
+        line_previous = chip.get_line();
+        line_previous.request({"GPIO", gpiod::line_request::DIRECTION_INPUT, 0}, 0);
+        std::cout << "Previous setting pin acquired" << std::endl;
+
+        // power on/ off button
+        line_power = chip.get_line();
+        line_power.request({"GPIO", gpiod::line_request::DIRECTION_INPUT, 0}, 0);
+        std::cout << "power on/ off pin acquired" << std::endl;
+#pragma endregion
+#pragma endregion
+    }
+
+    /**
+     * Polls for button events and then process these events
+     */
+    void poll()
+    {
+        // check for button press
+        if (is_falling_edge(line_bluetooth, _bluetooth_edge))
+        {
+            // todo
+            //  activate bluetooth protocol
+            //  blink bluetooth led
+        }
+        if (is_falling_edge(line_next, _next_edge))
+        {
+            // todo
+            //  activate next setting
+        }
+        if (is_falling_edge(line_previous, _previous_edge))
+        {
+            // todo
+            //  activate next setting
+        }
+        if (is_falling_edge(line_power, _power_edge))
+        {
+            // todo
+            //  switch on/ off cube
+        }
     }
 
     void loop()
@@ -186,6 +285,9 @@ public:
             // and only at the end of the current frame duration continue with next frame
             while (true)
             {
+                // poll for possible button events
+                poll();
+
                 int i_layer = 0;
                 for (const auto &layer_data: frame.data)
                 {
@@ -228,13 +330,12 @@ public:
                     if (elapsed_time >= max_frame_time)
                     {
                         goto break_while;
-                        break;
                     }
 
                     ++i_layer;
                 }
             }
-            break_while: true;
+            break_while:;
         }
     }
 };
