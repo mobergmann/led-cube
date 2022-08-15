@@ -11,6 +11,8 @@ find_package(Qt5 COMPONENTS
     Core
     Gui
     Widgets
+    3DCore
+    3DExtras
     REQUIRED)
 
 add_executable(editor main.cpp)
@@ -18,5 +20,5 @@ target_link_libraries(editor
     Qt5::Core
     Qt5::Gui
     Qt5::Widgets
-    )
-
+    Qt5::3DCore
+    Qt5::3DExtras)

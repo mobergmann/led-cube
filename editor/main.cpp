@@ -1,5 +1,7 @@
 #include <QApplication>
 #include <QPushButton>
+#include <Qt3DCore>
+#include <Qt3DExtras>
 
 
 int main(int argc, char *argv[])
