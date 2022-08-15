@@ -10,10 +10,11 @@ Diese Programme müssen installiert sein um das Projekt zu kompilieren.
 ## Pins
 ### User Pins
 Eine Liste von Pins, die dem Benutzer zur Verfügung stehen.
+Die Reihenfolge dieser Liste stellt die verfügbaren Pins von oben nach unten da.
 - 8
 - 7
-- 2
-- 3
+- 2 (funktioniert nicht)
+- 3 (funktioniert nicht)
 - 4
 - 11
 - 5
@@ -25,21 +26,21 @@ Eine Liste von Pins, die dem Benutzer zur Verfügung stehen.
 ### Belegung
 | Bezeichnung      | Pin | Notizen | Ort       |
 |------------------|-----|---------|-----------|
-| Data_In          | 12  |         | Verbaut   |
-| Pin_25           | 13  |         | Verbaut   |
-| Shift_Clock      | 14  | lila    | Verbaut   |
-| Store_Clock      | 15  | grün    | Verbaut   |
-| Reset_Pin        | 18  |         | Verbaut   |
-| Layer_1          | 20  |         | Verbaut   |
-| Layer_2          | 21  |         | Verbaut   |
-| Layer_3          | 23  |         | Verbaut   |
-| Layer_4          | 24  |         | Verbaut   |
-| Layer_5          | 25  |         | Verbaut   |
-| pairing led      |     |         | User Pins |
-| bluetooth button |     |         | User Pins |
-| next button      |     |         | User Pins |
-| previous button  |     |         | User Pins |
-| power button     |     |         | User Pins |
+| Datain           | 12  |         | Verbaut   |
+| Special Pin      | 13  |         | Verbaut   |
+| Shift Clock      | 14  | lila    | Verbaut   |
+| Store Clock      | 15  | grün    | Verbaut   |
+| Reset Pin        | 18  |         | Verbaut   |
+| Layer 1          | 20  |         | Verbaut   |
+| Layer 2          | 21  |         | Verbaut   |
+| Layer 3          | 23  |         | Verbaut   |
+| Layer 4          | 24  |         | Verbaut   |
+| Layer 5          | 25  |         | Verbaut   |
+| Pairing LED      | 16  |         | User Pins |
+| Bluetooth Button | 26  |         | User Pins |
+| Next Button      | 19  |         | User Pins |
+| Previous Button  | 6   |         | User Pins |
+| Power Button     | 5   |         | User Pins |
 
 
 ## Programm
@@ -146,4 +147,4 @@ Die erste Dimension stellt die Layer dar (die Schichten von unten nach oben).
 Jeder Layer, somit die zweite Dimension, besteht aus 5 sogenannten Lines.
 Jede Line besteht wiederrum aus 5 boolean Werten. Diese kodieren, ob eine LED an, oder aus sein soll.
 
-Die LED an der Position layers[1][2][3] stellt somit die LED dar, die im ersten Layer (von unten nach oben), in der Zweiten Line (von vorne nach hinten) und an der dritten Stelle (von links nach rechts) ist.
+Die LED an der Position `layers[1][2][3]` stellt somit die LED dar, die im ersten Layer (von unten nach oben), in der Zweiten Line (von vorne nach hinten) und an der dritten Stelle (von links nach rechts) ist.
