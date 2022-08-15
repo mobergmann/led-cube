@@ -405,3 +405,6 @@ CMakeLists.txt.user*
 *.code-workspace
 
 # End of https://www.toptal.com/developers/gitignore/api/qt,c++,python,qtcreator,intellij+all,visualstudiocode,cmake
+
+.idea/
+.vscode/
