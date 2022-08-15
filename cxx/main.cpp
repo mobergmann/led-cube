@@ -49,7 +49,7 @@ private:
 
 #pragma region I/O
     /// led for showing if the cube is in pairing mode
-    gpiod::line line_pairing_mode;
+    gpiod::line line_pairing_led;
 
     /// button for enabling pairing mode
     gpiod::line line_bluetooth;
@@ -213,8 +213,8 @@ public:
 
 #pragma region I/O
         // Pairing Mode LED
-        line_pairing_mode = chip.get_line();
-        line_pairing_mode.request({"GPIO", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
+        line_pairing_led = chip.get_line();
+        line_pairing_led.request({"GPIO", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
         std::cout << "Pairing Mode LED acquired" << std::endl;
 
         // bluetooth pairing button
@@ -251,21 +251,25 @@ public:
             // todo
             //  activate bluetooth protocol
             //  blink bluetooth led
+            std::cout << "bluetooth button press" << std::endl;
         }
         if (is_falling_edge(line_next, _next_edge))
         {
             // todo
             //  activate next setting
+            std::cout << "next setting button press" << std::endl;
         }
         if (is_falling_edge(line_previous, _previous_edge))
         {
             // todo
             //  activate next setting
+            std::cout << "previous setting button press" << std::endl;
         }
         if (is_falling_edge(line_power, _power_edge))
         {
             // todo
             //  switch on/ off cube
+            std::cout << "switch on/ off button press" << std::endl;
         }
     }
 
