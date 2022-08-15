@@ -2,6 +2,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QPushButton>
+#include <Qt3DCore>
+#include <Qt3DExtras>
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
