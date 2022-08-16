@@ -260,13 +260,13 @@ public:
             //  activate next setting
             std::cout << "next setting button press" << std::endl;
         }
-        if (is_falling_edge(line_previous, _previous_edge))
+        if (is_falling_edge(line_previous, _previous_edge) // todo this buttons doesnt work
         {
             // todo
             //  activate next setting
             std::cout << "previous setting button press" << std::endl;
         }
-        if (is_falling_edge(line_power, _power_edge))
+        if (is_falling_edge(line_power, _power_edge)) // todo this buttons doesnt work
         {
             // todo
             //  switch on/ off cube
