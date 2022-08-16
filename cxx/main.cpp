@@ -153,6 +153,40 @@ private:
         pin_store.set_value(1);
     }
 
+#pragma region bluetooth
+    void save()
+    {
+
+    }
+
+    void load()
+    {
+
+    }
+
+    void next()
+    {
+
+    }
+
+    void previous()
+    {
+
+    }
+#pragma endregion
+
+#pragma region bluetooth
+    void pair()
+    {
+
+    }
+
+    void sync_files()
+    {
+
+    }
+#pragma endregion
+
 public:
     Main()
     {
