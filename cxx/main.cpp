@@ -258,6 +258,10 @@ public:
             //  activate bluetooth protocol
             //  blink bluetooth led
             std::cout << "bluetooth button press" << std::endl;
+            line_pairing_led.set_value(1);
+        }
+        else {
+            line_pairing_led.set_value(0);
         }
         if (is_falling_edge(line_next, _next_edge))
         {
