@@ -9,9 +9,6 @@
 #include <nlohmann/json.hpp>
 
 
-#define RASPI_GPIO_CHIP "gpiochip0"
-
-
 struct Frame
 {
     /// the time in milliseconds, how long the frame should be visible
@@ -26,10 +23,12 @@ private:
     /// a list of frames, each representing a current state of the cube
     std::vector<Frame> frames;
 
+    bool cube_on = true;
+
+#pragma region lines
     /// pins for each layer toggle
     std::array<gpiod::line, 5> layers;
 
-#pragma region lines
 #pragma region led
     /// reset pin
     gpiod::line pin_reset;
@@ -51,21 +50,21 @@ private:
     /// led for showing if the cube is in pairing mode
     gpiod::line line_pairing_led;
 
-    /// button for enabling pairing mode
+    /// button for enabling pairing mode (pull down)
     gpiod::line line_bluetooth;
     bool _bluetooth_edge = false;
 
-    /// button for iterating to next led setting
+    /// button for iterating to next led setting (pull down)
     gpiod::line line_next;
     bool _next_edge = false;
 
-    /// button for iterating to previous led setting
+    /// button for iterating to previous led setting (pull up)
     gpiod::line line_previous;
-    bool _previous_edge = false;
+    bool _previous_edge = true;
 
-    /// button for enabling/ disabling the cube
+    /// button for enabling/ disabling the cube (pull up)
     gpiod::line line_power;
-    bool _power_edge = false;
+    bool _power_edge = true;
 #pragma endregion
 
 private:
@@ -190,7 +189,7 @@ public:
 #pragma region led
         // reset pin setup
         pin_reset = chip.get_line(18);
-        pin_reset.request({"GPIO12", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
+        pin_reset.request({"GPIO12", gpiod::line_request::DIRECTION_OUTPUT, 0}, 1);
         std::cout << "Reset pin acquired" << std::endl;
 
         // shift pin setup
@@ -212,35 +211,32 @@ public:
         pin_special = chip.get_line(13);
         pin_special.request({"GPIO13", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
         std::cout << "Special pin acquired" << std::endl;
-
-        // set pin reset initially to off
-        pin_reset.set_value(1);
 #pragma endregion
 
 #pragma region I/O
         // Pairing Mode LED
         line_pairing_led = chip.get_line(26);
-        line_pairing_led.request({"GPIO", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
+        line_pairing_led.request({"GPI26O", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
         std::cout << "Pairing Mode LED acquired" << std::endl;
 
         // bluetooth pairing button
         line_bluetooth = chip.get_line(16);
-        line_bluetooth.request({"GPIO", gpiod::line_request::DIRECTION_INPUT, 0}, 0);
+        line_bluetooth.request({"GPIO16", gpiod::line_request::DIRECTION_INPUT, 0}, 0);
         std::cout << "bluetooth pairing pin acquired" << std::endl;
-
-        // next setting button
-        line_next = chip.get_line(6);
-        line_next.request({"GPIO", gpiod::line_request::DIRECTION_INPUT, 0}, 0);
-        std::cout << "Next setting pin acquired" << std::endl;
 
         // previous setting button
         line_previous = chip.get_line(19);
-        line_previous.request({"GPIO", gpiod::line_request::DIRECTION_INPUT, 0}, 0);
+        line_previous.request({"GPIO19", gpiod::line_request::DIRECTION_INPUT, 0}, 0);
         std::cout << "Previous setting pin acquired" << std::endl;
+
+        // next setting button
+        line_next = chip.get_line(6);
+        line_next.request({"GPIO6", gpiod::line_request::DIRECTION_INPUT, 0}, 1);
+        std::cout << "Next setting pin acquired" << std::endl;
 
         // power on/ off button
         line_power = chip.get_line(5);
-        line_power.request({"GPIO", gpiod::line_request::DIRECTION_INPUT, 0}, 0);
+        line_power.request({"GPIO5", gpiod::line_request::DIRECTION_INPUT, 0}, 1);
         std::cout << "power on/ off pin acquired" << std::endl;
 #pragma endregion
 #pragma endregion
@@ -251,7 +247,7 @@ public:
      */
     void poll()
     {
-        // check for button press
+        // PULL DOWN Bluetooth button
         if (is_falling_edge(line_bluetooth, _bluetooth_edge))
         {
             // todo
@@ -260,31 +256,45 @@ public:
             std::cout << "bluetooth button press" << std::endl;
             line_pairing_led.set_value(1);
         }
-        else {
+        else
+        {
             line_pairing_led.set_value(0);
         }
-        if (is_falling_edge(line_next, _next_edge))
-        {
-            // todo
-            //  activate next setting
-            std::cout << "next setting button press" << std::endl;
-        }
-        if (is_falling_edge(line_previous, _previous_edge)) // todo this buttons doesnt work
+
+        // PULL DOWN Previous Button
+        if (is_falling_edge(line_previous, _previous_edge))
         {
             // todo
             //  activate next setting
             std::cout << "previous setting button press" << std::endl;
         }
-        if (is_falling_edge(line_power, _power_edge)) // todo this buttons doesnt work
+
+        // PULL UP Next Button
+        if (is_rising_edge(line_next, _next_edge))
+        {
+            // todo
+            //  activate next setting
+            std::cout << "next setting button press" << std::endl;
+        }
+
+        // PULL UP Power Button
+        if (is_rising_edge(line_power, _power_edge))
         {
             // todo
             //  switch on/ off cube
             std::cout << "switch on/ off button press" << std::endl;
+
+            cube_on = not cube_on;
         }
     }
 
     void loop()
     {
+        if (not cube_on)
+        {
+            return;
+        }
+
         for (auto &frame: frames)
         {
             // timer is used to determine if we should switch to next frame
