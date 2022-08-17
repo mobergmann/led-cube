@@ -7,7 +7,7 @@ add_subdirectory(depedencies/json)
 
 find_library(GPIOD_LIBRARY gpiodcxx REQUIRED)
 
-add_executable(led_cube main.cpp)
+add_executable(led_cube src/Bluetooth.cpp include/Bluetooth.h main.cpp)
 target_link_libraries(led_cube ${GPIOD_LIBRARY} nlohmann_json::nlohmann_json)
 
 add_executable(test-reset reset.cpp)
