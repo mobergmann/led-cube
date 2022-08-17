@@ -219,22 +219,22 @@ public:
 
 #pragma region I/O
         // Pairing Mode LED
-        line_pairing_led = chip.get_line(16);
+        line_pairing_led = chip.get_line(26);
         line_pairing_led.request({"GPIO", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
         std::cout << "Pairing Mode LED acquired" << std::endl;
 
         // bluetooth pairing button
-        line_bluetooth = chip.get_line(26);
+        line_bluetooth = chip.get_line(16);
         line_bluetooth.request({"GPIO", gpiod::line_request::DIRECTION_INPUT, 0}, 0);
         std::cout << "bluetooth pairing pin acquired" << std::endl;
 
         // next setting button
-        line_next = chip.get_line(19);
+        line_next = chip.get_line(6);
         line_next.request({"GPIO", gpiod::line_request::DIRECTION_INPUT, 0}, 0);
         std::cout << "Next setting pin acquired" << std::endl;
 
         // previous setting button
-        line_previous = chip.get_line(6);
+        line_previous = chip.get_line(19);
         line_previous.request({"GPIO", gpiod::line_request::DIRECTION_INPUT, 0}, 0);
         std::cout << "Previous setting pin acquired" << std::endl;
 
