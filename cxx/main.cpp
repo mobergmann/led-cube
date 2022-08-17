@@ -260,7 +260,7 @@ public:
             //  activate next setting
             std::cout << "next setting button press" << std::endl;
         }
-        if (is_falling_edge(line_previous, _previous_edge) // todo this buttons doesnt work
+        if (is_falling_edge(line_previous, _previous_edge)) // todo this buttons doesnt work
         {
             // todo
             //  activate next setting
