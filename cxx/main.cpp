@@ -87,6 +87,11 @@ private:
         return false;
     }
 
+    static bool is_rising_edge(const gpiod::line& line, bool& edge)
+    {
+        throw std::runtime_error("Not Implemented");
+    }
+
     static std::vector<Frame> parse_layout()
     {
         std::vector<Frame> frames;
