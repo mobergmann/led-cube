@@ -220,7 +220,7 @@ public:
 #pragma region led
         // reset pin setup
         pin_reset = chip.get_line(18);
-        pin_reset.request({"GPIO12", gpiod::line_request::DIRECTION_OUTPUT, 0}, 1);
+        pin_reset.request({"GPIO18", gpiod::line_request::DIRECTION_OUTPUT, 0}, 1);
         std::cout << "Reset pin acquired" << std::endl;
 
         // shift pin setup
@@ -312,7 +312,7 @@ public:
         }
     }
 
-    void set_leds(layers_t frame_data)
+    void set_leds(const layers_t &frame_data)
     {
         if (not cube_on)
         {
