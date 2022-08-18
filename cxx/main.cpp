@@ -1,5 +1,6 @@
 #include <array>
 #include <chrono>
+#include <thread>
 #include <fstream>
 #include <iostream>
 #include <algorithm>
@@ -106,6 +107,18 @@ private:
         }
         edge = false;
         return false;
+    }
+
+    static void bluetooth_deamon(const Main* m)
+    {
+        for (int i = 0; i < 5; ++i)
+        {
+            // blink bluetooth pairing led
+            m->line_pairing_led.set_value(1);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            m->line_pairing_led.set_value(0);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        }
     }
 
     static std::vector<Frame> parse_layout()
@@ -264,27 +277,12 @@ public:
      */
     void poll()
     {
-
-        //std::cout << "Button: Bluetooth: Value: " << line_bluetooth.get_value() << ", Edge: " << _bluetooth_edge << std::endl;
-        // std::cout << "Button: previous: Value: " << line_previous.get_value() << std::endl;
-        // std::cout << "Button: next: Value: " << line_next.get_value() << std::endl;
-        // std::cout << "Button: on/ off: Value: " << line_power.get_value() << std::endl;
-        // std::cout << std::endl;
-        // return;
-
         // PULL UP Bluetooth button
         if (is_rising_edge(line_bluetooth, _bluetooth_edge))
         {
-            // todo
-            //  activate bluetooth protocol
-            //  blink bluetooth led
+            std::thread deamon(&bluetooth_deamon, this);
             std::cout << "bluetooth button press" << std::endl;
-            line_pairing_led.set_value(1);
         }
-        // else
-        // {
-        //     line_pairing_led.set_value(0);
-        // }
 
         // PULL UP Previous Button
         if (is_rising_edge(line_previous, _previous_edge))
@@ -294,7 +292,7 @@ public:
             std::cout << "previous setting button press" << std::endl;
         }
 
-        // PULL DOWN Next Button
+        // PULL UP Next Button
         if (is_rising_edge(line_next, _next_edge))
         {
             // todo
@@ -302,7 +300,7 @@ public:
             std::cout << "next setting button press" << std::endl;
         }
 
-        // PULL DOWN Power Button
+        // PULL UP Power Button
         if (is_rising_edge(line_power, _power_edge))
         {
             // todo
@@ -311,7 +309,6 @@ public:
 
             cube_on = not cube_on;
         }
-        
     }
 
     void set_leds(layers_t frame_data)
