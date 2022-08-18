@@ -10,5 +10,8 @@ find_library(GPIOD_LIBRARY gpiodcxx REQUIRED)
 add_executable(led_cube main.cpp)
 target_link_libraries(led_cube ${GPIOD_LIBRARY} nlohmann_json::nlohmann_json)
 
-add_executable(test-reset reset.cpp)
-target_link_libraries(test-reset ${GPIOD_LIBRARY} nlohmann_json::nlohmann_json)
+add_executable(reset reset.cpp)
+target_link_libraries(reset ${GPIOD_LIBRARY} nlohmann_json::nlohmann_json)
+
+add_executable(buttons buttons.cpp)
+target_link_libraries(buttons ${GPIOD_LIBRARY})
