@@ -1,5 +1,6 @@
 #include <array>
 #include <chrono>
+#include <thread>
 #include <fstream>
 #include <iostream>
 #include <algorithm>
@@ -89,6 +90,18 @@ private:
     static bool is_rising_edge(const gpiod::line& line, bool& edge)
     {
         throw std::runtime_error("Not Implemented");
+    }
+
+    static void bluetooth_deamon(const Main* m)
+    {
+        for (int i = 0; i < 5; ++i)
+        {
+            // blink bluetooth pairing led
+            m->line_pairing_led.set_value(1);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            m->line_pairing_led.set_value(0);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        }
     }
 
     static std::vector<Frame> parse_layout()
@@ -250,15 +263,9 @@ public:
         // PULL DOWN Bluetooth button
         if (is_falling_edge(line_bluetooth, _bluetooth_edge))
         {
-            // todo
-            //  activate bluetooth protocol
-            //  blink bluetooth led
+
+            std::thread deamon(&bluetooth_deamon, this);
             std::cout << "bluetooth button press" << std::endl;
-            line_pairing_led.set_value(1);
-        }
-        else
-        {
-            line_pairing_led.set_value(0);
         }
 
         // PULL DOWN Previous Button
