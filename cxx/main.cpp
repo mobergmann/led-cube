@@ -10,9 +10,10 @@
 #include <nlohmann/json.hpp>
 
 
-using layers_t = std::array<std::array<std::array<bool, 5>, 5>, 5>;
-using lines_t = std::array<std::array<bool, 5>, 5>;
 using values_t = std::array<bool, 5>;
+using lines_t = std::array<values_t, 5>;
+using layers_t = std::array<lines_t, 5>;
+
 
 struct Frame
 {
