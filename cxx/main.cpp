@@ -11,6 +11,7 @@
 #include <gpiod.hpp>
 #include <nlohmann/json.hpp>
 
+#define APPDATA_DIR_PATH "/home/mobergmann/Downloads/files";
 
 using values_t = std::array<bool, 5>;
 using lines_t = std::array<values_t, 5>;
@@ -29,8 +30,10 @@ class Main
 {
 private:
 #pragma region file management
+    /// a list of all files in the data folder
     std::vector<std::string> files;
-    std::vector<std::string>::iterator current_file;
+    std::string current_file;
+
 #pragma endregion
 
     /// a list of frames, each representing a current state of the cube
@@ -117,8 +120,10 @@ private:
         return false;
     }
 
-    static void bluetooth_deamon(const Main* m)
+    static void bluetooth_deamon(Main* m)
     {
+        m->update_file_list();
+
         for (int i = 0; i < 5; ++i)
         {
             // blink bluetooth pairing led
@@ -134,7 +139,7 @@ private:
         std::vector<Frame> frames;
 
         // load from file
-        std::ifstream stream(*current_file); // todo proper/ dynamic file loading
+        std::ifstream stream(current_file);
 
         nlohmann::json file;
         stream >> file;
@@ -179,60 +184,82 @@ private:
 
     void update_file_list()
     {
-        std::string tmp = *current_file;
+        std::string tmp = current_file;
 
         files.clear();
 
         // search all new files
-        std::string data_dir_path = "$HOME/.led-cube/files/";
-        for (const auto &entry: std::filesystem::directory_iterator(data_dir_path))
+        std::string data_dir_path = APPDATA_DIR_PATH;
+        for (const auto &file: std::filesystem::recursive_directory_iterator(data_dir_path))
         {
-            std::cout << "Found file: " << entry.path() << std::endl;
-            files.push_back(entry.path());
+            std::cout << "Found file: " << file.path() << std::endl;
+            files.push_back(file.path());
         }
 
-        // search last
-        current_file = files.begin(); // fallback option
-        for (auto it = files.begin(); it != files.end(); ++it)
+        // search element in list, if not exits use fallback option
+        current_file = *files.begin(); // fallback option
+        for (const auto &val: files)
         {
-            if (*it == tmp)
+            if (val == tmp)
             {
-                current_file = it;
+                current_file = val;
+                break;
             }
         }
     }
 
     void next()
     {
-        if (current_file == files.end())
+        // search element in list, if not exits use fallback option
+        std::string tmp = current_file;
+        current_file = *files.begin(); // fallback option
+        for (int i = 0; i < files.size(); ++i)
         {
-            current_file = files.begin();
-        }
-        else
-        {
-            ++current_file;
-        }
+            const auto &it = files[i];
 
-        frames = parse_layout();
+            if (it == tmp)
+            {
+                // when at end, the next element is the beginning of the list
+                if (it == *files.end())
+                {
+                    current_file = *files.begin();
+                    break;
+                }
+                    // when found use previous element as new one
+                else
+                {
+                    current_file = files[i+1];
+                    break;
+                }
+            }
+        }
     }
 
     void previous()
     {
-        if (current_file == files.begin())
+        // search element in list, if not exits use fallback option
+        std::string tmp = current_file;
+        current_file = *files.begin(); // fallback option
+        for (int i = 0; i < files.size(); ++i)
         {
-            current_file = files.end();
-        }
-        else
-        {
-            --current_file;
-        }
+            const auto &it = files[i];
 
-        frames = parse_layout();
-    }
-
-    void bluetooth()
-    {
-        update_file_list();
+            if (it == tmp)
+            {
+                // when at beginning, the previous element is the end of the list
+                if (it == *files.begin())
+                {
+                    current_file = *files.end();
+                    break;
+                }
+                    // when found use previous element as new one
+                else
+                {
+                    current_file = files[i-1];
+                    break;
+                }
+            }
+        }
     }
 
     /**
@@ -346,7 +373,6 @@ public:
     {
         // get all files
         update_file_list();
-        current_file = files.begin();
 
         // parse input data
         frames = parse_layout();
