@@ -179,11 +179,26 @@ private:
 
     void update_file_list()
     {
+        std::string tmp = *current_file;
+
+        files.clear();
+
+        // search all new files
         std::string data_dir_path = "$HOME/.led-cube/files/";
         for (const auto &entry: std::filesystem::directory_iterator(data_dir_path))
         {
             std::cout << "Found file: " << entry.path() << std::endl;
             files.push_back(entry.path());
+        }
+
+        // search last
+        current_file = files.begin(); // fallback option
+        for (auto it = files.begin(); it != files.end(); ++it)
+        {
+            if (*it == tmp)
+            {
+                current_file = it;
+            }
         }
     }
 
@@ -213,6 +228,11 @@ private:
         }
 
         frames = parse_layout();
+    }
+
+    void bluetooth()
+    {
+        update_file_list();
     }
 
     /**
@@ -322,8 +342,12 @@ private:
 #pragma endregion
 
 public:
-    Main() : current_file(files.begin())
+    Main()
     {
+        // get all files
+        update_file_list();
+        current_file = files.begin();
+
         // parse input data
         frames = parse_layout();
 
