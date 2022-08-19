@@ -13,6 +13,3 @@ target_link_libraries(led_cube ${GPIOD_LIBRARY} nlohmann_json::nlohmann_json Thr
 
 add_executable(reset reset.cpp)
 target_link_libraries(reset ${GPIOD_LIBRARY} nlohmann_json::nlohmann_json Threads::Threads)
-
-add_executable(buttons buttons.cpp)
-target_link_libraries(buttons ${GPIOD_LIBRARY} Threads::Threads)
