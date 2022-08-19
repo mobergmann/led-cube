@@ -3,6 +3,7 @@
 #include <thread>
 #include <fstream>
 #include <iostream>
+#include <iterator>
 #include <algorithm>
 #include <exception>
 
@@ -26,6 +27,11 @@ struct Frame
 class Main
 {
 private:
+#pragma region file management
+    std::vector<std::string> files;
+    std::vector<std::string>::iterator current_file;
+#pragma endregion
+
     /// a list of frames, each representing a current state of the cube
     std::vector<Frame> frames;
 
@@ -122,12 +128,12 @@ private:
         }
     }
 
-    static std::vector<Frame> parse_layout()
+    std::vector<Frame> parse_layout()
     {
         std::vector<Frame> frames;
 
         // load from file
-        std::ifstream stream("data.json"); // todo proper/ dynamic file loading
+        std::ifstream stream(*current_file); // todo proper/ dynamic file loading
 
         nlohmann::json file;
         stream >> file;
@@ -190,7 +196,7 @@ private:
     }
 
 public:
-    Main()
+    Main() : current_file(files.begin())
     {
         // parse input data
         frames = parse_layout();
@@ -274,41 +280,64 @@ public:
 #pragma endregion
     }
 
+    void next()
+    {
+        if (current_file == files.end())
+        {
+            current_file = files.begin();
+        }
+        else
+        {
+            ++current_file;
+        }
+
+        frames = parse_layout();
+    }
+
+    void previous()
+    {
+        if (current_file == files.begin())
+        {
+            current_file = files.end();
+        }
+        else
+        {
+            --current_file;
+        }
+
+        frames = parse_layout();
+    }
+
     /**
      * Polls for button events and then process these events
      */
     void poll()
     {
-        // PULL UP Bluetooth button
+        // Bluetooth button
         if (is_rising_edge(line_bluetooth, _bluetooth_edge))
         {
+            std::cout << "bluetooth button pressed" << std::endl;
             std::thread deamon(&bluetooth_deamon, this);
-            std::cout << "bluetooth button press" << std::endl;
         }
 
-        // PULL UP Previous Button
+        // Previous Button
         if (is_rising_edge(line_previous, _previous_edge))
         {
-            // todo
-            //  activate next setting
-            std::cout << "previous setting button press" << std::endl;
+            std::cout << "previous setting button pressed" << std::endl;
+            previous();
         }
 
-        // PULL UP Next Button
+        // Next Button
         if (is_rising_edge(line_next, _next_edge))
         {
-            // todo
-            //  activate next setting
-            std::cout << "next setting button press" << std::endl;
+            std::cout << "next setting button pressed" << std::endl;
+            next();
         }
 
-        // PULL UP Power Button
+        // Power Button
         if (is_rising_edge(line_power, _power_edge))
         {
-            // todo
-            //  switch on/ off cube
             std::cout << "switch on/ off button press" << std::endl;
-
             cube_on = not cube_on;
         }
     }
