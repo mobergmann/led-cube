@@ -302,21 +302,21 @@ private:
 #pragma region
     void reset()
     {
-        pin_reset.set_value(1);
         pin_reset.set_value(0);
+        pin_reset.set_value(1);
         pin_special.set_value(0);
     }
 
     void shift()
     {
-        pin_shift.set_value(0);
         pin_shift.set_value(1);
+        pin_shift.set_value(0);
     }
 
     void store()
     {
-        pin_store.set_value(0);
         pin_store.set_value(1);
+        pin_store.set_value(0);
     }
 
 #pragma endregion
