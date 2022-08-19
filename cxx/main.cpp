@@ -6,6 +6,7 @@
 #include <iterator>
 #include <algorithm>
 #include <exception>
+#include <filesystem>
 
 #include <gpiod.hpp>
 #include <nlohmann/json.hpp>
@@ -176,108 +177,14 @@ private:
         return frames;
     }
 
-    void reset()
+    void update_file_list()
     {
-        pin_reset.set_value(1);
-        pin_reset.set_value(0);
-        pin_special.set_value(0);
-    }
-
-    void shift()
-    {
-        pin_shift.set_value(0);
-        pin_shift.set_value(1);
-    }
-
-    void store()
-    {
-        pin_store.set_value(0);
-        pin_store.set_value(1);
-    }
-
-public:
-    Main() : current_file(files.begin())
-    {
-        // parse input data
-        frames = parse_layout();
-
-        // init chip
-        gpiod::chip chip("gpiochip0", gpiod::chip::OPEN_BY_NAME);
-
-#pragma region aquire lines
-#pragma region layers
-        // save layers to array
-        layers = {
-            chip.get_line(20),
-            chip.get_line(21),
-            chip.get_line(23),
-            chip.get_line(24),
-            chip.get_line(25)
-        };
-
-        // initialize layers
-        for (auto &layer: layers)
+        std::string data_dir_path = "$HOME/.local/files/";
+        for (const auto &entry: std::filesystem::directory_iterator(data_dir_path))
         {
-            // todo name maybe has to be set explicitly
-            layer.request({layer.name(), gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
+            std::cout << "Found file: " << entry.path() << std::endl;
+            files.push_back(entry.path());
         }
-        std::cout << "All Layers acquired" << std::endl;
-#pragma endregion
-
-#pragma region led
-        // reset pin setup
-        pin_reset = chip.get_line(18);
-        pin_reset.request({"GPIO18", gpiod::line_request::DIRECTION_OUTPUT, 0}, 1);
-        std::cout << "Reset pin acquired" << std::endl;
-
-        // shift pin setup
-        pin_shift = chip.get_line(14);
-        pin_shift.request({"GPIO14", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
-        std::cout << "Shift pin acquired" << std::endl;
-
-        // store pin setup
-        pin_store = chip.get_line(15);
-        pin_store.request({"GPIO15", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
-        std::cout << "Store pin acquired" << std::endl;
-
-        // datain pin setup
-        pin_datain = chip.get_line(12);
-        pin_datain.request({"GPIO12", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
-        std::cout << "Datain pin acquired" << std::endl;
-
-        // special pin setup
-        pin_special = chip.get_line(13);
-        pin_special.request({"GPIO13", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
-        std::cout << "Special pin acquired" << std::endl;
-#pragma endregion
-
-#pragma region I/O
-        // Pairing Mode LED (pull down)
-        line_pairing_led = chip.get_line(11);
-        line_pairing_led.request({"GPIO11", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
-        std::cout << "Pairing Mode LED acquired" << std::endl;
-
-        // bluetooth pairing button (pull up)
-        line_bluetooth = chip.get_line(6);
-        line_bluetooth.request({"GPIO6", gpiod::line_request::DIRECTION_INPUT, 0}, 1);
-        std::cout << "bluetooth pairing pin acquired" << std::endl;
-
-        // previous setting button (pull up)
-        line_previous = chip.get_line(5);
-        line_previous.request({"GPIO5", gpiod::line_request::DIRECTION_INPUT, 0}, 1);
-        std::cout << "Previous setting pin acquired" << std::endl;
-
-        // next setting button (pull down)
-        line_next = chip.get_line(4);
-        line_next.request({"GPIO4", gpiod::line_request::DIRECTION_INPUT, 0}, 1);
-        std::cout << "Next setting pin acquired" << std::endl;
-
-        // power on/ off button (pull down)
-        line_power = chip.get_line(7);
-        line_power.request({"GPIO7", gpiod::line_request::DIRECTION_INPUT, 0}, 1);
-        std::cout << "power on/ off pin acquired" << std::endl;
-#pragma endregion
-#pragma endregion
     }
 
     void next()
@@ -387,6 +294,113 @@ public:
 
             ++i_layer;
         }
+    }
+
+#pragma region
+    void reset()
+    {
+        pin_reset.set_value(1);
+        pin_reset.set_value(0);
+        pin_special.set_value(0);
+    }
+
+    void shift()
+    {
+        pin_shift.set_value(0);
+        pin_shift.set_value(1);
+    }
+
+    void store()
+    {
+        pin_store.set_value(0);
+        pin_store.set_value(1);
+    }
+
+#pragma endregion
+
+public:
+    Main() : current_file(files.begin())
+    {
+        // parse input data
+        frames = parse_layout();
+
+        // init chip
+        gpiod::chip chip("gpiochip0", gpiod::chip::OPEN_BY_NAME);
+
+#pragma region aquire lines
+#pragma region layers
+        // save layers to array
+        layers = {
+            chip.get_line(20),
+            chip.get_line(21),
+            chip.get_line(23),
+            chip.get_line(24),
+            chip.get_line(25)
+        };
+
+        // initialize layers
+        for (auto &layer: layers)
+        {
+            // todo name maybe has to be set explicitly
+            layer.request({layer.name(), gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
+        }
+        std::cout << "All Layers acquired" << std::endl;
+#pragma endregion
+
+#pragma region led
+        // reset pin setup
+        pin_reset = chip.get_line(18);
+        pin_reset.request({"GPIO18", gpiod::line_request::DIRECTION_OUTPUT, 0}, 1);
+        std::cout << "Reset pin acquired" << std::endl;
+
+        // shift pin setup
+        pin_shift = chip.get_line(14);
+        pin_shift.request({"GPIO14", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
+        std::cout << "Shift pin acquired" << std::endl;
+
+        // store pin setup
+        pin_store = chip.get_line(15);
+        pin_store.request({"GPIO15", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
+        std::cout << "Store pin acquired" << std::endl;
+
+        // datain pin setup
+        pin_datain = chip.get_line(12);
+        pin_datain.request({"GPIO12", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
+        std::cout << "Datain pin acquired" << std::endl;
+
+        // special pin setup
+        pin_special = chip.get_line(13);
+        pin_special.request({"GPIO13", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
+        std::cout << "Special pin acquired" << std::endl;
+#pragma endregion
+
+#pragma region I/O
+        // Pairing Mode LED (pull down)
+        line_pairing_led = chip.get_line(11);
+        line_pairing_led.request({"GPIO11", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
+        std::cout << "Pairing Mode LED acquired" << std::endl;
+
+        // bluetooth pairing button (pull up)
+        line_bluetooth = chip.get_line(6);
+        line_bluetooth.request({"GPIO6", gpiod::line_request::DIRECTION_INPUT, 0}, 1);
+        std::cout << "bluetooth pairing pin acquired" << std::endl;
+
+        // previous setting button (pull up)
+        line_previous = chip.get_line(5);
+        line_previous.request({"GPIO5", gpiod::line_request::DIRECTION_INPUT, 0}, 1);
+        std::cout << "Previous setting pin acquired" << std::endl;
+
+        // next setting button (pull down)
+        line_next = chip.get_line(4);
+        line_next.request({"GPIO4", gpiod::line_request::DIRECTION_INPUT, 0}, 1);
+        std::cout << "Next setting pin acquired" << std::endl;
+
+        // power on/ off button (pull down)
+        line_power = chip.get_line(7);
+        line_power.request({"GPIO7", gpiod::line_request::DIRECTION_INPUT, 0}, 1);
+        std::cout << "power on/ off pin acquired" << std::endl;
+#pragma endregion
+#pragma endregion
     }
 
     void loop()
