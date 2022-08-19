@@ -259,6 +259,9 @@ private:
         int i_layer = 0;
         for (const auto &layer_data: frame_data)
         {
+            // reset all leds for next frame
+            reset();
+
             // disable all previous layer, to ensure that only one layer is turned on
             for (auto &layer_pin: layers)
             {
@@ -411,9 +414,6 @@ public:
             const auto starting_time = std::chrono::steady_clock::now();
             // convert the frame time to milliseconds
             const auto max_frame_time = std::chrono::milliseconds(frame.frame_time);
-
-            // reset all leds for next frame
-            reset();
 
             // replay current frame as fast as possible, as often as possible
             // and only at the end of the current frame duration continue with next frame
