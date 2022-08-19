@@ -172,8 +172,9 @@ private:
 
     void reset()
     {
-        pin_reset.set_value(0);
         pin_reset.set_value(1);
+        pin_reset.set_value(0);
+        pin_special.set_value(0);
     }
 
     void shift()
