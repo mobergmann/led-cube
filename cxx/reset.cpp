@@ -1,4 +1,5 @@
 #include <array>
+#include <chrono>
 #include <thread>
 #include <fstream>
 #include <iostream>
@@ -9,21 +10,29 @@
 #include <nlohmann/json.hpp>
 
 
-struct Frame {
+using values_t = std::array<bool, 5>;
+using lines_t = std::array<values_t, 5>;
+using layers_t = std::array<lines_t, 5>;
+
+
+struct Frame
+{
     /// the time in milliseconds, how long the frame should be visible
     unsigned int frame_time;
     /// for each layer a stream of booleans, encoding which led is on
-    std::array<std::array<std::array<bool, 5>, 5>, 5> data;
+    layers_t data;
 };
 
-class Main {
+class Main
+{
 private:
-    /// a list of frames, each representing a current state of the cube
-    std::vector<Frame> frames;
+    lines_t line_data;
 
+#pragma region lines
     /// pins for each layer toggle
-    std::array<gpiod::line, 5> layers;
+    gpiod::line layer;
 
+#pragma region led
     /// reset pin
     gpiod::line pin_reset;
 
@@ -39,95 +48,103 @@ private:
     /// special pin, which cannot be accessed by shifting
     gpiod::line pin_special;
 
+    gpiod::line line_reset_btn;
+    bool _line_reset_btn_edge = true;
+#pragma endregion
+
 private:
-    static std::vector<Frame> parse_layout() {
-        std::vector<Frame> frames;
-
-        // load from file
-        std::ifstream stream("data.json"); // todo proper/ dynamic file loading
-
-        nlohmann::json file;
-        stream >> file;
-        stream.close();
-
-        // parse json
-        auto _frames = file["frames"];
-        for (auto &_frame: _frames) {
-            Frame frame{};
-
-            // frame time
-            frame.frame_time = _frame["frame-time"];
-
-            // layer data
-            for (int i = 0; i < 5; i++) {
-                for (int j = 0; j < 5; j++) {
-                    for (int k = 0; k < 5; k++) {
-                        const auto &value = _frame["layers"][i][j][k];
-                        frame.data[i][j][k] = value;
-                    }
-                }
+    static bool is_falling_edge(const gpiod::line& line, bool& edge)
+    {
+        if (line.get_value() != edge)
+        {
+            if (edge)
+            {
+                edge = false;
+                return true;
             }
-
-            // reverse each lain and each
-            for (auto &layer: frame.data) {
-                for (auto &lain: layer) {
-                    std::reverse(std::begin(lain), std::end(lain));
-                }
-            }
-
-            frames.push_back(frame);
         }
-
-        return frames;
+        else
+        {
+            return false;
+        }
+        edge = true;
+        return false;
     }
 
-    void reset() {
+    static bool is_rising_edge(const gpiod::line& line, bool& edge)
+    {
+        if (line.get_value() != edge)
+        {
+            if (not edge)
+            {
+                edge = true;
+                return true;
+            }
+        }
+        else
+        {
+            return false;
+        }
+        edge = false;
+        return false;
+    }
+
+    static lines_t gen_data()
+    {
+        lines_t data;
+
+        // layer data
+        for (int j = 0; j < 5; j++)
+        {
+            for (int k = 0; k < 5; k++)
+            {
+                data[j][k] = true;
+            }
+        }
+
+        return data;
+    }
+
+    void reset()
+    {
         pin_reset.set_value(1);
         pin_reset.set_value(0);
-
-        // todo maybe also store?
-
-        // also reset sepcial pin
         pin_special.set_value(0);
     }
 
-    void shift() {
+    void shift()
+    {
         pin_shift.set_value(0);
         pin_shift.set_value(1);
     }
 
-    void store() {
+    void store()
+    {
         pin_store.set_value(0);
         pin_store.set_value(1);
     }
 
 public:
-    Main() {
+    Main()
+    {
+        // parse input data
+        line_data = gen_data();
+
         // init chip
         gpiod::chip chip("gpiochip0", gpiod::chip::OPEN_BY_NAME);
 
 #pragma region aquire lines
 #pragma region layers
         // save layers to array
-        layers = {
-                chip.get_line(20),
-                chip.get_line(21),
-                chip.get_line(23),
-                chip.get_line(24),
-                chip.get_line(25)
-        };
-
-        // initialize layers
-        for (auto &layer: layers) {
-            // todo name maybe has to be set explicitly
-            layer.request({layer.name(), gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
-        }
+        layer = chip.get_line(20);
+        layer.request({layer.name(), gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
         std::cout << "All Layers acquired" << std::endl;
 #pragma endregion
 
+#pragma region led
         // reset pin setup
         pin_reset = chip.get_line(18);
-        pin_reset.request({"GPIO12", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
+        pin_reset.request({"GPIO18", gpiod::line_request::DIRECTION_OUTPUT, 0}, 1);
         std::cout << "Reset pin acquired" << std::endl;
 
         // shift pin setup
@@ -151,67 +168,75 @@ public:
         std::cout << "Special pin acquired" << std::endl;
 #pragma endregion
 
-        // set pin reset initially to off
-        pin_reset.set_value(1);
+#pragma region I/O
+        // bluetooth pairing button (pull up)
+        line_reset_btn = chip.get_line(6);
+        line_reset_btn.request({"GPIO6", gpiod::line_request::DIRECTION_INPUT, 0}, 1);
+        std::cout << "line_reset_btn pin acquired" << std::endl;
+#pragma endregion
+#pragma endregion
     }
 
-    void loop() {
-        int i_frame = 0;
-
-        // enable each separate
-        int i_layer = 0;
-        for (auto &layer_pin: layers) {
-            std::cout << "STEP: in layer" << i_layer << std::endl;
-
-            // first disable all layers
-            for (auto &_: layers) {
-                _.set_value(0);
-            }
-            // enable current layer
-            layers[i_layer].set_value(1);
-
-
-            // enable all pins of all layer
-            int i_line = 0;
-            for (int i = 0; i_line < 5; ++i) {
-                for (int i_value = 0; i_value < 5; ++i_value) {
-                    // turn on special pin if end of shift register reached (layer 5 and pin 25)
-                    if (i_line == 4 && i_value == 4) {
-                        pin_special.set_value(1);
-                    } else {
-                        pin_datain.set_value(1);
-                        shift(); // only shift, when not the last pin
-                    }
-                    ++i_value;
-                }
-                ++i_line;
-            }
-            store();
-
-            std::cout << "STEP: Await reset" << std::endl;
-            // std::cout << "Press any button to continue..." << std::endl;
-            std::cin.get();
+    /**
+     * Polls for button events and then process these events
+     */
+    void poll()
+    {
+        // PULL UP Bluetooth button
+        if (is_rising_edge(line_reset_btn, _line_reset_btn_edge))
+        {
+            std::cout << "Reset Button Pressed" << std::endl;
 
             reset();
             store();
+        }
+    }
 
-            std::cout << "STEP: reset done" << std::endl;
-            // std::cout << "Press any button to continue..." << std::endl << std::endl;
-            std::cin.get();
+    void loop()
+    {
+        layer.set_value(1);
 
-            ++i_layer;
+        int i_line = 0;
+        for (const auto &line_data: line_data)
+        {
+            int i_value = 0;
+            for (const auto &led_value: line_data)
+            {
+                // turn on special pin if end of shift register reached (layer 5 and pin 25)
+                if (i_line == 4 && i_value == 4)
+                {
+                    pin_special.set_value(led_value);
+                }
+                else
+                {
+                    pin_datain.set_value(led_value);
+                    shift(); // only shift, when not the last pin
+                }
+
+                ++i_value;
+            }
+
+            ++i_line;
+        }
+
+        store();
+
+        while (true)
+        {
+            poll();
         }
     }
 };
 
-int main() {
-    try {
+int main()
+{
+    try
+    {
         Main m;
-        while (true) {
-            m.loop();
-        }
+        m.loop();
     }
-    catch (const std::exception &e) {
+    catch(const std::exception& e)
+    {
         std::cerr << "failure: " << e.what() << std::endl;
     }
 }
