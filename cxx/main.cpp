@@ -179,7 +179,7 @@ private:
 
     void update_file_list()
     {
-        std::string data_dir_path = "$HOME/.local/files/";
+        std::string data_dir_path = "$HOME/.led-cube/files/";
         for (const auto &entry: std::filesystem::directory_iterator(data_dir_path))
         {
             std::cout << "Found file: " << entry.path() << std::endl;
