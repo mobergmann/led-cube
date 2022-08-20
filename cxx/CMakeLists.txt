@@ -8,5 +8,8 @@ add_subdirectory(depedencies/json)
 find_library(GPIOD_LIBRARY gpiodcxx REQUIRED)
 find_package(Threads REQUIRED)
 
-add_executable(led_cube main.cpp)
+set(PROJECT_SOURCES
+    Button.h main.cpp)
+
+add_executable(led_cube ${PROJECT_SOURCES})
 target_link_libraries(led_cube ${GPIOD_LIBRARY} nlohmann_json::nlohmann_json Threads::Threads)
