@@ -11,12 +11,12 @@
 #include <gpiod.hpp>
 #include <nlohmann/json.hpp>
 
-#define APPDATA_DIR_PATH "/home/mobergmann/Downloads/files";
 
 using values_t = std::array<bool, 5>;
 using lines_t = std::array<values_t, 5>;
 using layers_t = std::array<lines_t, 5>;
 
+namespace fs = std::filesystem;
 
 struct Frame
 {
@@ -189,8 +189,16 @@ private:
         files.clear();
 
         // search all new files
-        std::string data_dir_path = APPDATA_DIR_PATH;
-        for (const auto &file: std::filesystem::recursive_directory_iterator(data_dir_path))
+        std::string data_dir_path = fs::path(getenv("HOME")) / ".led-cube" / "custom";
+        std::string default_dir_path = fs::path(getenv("HOME")) / ".led-cube" / "default";
+        // add default cube configurations
+        for (const auto &file: fs::recursive_directory_iterator(default_dir_path))
+        {
+            std::cout << "Found file: " << file.path() << std::endl;
+            files.push_back(file.path());
+        }
+        // add custom cube configurations
+        for (const auto &file: fs::recursive_directory_iterator(data_dir_path))
         {
             std::cout << "Found file: " << file.path() << std::endl;
             files.push_back(file.path());

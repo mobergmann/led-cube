@@ -148,3 +148,6 @@ Jeder Layer, somit die zweite Dimension, besteht aus 5 sogenannten Lines.
 Jede Line besteht wiederrum aus 5 boolean Werten. Diese kodieren, ob eine LED an, oder aus sein soll.
 
 Die LED an der Position `layers[1][2][3]` stellt somit die LED dar, die im ersten Layer (von unten nach oben), in der Zweiten Line (von vorne nach hinten) und an der dritten Stelle (von links nach rechts) ist.
+
+### Programme laden
+Die Programme (die `json` Dateien), die ein Benutzer im Cube anzeigen lassen möchte, müssen in dem Ordner `~/.led-cube/custom` vorhanden sein.
