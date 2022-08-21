@@ -6,9 +6,7 @@ set(CMAKE_CXX_STANDARD 20)
 add_subdirectory(depedencies/json)
 
 find_library(GPIOD_LIBRARY gpiodcxx REQUIRED)
+find_package(Threads REQUIRED)
 
 add_executable(led_cube src/Bluetooth.cpp include/Bluetooth.h main.cpp)
-target_link_libraries(led_cube ${GPIOD_LIBRARY} nlohmann_json::nlohmann_json)
-
-add_executable(test-reset reset.cpp)
-target_link_libraries(test-reset ${GPIOD_LIBRARY} nlohmann_json::nlohmann_json)
+target_link_libraries(led_cube ${GPIOD_LIBRARY} nlohmann_json::nlohmann_json Threads::Threads)
