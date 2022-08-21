@@ -20,6 +20,8 @@ find_package(Qt5 COMPONENTS
 
 set(PROJECT_SOURCES
     main.cpp
+    Cube.h
+    Frame.cpp Frame.h
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
