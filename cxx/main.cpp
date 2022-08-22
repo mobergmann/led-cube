@@ -401,7 +401,7 @@ private:
         for (int i = 0; i < frame_data.size(); ++i)
         {
             // reset all leds for next frame
-            reset();
+//            reset(); // todo test if reset is causing issues
 
             // disable all previous layer, to ensure that only one layer is turned on
             for (auto &layer_pin: layers)
