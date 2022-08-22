@@ -34,20 +34,24 @@ private:
      */
     bool is_falling_edge()
     {
-        if (line.get_value() != edge)
+        if (line.get_value() != edge) // edge
         {
-            if (edge)
+            if (not edge) // rising edge
+            {
+                
+                edge = true;
+                return false;
+            } 
+            else // falling edge
             {
                 edge = false;
                 return true;
             }
         }
-        else
+        else // no edge
         {
             return false;
         }
-        edge = true;
-        return false;
     }
 
     /**
