@@ -31,18 +31,19 @@ struct Frame
 class Main
 {
 private:
-#pragma region file management
-    /// a list of all files in the data folder
-    std::vector<std::string> files;
-    std::string current_file;
-
-#pragma endregion
-
     /// a list of frames, each representing a current state of the cube
     std::vector<Frame> frames;
 
     /// boolean indicating if the led cube should be on
     bool cube_on;
+
+#pragma region file management
+    /// a list of all files in the data folder
+    std::vector<std::string> files;
+
+    /// stores the current configuration file
+    std::string current_file;
+#pragma endregion
 
 #pragma region lines
     /// reference to the lines chip
@@ -84,89 +85,6 @@ private:
     /// button for enabling/ disabling the cube (pull up)
     Button *line_power;
 #pragma endregion
-
-private:
-    static void bluetooth_deamon(Main* m)
-    {
-        for (int i = 0; i < 5; ++i)
-        {
-            // blink bluetooth pairing led
-            m->line_pairing_led.set_value(1);
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-            m->line_pairing_led.set_value(0);
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        }
-
-        m->update_file_list();
-    }
-
-    std::vector<Frame> parse_layout()
-    {
-        std::vector<Frame> frames;
-
-        // load from file
-        std::ifstream stream(current_file);
-
-        nlohmann::json file;
-        stream >> file;
-        stream.close();
-
-        // parse json
-        auto _frames = file["frames"];
-        for (auto &_frame: _frames)
-        {
-            Frame frame{};
-
-            // frame time
-            frame.frame_time = _frame["frame-time"];
-
-            // layer data
-            for (int i = 0; i < 5; i++)
-            {
-                for (int j = 0; j < 5; j++)
-                {
-                    for (int k = 0; k < 5; k++)
-                    {
-                        const auto &value = _frame["layers"][i][j][k];
-                        frame.data[i][j][k] = value;
-                    }
-                }
-            }
-
-            // reverse each lain and each
-            for (auto &layer: frame.data)
-            {
-                for (auto &lain: layer)
-                {
-                    std::reverse(std::begin(lain), std::end(lain));
-                }
-            }
-
-            frames.push_back(frame);
-        }
-
-        return frames;
-    }
-
-#pragma region
-    void reset()
-    {
-        pin_reset.set_value(0);
-        pin_reset.set_value(1);
-        pin_special.set_value(0);
-    }
-
-    void shift()
-    {
-        pin_shift.set_value(1);
-        pin_shift.set_value(0);
-    }
-
-    void store()
-    {
-        pin_store.set_value(1);
-        pin_store.set_value(0);
-    }
 #pragma endregion
 
 public:
@@ -251,6 +169,91 @@ public:
 #pragma endregion
 #pragma endregion
     }
+
+private:
+    static void bluetooth_deamon(Main* m)
+    {
+        for (int i = 0; i < 5; ++i)
+        {
+            // blink bluetooth pairing led
+            m->line_pairing_led.set_value(1);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            m->line_pairing_led.set_value(0);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        }
+
+        m->update_file_list();
+    }
+
+private:
+    std::vector<Frame> parse_layout()
+    {
+        std::vector<Frame> frames;
+
+        // load from file
+        std::ifstream stream(current_file);
+
+        nlohmann::json file;
+        stream >> file;
+        stream.close();
+
+        // parse json
+        auto _frames = file["frames"];
+        for (auto &_frame: _frames)
+        {
+            Frame frame{};
+
+            // frame time
+            frame.frame_time = _frame["frame-time"];
+
+            // layer data
+            for (int i = 0; i < 5; i++)
+            {
+                for (int j = 0; j < 5; j++)
+                {
+                    for (int k = 0; k < 5; k++)
+                    {
+                        const auto &value = _frame["layers"][i][j][k];
+                        frame.data[i][j][k] = value;
+                    }
+                }
+            }
+
+            // reverse each lain and each
+            for (auto &layer: frame.data)
+            {
+                for (auto &lain: layer)
+                {
+                    std::reverse(std::begin(lain), std::end(lain));
+                }
+            }
+
+            frames.push_back(frame);
+        }
+
+        return frames;
+    }
+
+#pragma region line controll abstraction methods
+    void reset()
+    {
+        pin_reset.set_value(0);
+        pin_reset.set_value(1);
+        pin_special.set_value(0);
+    }
+
+    void shift()
+    {
+        pin_shift.set_value(1);
+        pin_shift.set_value(0);
+    }
+
+    void store()
+    {
+        pin_store.set_value(1);
+        pin_store.set_value(0);
+    }
+#pragma endregion
 
     void update_file_list()
     {
@@ -414,7 +417,7 @@ public:
         }
     }
 
-
+public:
     void loop()
     {
         for (auto &frame: frames)
