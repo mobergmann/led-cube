@@ -123,8 +123,6 @@ private:
 
     static void bluetooth_deamon(Main* m)
     {
-        m->update_file_list();
-
         for (int i = 0; i < 5; ++i)
         {
             // blink bluetooth pairing led
@@ -133,6 +131,8 @@ private:
             m->line_pairing_led.set_value(0);
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
+
+        m->update_file_list();
     }
 
     std::vector<Frame> parse_layout()
