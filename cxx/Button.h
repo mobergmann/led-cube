@@ -90,18 +90,21 @@ private:
     {
         if (line.get_value() != edge)
         {
-            if (not edge)
+            if (not edge) // rising edge
             {
                 edge = true;
                 return true;
+            } 
+            else // falling edge
+            {
+                edge = false;
+                return false;
             }
         }
-        else
+        else // no edge
         {
             return false;
         }
-        edge = false;
-        return false;
     }
 
 public:
@@ -123,7 +126,7 @@ public:
     void poll(const std::function<void()>& callback)
     {
         // if button press detected
-        if (is_falling_edge())
+        if (is_rising_edge())
         {
             auto current_time = std::chrono::steady_clock::now();
             auto elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(current_time - last_pressed);
@@ -139,6 +142,6 @@ public:
     }
 };
 
-const std::chrono::milliseconds Button::press_delta = std::chrono::milliseconds(250);
+const std::chrono::milliseconds Button::press_delta = std::chrono::milliseconds(50);
 
 #endif //BUTTON_H
