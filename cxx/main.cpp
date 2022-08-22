@@ -214,6 +214,7 @@ private:
                 break;
             }
         }
+        std::cout << "New Configuration: " << current_file << std::endl;
     }
 
     void next()
