@@ -292,9 +292,15 @@ private:
 
     void next()
     {
+        // if only one or fewer elements in list => no scrolling possible
+        if (files.size() <= 1)
+        {
+            return;
+        }
+
         // search element in list, if not exits use fallback option
         std::string tmp = current_file;
-        current_file = *files.begin(); // fallback option
+        current_file = files[0]; // fallback option
         for (int i = 0; i < files.size(); ++i)
         {
             const auto &it = files[i];
@@ -302,12 +308,12 @@ private:
             if (it == tmp)
             {
                 // when at end, the next element is the beginning of the list
-                if (it == *files.end())
+                if (i == files.size())
                 {
-                    current_file = *files.begin();
+                    // current_file = files[0]; // this is the fallback option, therefore change nothing
                     break;
                 }
-                    // when found use previous element as new one
+                // when found use previous element as new one
                 else
                 {
                     current_file = files[i+1];
@@ -320,25 +326,31 @@ private:
 
     void previous()
     {
+        // if only one or fewer elements in list => no scrolling possible
+        if (files.size() <= 1)
+        {
+            return;
+        }
+
         // search element in list, if not exits use fallback option
         std::string tmp = current_file;
-        current_file = *files.begin(); // fallback option
+        current_file = files[0]; // fallback option
         for (int i = 0; i < files.size(); ++i)
         {
             const auto &it = files[i];
 
             if (it == tmp)
             {
-                // when at beginning, the previous element is the end of the list
-                if (it == *files.begin())
+                // when at beginning, the previous element is the beginning of the list
+                if (i == 0)
                 {
-                    current_file = *files.end();
+                    current_file = files[files.size()];
                     break;
                 }
                     // when found use previous element as new one
                 else
                 {
-                    current_file = files[i-1];
+                    current_file = files[i+1];
                     break;
                 }
             }
