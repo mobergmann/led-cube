@@ -123,7 +123,7 @@ public:
     void poll(const std::function<void()>& callback)
     {
         // if button press detected
-        if (is_rising_edge())
+        if (is_falling_edge())
         {
             auto current_time = std::chrono::steady_clock::now();
             auto elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(current_time - last_pressed);
