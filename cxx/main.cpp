@@ -350,7 +350,7 @@ private:
                     // when found use previous element as new one
                 else
                 {
-                    current_file = files[i+1];
+                    current_file = files[i-1];
                     break;
                 }
             }
