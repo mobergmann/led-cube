@@ -241,6 +241,7 @@ private:
                 }
             }
         }
+        std::cout << "New Configuration: " << current_file << std::endl;
     }
 
     void previous()
@@ -268,6 +269,7 @@ private:
                 }
             }
         }
+        std::cout << "New Configuration: " << current_file << std::endl;
     }
 
     /**
