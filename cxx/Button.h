@@ -88,7 +88,7 @@ private:
      */
     bool is_rising_edge()
     {
-        if (line.get_value() != edge)
+        if (get_value() != edge)
         {
             if (not edge) // rising edge
             {
