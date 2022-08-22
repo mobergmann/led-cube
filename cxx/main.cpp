@@ -156,11 +156,11 @@ public:
         std::cout << "bluetooth pairing pin acquired" << std::endl;
 
         /// button for iterating to next led setting (pull down)
-        line_next = new Button(chip, 4);
+        line_next = new Button(chip, 5);
         std::cout << "Previous setting pin acquired" << std::endl;
 
         /// button for iterating to previous led setting (pull up)
-        line_previous = new Button(chip, 5);
+        line_previous = new Button(chip, 4);
         std::cout << "Next setting pin acquired" << std::endl;
 
         /// button for enabling/ disabling the cube (pull up)
