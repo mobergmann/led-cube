@@ -58,7 +58,7 @@ def save_frames():
     global frames
     global deltaTime
 
-    path = f"../files/{fileName.text}.json"
+    path = f"../assets/files/{fileName.text}.json"
 
     json_frames = list()
 
