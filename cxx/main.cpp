@@ -310,15 +310,14 @@ private:
                 // when at end, the next element is the beginning of the list
                 if (i == files.size())
                 {
-                    current_file = files[0]; // this is the fallback option, therefore change nothing
-                    break;
+                    // current_file = files[0]; // this is the fallback option, therefore change nothing
                 }
                 // when found use previous element as new one
                 else
                 {
                     current_file = files[i+1];
-                    break;
                 }
+                break;
             }
         }
         std::cout << "New Configuration: " << current_file << std::endl;
@@ -345,14 +344,13 @@ private:
                 if (i == 0)
                 {
                     current_file = files[files.size()];
-                    break;
                 }
-                    // when found use previous element as new one
+                // when found use previous element as new one
                 else
                 {
                     current_file = files[i-1];
-                    break;
                 }
+                break;
             }
         }
         std::cout << "New Configuration: " << current_file << std::endl;
