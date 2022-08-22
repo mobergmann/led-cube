@@ -29,7 +29,7 @@ private:
     bool edge;
 
     /// the last state of the button
-    bool last_state = false;
+    bool last_state;
 
     /**
      * checks if the button is actually pressed
@@ -110,7 +110,7 @@ private:
 public:
     Button() = delete;
 
-    Button(const gpiod::chip &chip, int line_number) : last_pressed(std::chrono::steady_clock::now()), edge(true)
+    Button(const gpiod::chip &chip, int line_number) : last_pressed(std::chrono::steady_clock::now()), edge(true), last_state(true)
     {
         string line_name = "GPIO" + std::to_string(line_number);
         line = chip.get_line(line_number);
@@ -128,16 +128,8 @@ public:
         // if button press detected
         if (is_rising_edge())
         {
-            auto current_time = std::chrono::steady_clock::now();
-            auto elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(current_time - last_pressed);
-            if (elapsed_time >= press_delta)
-            {
-                // update last time pressed value
-                last_pressed = current_time;
-
-                // run callback function
-                callback();
-            }
+            // run callback function
+            callback();
         }
     }
 };
