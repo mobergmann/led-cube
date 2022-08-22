@@ -39,6 +39,7 @@ private:
     /// a list of frames, each representing a current state of the cube
     std::vector<Frame> frames;
 
+    /// boolean indicating if the led cube should be on
     bool cube_on = true;
 
 #pragma region lines
