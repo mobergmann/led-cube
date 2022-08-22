@@ -94,7 +94,7 @@ public:
         update_file_list();
 
         // parse input data
-        frames = parse_layout();
+        parse_layout();
 
         // init chip
         chip = gpiod::chip("gpiochip0", gpiod::chip::OPEN_BY_NAME);
@@ -186,7 +186,7 @@ private:
     }
 
 private:
-    std::vector<Frame> parse_layout()
+    void parse_layout()
     {
         std::vector<Frame> frames;
 
@@ -231,7 +231,7 @@ private:
             frames.push_back(frame);
         }
 
-        return frames;
+        this->frames = frames;
     }
 
 #pragma region line controll abstraction methods
@@ -278,7 +278,7 @@ private:
         }
 
         // search element in list, if not exits use fallback option
-        current_file = *files.begin(); // fallback option
+        current_file = files[0]; // fallback option
         for (const auto &val: files)
         {
             if (val == tmp)
@@ -287,7 +287,6 @@ private:
                 break;
             }
         }
-        std::cout << "New Configuration: " << current_file << std::endl;
     }
 
     void next()
@@ -369,11 +368,13 @@ private:
         line_previous->poll([&](){
             std::cout << "previous setting button press" << std::endl;
             previous();
+            parse_layout();
         });
 
         line_next->poll([&](){
             std::cout << "next setting button press" << std::endl;
             next();
+            parse_layout();
         });
 
         line_power->poll([&](){
