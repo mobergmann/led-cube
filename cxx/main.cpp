@@ -170,6 +170,14 @@ public:
 #pragma endregion
     }
 
+    ~Main()
+    {
+        delete line_bluetooth;
+        delete line_previous;
+        delete line_next;
+        delete line_power;
+    }
+
 private:
     static void bluetooth_deamon(Main* m)
     {
