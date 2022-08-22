@@ -279,7 +279,7 @@ private:
         if (is_rising_edge(line_bluetooth, _bluetooth_edge))
         {
             std::cout << "bluetooth button pressed" << std::endl;
-            std::thread deamon(&bluetooth_deamon, this);
+            new std::thread(&bluetooth_deamon, this);
         }
 
         // Previous Button
