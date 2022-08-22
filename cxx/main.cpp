@@ -308,7 +308,7 @@ private:
             if (it == tmp)
             {
                 // when at end, the next element is the beginning of the list
-                if (i == files.size())
+                if (i == files.size()-1)
                 {
                     // current_file = files[0]; // this is the fallback option, therefore change nothing
                 }
@@ -343,7 +343,7 @@ private:
                 // when at beginning, the previous element is the beginning of the list
                 if (i == 0)
                 {
-                    current_file = files[files.size()];
+                    current_file = files[files.size()-1];
                 }
                 // when found use previous element as new one
                 else
