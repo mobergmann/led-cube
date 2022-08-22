@@ -19,14 +19,42 @@ private:
     /// delta time, a button cannot be pressed after being pressed
     const static std::chrono::milliseconds press_delta;
 
-    /// stores the last time the button has been pressed
+    /// stores the last time before the button state changes
     std::chrono::time_point<std::chrono::steady_clock> last_pressed;
 
-    /// the line/ pin object for controlling the lin
+    /// the line/ pin object for controlling the line
     gpiod::line line;
 
     /// the last value of the rising/ falling edge
     bool edge;
+
+    /// the last state of the button
+    bool last_state = false;
+
+    /**
+     * checks if the button is actually pressed
+     * @return true if the button is pressed
+     */
+    bool get_value()
+    {
+        bool state = line.get_value();
+
+        if (state == last_state)
+        {
+            last_pressed = std::chrono::steady_clock::now();
+        }
+        else
+        {
+            auto current_time = std::chrono::steady_clock::now();
+            auto elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(current_time - last_pressed);
+            if (elapsed_time >= press_delta)
+            {
+                last_state = state;
+            }
+        }
+
+        return last_state;
+    }
 
     /**
      * checks if the line is returning a falling edge
@@ -34,7 +62,7 @@ private:
      */
     bool is_falling_edge()
     {
-        if (line.get_value() != edge) // edge
+        if (get_value() != edge) // edge
         {
             if (not edge) // rising edge
             {
