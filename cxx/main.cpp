@@ -196,7 +196,7 @@ private:
 private:
     void parse_layout()
     {
-        std::vector<Frame> frames;
+        std::vector<Frame> _frames;
 
         // load from file
         std::ifstream stream(current_file);
@@ -206,8 +206,7 @@ private:
         stream.close();
 
         // parse json
-        auto _frames = file["frames"];
-        for (auto &_frame: _frames)
+        for (auto &_frame: file["frames"])
         {
             Frame frame{};
 
@@ -236,10 +235,10 @@ private:
                 }
             }
 
-            frames.push_back(frame);
+            _frames.push_back(frame);
         }
 
-        this->frames = frames;
+        frames = _frames;
     }
 
 #pragma region line controll abstraction methods
