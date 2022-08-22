@@ -17,7 +17,7 @@ class Button
 {
 private:
     /// delta time, a button cannot be pressed after being pressed
-    static std::chrono::milliseconds press_delta;
+    const static std::chrono::milliseconds press_delta;
 
     /// stores the last time the button has been pressed
     std::chrono::time_point<std::chrono::steady_clock> last_pressed;
@@ -107,6 +107,6 @@ public:
     }
 };
 
-std::chrono::milliseconds Button::press_delta = std::chrono::milliseconds(250);
+const std::chrono::milliseconds Button::press_delta = std::chrono::milliseconds(250);
 
 #endif //BUTTON_H
