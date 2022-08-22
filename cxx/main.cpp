@@ -304,6 +304,8 @@ private:
         if (is_rising_edge(line_power, _power_edge))
         {
             std::cout << "switch on/ off button press" << std::endl;
+            reset();
+            store();
             cube_on = not cube_on;
         }
     }
@@ -315,8 +317,7 @@ private:
             return;
         }
 
-        int i_layer = 0;
-        for (const auto &layer_data: frame_data)
+        for (int i = 0; i < frame_data.size(); ++i)
         {
             // reset all leds for next frame
             reset();
@@ -326,16 +327,17 @@ private:
             {
                 layer_pin.set_value(0);
             }
-            layers[i_layer].set_value(1); // enable current layer
+            // enable current layer
+            layers[i].set_value(1);
 
-            int i_line = 0;
-            for (const auto &line_data: layer_data)
+            for (int j = 0; j < frame_data[i].size(); ++j)
             {
-                int i_value = 0;
-                for (const auto &led_value: line_data)
+                for (int k = 0; k < frame_data[i][j].size(); ++k)
                 {
+                    const auto led_value = frame_data[i][j][k];
+
                     // turn on special pin if end of shift register reached (layer 5 and pin 25)
-                    if (i_line == 4 && i_value == 4)
+                    if (j == 4 && k == 4)
                     {
                         pin_special.set_value(led_value);
                     }
@@ -344,17 +346,10 @@ private:
                         pin_datain.set_value(led_value);
                         shift(); // only shift, when not the last pin
                     }
-
-                    ++i_value;
                 }
-
-                ++i_line;
             }
 
             store(); // store each layer
-
-
-            ++i_layer;
         }
     }
 
