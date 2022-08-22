@@ -310,7 +310,7 @@ private:
                 // when at end, the next element is the beginning of the list
                 if (i == files.size())
                 {
-                    // current_file = files[0]; // this is the fallback option, therefore change nothing
+                    current_file = files[0]; // this is the fallback option, therefore change nothing
                     break;
                 }
                 // when found use previous element as new one
