@@ -203,7 +203,6 @@ private:
 
         nlohmann::json file;
         stream >> file;
-        stream.close();
 
         // parse json
         for (auto &_frame: file["frames"])
