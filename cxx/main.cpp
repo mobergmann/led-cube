@@ -225,15 +225,6 @@ private:
                 }
             }
 
-            // reverse each lain and each
-            for (auto &layer: frame.data)
-            {
-                for (auto &lain: layer)
-                {
-                    std::reverse(std::begin(lain), std::end(lain));
-                }
-            }
-
             _frames.push_back(frame);
         }
 
@@ -417,6 +408,13 @@ private:
             }
             // enable current layer
             layers[i].set_value(1);
+
+            // print layer status
+            for (const auto &layer_pin: layers)
+            {
+                std::cout << layer_pin.name() << ": " << layer_pin.get_value() << "; ";
+            }
+            std::cout << std::endl;
 
             for (int j = 0; j < frame_data[i].size(); ++j)
             {
