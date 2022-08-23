@@ -45,5 +45,6 @@ if __name__ == "__main__":
                 pin_datain.on()
                 shift()
                 pin_datain.off()
+            store()
             input("Press enter to continue...")
             layer.off()
