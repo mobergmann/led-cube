@@ -414,10 +414,10 @@ private:
                 }
             }
 
-            store(); // store each layer
-
             // disable layer (no more than one layer is allowed to be on)
             layers[i].set_value(0);
+
+            store(); // store each layer
         }
     }
 
