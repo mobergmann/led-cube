@@ -38,6 +38,8 @@ def reset():
 
 
 if __name__ == "__main__":
+    pin_reset.on()
+
     while True:
         for layer in layers:
             layer.on()
