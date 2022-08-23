@@ -364,9 +364,12 @@ private:
 
     /**
      * Polls for button events and then process these events
+     * @return true if one of the next or previous buttons have been pressed.
      */
-    void poll()
+    bool poll()
     {
+        bool button_pressed = false;
+
         line_bluetooth->poll([&](){
             std::cout << "bluetooth button press" << std::endl;
             new std::thread(&Main::bluetooth_deamon, this);
@@ -376,12 +379,14 @@ private:
             std::cout << "previous setting button press" << std::endl;
             previous();
             parse_layout();
+            button_pressed = true;
         });
 
         line_next->poll([&](){
             std::cout << "next setting button press" << std::endl;
             next();
             parse_layout();
+            button_pressed = true;
         });
 
         line_power->poll([&](){
@@ -390,6 +395,8 @@ private:
             store();
             cube_on = not cube_on;
         });
+
+        return button_pressed;
     }
 
     void set_leds(const layers_t &frame_data)
@@ -450,7 +457,10 @@ public:
             while (true)
             {
                 // poll for possible button events
-                poll();
+                if (poll())
+                {
+                    return;
+                }
 
                 set_leds(frame.data);
 
