@@ -12,21 +12,11 @@
 #include <nlohmann/json.hpp>
 // Files
 #include "Button.h"
+#include "Frame.h"
 
-
-using values_t = std::array<bool, 5>;
-using lines_t = std::array<values_t, 5>;
-using layers_t = std::array<lines_t, 5>;
 
 namespace fs = std::filesystem;
 
-struct Frame
-{
-    /// the time in milliseconds, how long the frame should be visible
-    unsigned int frame_time;
-    /// for each layer a stream of booleans, encoding which led is on
-    layers_t data;
-};
 
 class Main
 {
@@ -252,6 +242,7 @@ private:
     }
 #pragma endregion
 
+    // todo this can lead to problems with threads
     void update_file_list()
     {
         std::string tmp = current_file;
@@ -401,11 +392,6 @@ private:
             // reset all leds for next frame
             reset();
 
-            // disable all previous layer, to ensure that only one layer is turned on
-            for (auto &layer_pin: layers)
-            {
-                layer_pin.set_value(0);
-            }
             // enable current layer
             layers[i].set_value(1);
 
@@ -429,6 +415,9 @@ private:
             }
 
             store(); // store each layer
+
+            // disable layer (no more than one layer is allowed to be on)
+            layers[i].set_value(0);
         }
     }
 
