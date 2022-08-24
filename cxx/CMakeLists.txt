@@ -17,3 +17,6 @@ target_link_libraries(led_cube ${GPIOD_LIBRARY} nlohmann_json::nlohmann_json Thr
 
 add_executable(test test.cpp)
 target_link_libraries(test ${GPIOD_LIBRARY} nlohmann_json::nlohmann_json Threads::Threads stdc++fs)
+
+add_executable(seq sequence.cpp)
+target_link_libraries(seq ${GPIOD_LIBRARY} nlohmann_json::nlohmann_json Threads::Threads stdc++fs)
