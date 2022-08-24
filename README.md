@@ -24,23 +24,23 @@ Die Reihenfolge dieser Liste stellt die verfügbaren Pins von oben nach unten da
 - 16
 
 ### Belegung
-| Bezeichnung      | Pin | Notizen | Ort       |
-|------------------|-----|---------|-----------|
-| Datain           | 12  |         | Verbaut   |
-| Special Pin      | 13  |         | Verbaut   |
-| Shift Clock      | 14  | lila    | Verbaut   |
-| Store Clock      | 15  | grün    | Verbaut   |
-| Reset Pin        | 18  |         | Verbaut   |
-| Layer 1          | 20  |         | Verbaut   |
-| Layer 2          | 21  |         | Verbaut   |
-| Layer 3          | 23  |         | Verbaut   |
-| Layer 4          | 24  |         | Verbaut   |
-| Layer 5          | 25  |         | Verbaut   |
-| Pairing LED      | 16  |         | User Pins |
-| Bluetooth Button | 26  |         | User Pins |
-| Next Button      | 19  |         | User Pins |
-| Previous Button  | 6   |         | User Pins |
-| Power Button     | 5   |         | User Pins |
+| Bezeichnung      | Pin | Power-on Pull | Ort       |
+|------------------|-----|---------------|-----------|
+| Datain           | 12  | Pull Down     | Verbaut   |
+| Special Pin      | 13  | Pull Down     | Verbaut   |
+| Shift Clock      | 14  | Pull Down     | Verbaut   |
+| Store Clock      | 15  | Pull Down     | Verbaut   |
+| Reset Pin        | 18  | Pull Down     | Verbaut   |
+| Layer 1          | 20  | Pull Down     | Verbaut   |
+| Layer 2          | 21  | Pull Down     | Verbaut   |
+| Layer 3          | 23  | Pull Down     | Verbaut   |
+| Layer 4          | 24  | Pull Down     | Verbaut   |
+| Layer 5          | 25  | Pull Down     | Verbaut   |
+| Pairing LED      | 11  | Pull Down     | User Pins |
+| Bluetooth Button | 6   | Pull Up       | User Pins |
+| Next Button      | 5   | Pull Up       | User Pins |
+| Previous Button  | 4   | Pull Up       | User Pins |
+| Power Button     | 7   | Pull Up       | User Pins |
 
 
 ## Programm
@@ -148,3 +148,6 @@ Jeder Layer, somit die zweite Dimension, besteht aus 5 sogenannten Lines.
 Jede Line besteht wiederrum aus 5 boolean Werten. Diese kodieren, ob eine LED an, oder aus sein soll.
 
 Die LED an der Position `layers[1][2][3]` stellt somit die LED dar, die im ersten Layer (von unten nach oben), in der Zweiten Line (von vorne nach hinten) und an der dritten Stelle (von links nach rechts) ist.
+
+### Programme laden
+Die Programme (die `json` Dateien), die ein Benutzer im Cube anzeigen lassen möchte, müssen in dem Ordner `~/.led-cube/custom` vorhanden sein.
