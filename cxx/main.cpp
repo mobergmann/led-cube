@@ -392,16 +392,8 @@ private:
             // reset all leds for next frame
             reset();
 
-            // turn of layer of last iteration
-            // (no more than one layer is allowed to be turned on at the same time)
-            if (i == 0)
-            {
-                layers[frame_data.size()].set_value(1);
-            }
-            else
-            {
-                layers[i-1].set_value(1);
-            }
+            // enable current layer
+            layers[i].set_value(1);
 
             for (int j = 0; j < frame_data[i].size(); ++j)
             {
@@ -422,8 +414,8 @@ private:
                 }
             }
 
-            // enable current layer
-            layers[i].set_value(1);
+            // disable layer (no more than one layer is allowed to be on)
+            layers[i].set_value(0);
 
             store(); // store each layer
         }
