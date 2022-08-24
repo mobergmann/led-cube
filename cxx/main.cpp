@@ -407,7 +407,7 @@ private:
             reset();
 
             // disable previous layer (no more than one layer is allowed to be on)
-            if (i == 0) // if at the beginning of the array use
+            if (i == 0) // if at the beginning of the array disable previous layer
             {
                 layers[frame_data.size()].set_value(0);
             }
@@ -415,8 +415,11 @@ private:
             {
                 layers[i-1].set_value(0);
             }
-            // enable current layer
-            layers[i].set_value(1);
+/*
+            for (auto &layer: layers) {
+                layer.set_value(0);
+            }
+*/
 
             for (int j = 0; j < frame_data[i].size(); ++j)
             {
@@ -438,6 +441,9 @@ private:
             }
 
             store(); // store each layer
+
+            // enable current layer
+            layers[i].set_value(1);
         }
     }
 
