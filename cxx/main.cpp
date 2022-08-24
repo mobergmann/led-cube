@@ -428,7 +428,7 @@ private:
             // disable previous layer (no more than one layer is allowed to be on)
             if (i == 0) // if at the beginning of the array disable previous layer
             {
-                layers[frame_data.size()].set_value(0);
+                layers[frame_data.size()-1].set_value(0);
             }
             else
             {
