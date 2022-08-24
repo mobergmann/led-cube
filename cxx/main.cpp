@@ -12,21 +12,11 @@
 #include <nlohmann/json.hpp>
 // Files
 #include "Button.h"
+#include "Frame.h"
 
-
-using values_t = std::array<bool, 5>;
-using lines_t = std::array<values_t, 5>;
-using layers_t = std::array<lines_t, 5>;
 
 namespace fs = std::filesystem;
 
-struct Frame
-{
-    /// the time in milliseconds, how long the frame should be visible
-    unsigned int frame_time;
-    /// for each layer a stream of booleans, encoding which led is on
-    layers_t data;
-};
 
 class Main
 {
@@ -67,6 +57,8 @@ private:
 
     /// special pin, which cannot be accessed by shifting
     gpiod::line pin_special;
+    /// the value for the special pin, which needs to be applied in the store method
+    bool pin_special_val;
 #pragma endregion
 
 #pragma region I/O
@@ -88,7 +80,7 @@ private:
 #pragma endregion
 
 public:
-    Main() : cube_on(true)
+    Main() : cube_on(true), pin_special_val(false)
     {
         // get all files
         update_file_list();
@@ -121,34 +113,34 @@ public:
 #pragma region led
         // reset pin setup (pull down)
         pin_reset = chip.get_line(18);
-        pin_reset.request({"GPIO18", gpiod::line_request::DIRECTION_OUTPUT, 0}, 1);
+        pin_reset.request({pin_reset.name(), gpiod::line_request::DIRECTION_OUTPUT, 0}, 1);
         std::cout << "Reset pin acquired" << std::endl;
 
         // shift pin setup (pull down)
         pin_shift = chip.get_line(14);
-        pin_shift.request({"GPIO14", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
+        pin_shift.request({pin_shift.name(), gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
         std::cout << "Shift pin acquired" << std::endl;
 
         // store pin setup (pull down)
         pin_store = chip.get_line(15);
-        pin_store.request({"GPIO15", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
+        pin_store.request({pin_store.name(), gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
         std::cout << "Store pin acquired" << std::endl;
 
         // datain pin setup (pull down)
         pin_datain = chip.get_line(12);
-        pin_datain.request({"GPIO12", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
+        pin_datain.request({pin_datain.name(), gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
         std::cout << "Datain pin acquired" << std::endl;
 
         // special pin setup (pull down)
         pin_special = chip.get_line(13);
-        pin_special.request({"GPIO13", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
+        pin_special.request({pin_special.name(), gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
         std::cout << "Special pin acquired" << std::endl;
 #pragma endregion
 
 #pragma region I/O
         // Pairing Mode LED (pull down)
         line_pairing_led = chip.get_line(11);
-        line_pairing_led.request({"GPIO11", gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
+        line_pairing_led.request({line_pairing_led.name(), gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
         std::cout << "Pairing Mode LED acquired" << std::endl;
 
         /// button for enabling pairing mode (pull down)
@@ -225,15 +217,6 @@ private:
                 }
             }
 
-            // reverse each lain and each
-            for (auto &layer: frame.data)
-            {
-                for (auto &lain: layer)
-                {
-                    std::reverse(std::begin(lain), std::end(lain));
-                }
-            }
-
             _frames.push_back(frame);
         }
 
@@ -245,7 +228,9 @@ private:
     {
         pin_reset.set_value(0);
         pin_reset.set_value(1);
-        pin_special.set_value(0);
+
+        // set special pin for turn off on store
+        pin_special_val = false;
     }
 
     void shift()
@@ -256,11 +241,22 @@ private:
 
     void store()
     {
+        // actually turn of reset pin
+        if (pin_special_val)
+        {
+            pin_special.set_value(1);
+        }
+        else
+        {
+            pin_special.set_value(0);
+        }
+
         pin_store.set_value(1);
         pin_store.set_value(0);
     }
 #pragma endregion
 
+    // todo this can lead to problems with threads
     void update_file_list()
     {
         std::string tmp = current_file;
@@ -410,14 +406,6 @@ private:
             // reset all leds for next frame
             reset();
 
-            // disable all previous layer, to ensure that only one layer is turned on
-            for (auto &layer_pin: layers)
-            {
-                layer_pin.set_value(0);
-            }
-            // enable current layer
-            layers[i].set_value(1);
-
             for (int j = 0; j < frame_data[i].size(); ++j)
             {
                 for (int k = 0; k < frame_data[i][j].size(); ++k)
@@ -427,7 +415,7 @@ private:
                     // turn on special pin if end of shift register reached (layer 5 and pin 25)
                     if (j == 4 && k == 4)
                     {
-                        pin_special.set_value(led_value);
+                        pin_special_val = led_value;
                     }
                     else
                     {
@@ -437,7 +425,20 @@ private:
                 }
             }
 
+            // disable previous layer (no more than one layer is allowed to be on)
+            if (i == 0) // if at the beginning of the array disable previous layer
+            {
+                layers[frame_data.size()-1].set_value(0);
+            }
+            else
+            {
+                layers[i-1].set_value(0);
+            }
+
             store(); // store each layer
+
+            // enable current layer
+            layers[i].set_value(1);
         }
     }
 

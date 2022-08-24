@@ -112,9 +112,8 @@ public:
 
     Button(const gpiod::chip &chip, int line_number) : last_pressed(std::chrono::steady_clock::now()), edge(true), last_state(true)
     {
-        string line_name = "GPIO" + std::to_string(line_number);
         line = chip.get_line(line_number);
-        line.request({line_name, gpiod::line_request::DIRECTION_INPUT, 0}, 1);
+        line.request({line.name(), gpiod::line_request::DIRECTION_INPUT, 0}, 1);
     }
 
     /**

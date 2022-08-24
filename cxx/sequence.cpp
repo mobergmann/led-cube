@@ -125,20 +125,28 @@ private:
 public:
     void loop()
     {
-        layers[0].set_value(1);
-        layers[1].set_value(1);
+        for (const auto& layer: layers)
+        {
+            layer.set_value(1);
 
-        pin_special.set_value(1);
-        for (int i = 0; i < 25; ++i) {
-            if (i == 5 or i == 9) {
-                pin_shift.set_value(1);
-            }else {
-                pin_shift.set_value(0);
+            for (int i = 0; i < 25; ++i)
+            {
+                if (i == 24)
+                {
+                    pin_special.set_value(1);
+                }
+                else
+                {
+                    pin_datain.set_value(1);
+                    shift();
+                }
+                store();
+                std::this_thread::sleep_for(std::chrono::seconds (1));
             }
-            shift();
-        }
+//            store();
 
-        std::cin.ignore();
+            layer.set_value(0);
+        }
     }
 };
 
