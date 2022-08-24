@@ -415,7 +415,7 @@ private:
                     // turn on special pin if end of shift register reached (layer 5 and pin 25)
                     if (j == 4 && k == 4)
                     {
-                        pin_special_val = true;
+                        pin_special_val = led_value;
                     }
                     else
                     {
