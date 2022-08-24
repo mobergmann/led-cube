@@ -406,21 +406,6 @@ private:
             // reset all leds for next frame
             reset();
 
-            // disable previous layer (no more than one layer is allowed to be on)
-            if (i == 0) // if at the beginning of the array disable previous layer
-            {
-                layers[frame_data.size()].set_value(0);
-            }
-            else
-            {
-                layers[i-1].set_value(0);
-            }
-/*
-            for (auto &layer: layers) {
-                layer.set_value(0);
-            }
-*/
-
             for (int j = 0; j < frame_data[i].size(); ++j)
             {
                 for (int k = 0; k < frame_data[i][j].size(); ++k)
@@ -438,6 +423,16 @@ private:
                         shift(); // only shift, when not the last pin
                     }
                 }
+            }
+
+            // disable previous layer (no more than one layer is allowed to be on)
+            if (i == 0) // if at the beginning of the array disable previous layer
+            {
+                layers[frame_data.size()].set_value(0);
+            }
+            else
+            {
+                layers[i-1].set_value(0);
             }
 
             store(); // store each layer
