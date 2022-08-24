@@ -57,6 +57,8 @@ private:
 
     /// special pin, which cannot be accessed by shifting
     gpiod::line pin_special;
+    /// the value for the special pin, which needs to be applied in the store method
+    bool pin_special_val;
 #pragma endregion
 
 #pragma region I/O
@@ -78,7 +80,7 @@ private:
 #pragma endregion
 
 public:
-    Main() : cube_on(true)
+    Main() : cube_on(true), pin_special_val(false)
     {
         // get all files
         update_file_list();
@@ -226,7 +228,9 @@ private:
     {
         pin_reset.set_value(0);
         pin_reset.set_value(1);
-        pin_special.set_value(0);
+
+        // set special pin for turn off on store
+        pin_special_val = false;
     }
 
     void shift()
@@ -237,6 +241,16 @@ private:
 
     void store()
     {
+        // actually turn of reset pin
+        if (pin_special_val)
+        {
+            pin_special.set_value(1);
+        }
+        else
+        {
+            pin_special.set_value(0);
+        }
+
         pin_store.set_value(1);
         pin_store.set_value(0);
     }
@@ -404,7 +418,7 @@ private:
                     // turn on special pin if end of shift register reached (layer 5 and pin 25)
                     if (j == 4 && k == 4)
                     {
-                        pin_special.set_value(led_value);
+                        pin_special_val = true;
                     }
                     else
                     {
