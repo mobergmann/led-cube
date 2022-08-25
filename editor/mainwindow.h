@@ -3,8 +3,8 @@
 
 #include <QMainWindow>
 #include <QPushButton>
-#include <Qt3DCore>
-#include <Qt3DExtras>
+//#include <Qt3DCore>
+//#include <Qt3DExtras>
 
 
 QT_BEGIN_NAMESPACE

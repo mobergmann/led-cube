@@ -91,7 +91,11 @@
        </layout>
       </item>
       <item>
-       <widget class="QGraphicsView" name="cube_view"/>
+       <widget class="QQuickWidget" name="quickWidget">
+        <property name="resizeMode">
+         <enum>QQuickWidget::SizeRootObjectToView</enum>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>
@@ -109,6 +113,13 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QQuickWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">QtQuickWidgets/QQuickWidget</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

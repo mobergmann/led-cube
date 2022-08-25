@@ -12,17 +12,21 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS
+    Widgets
     Core
     Gui
-    Widgets
-    3DCore
-    3DExtras)
+    #3DCore
+    #3DExtras
+    Quick
+    QuickWidgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS
+    Widgets
     Core
     Gui
-    Widgets
-    3DCore
-    3DExtras)
+    #3DCore
+    #3DExtras
+    Quick
+    QuickWidgets)
 
 set(PROJECT_SOURCES
     main.cpp
@@ -58,9 +62,10 @@ target_link_libraries(editor PRIVATE
     Qt${QT_VERSION_MAJOR}::Widgets
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Gui
-    Qt${QT_VERSION_MAJOR}::Widgets
-    Qt${QT_VERSION_MAJOR}::3DCore
-    Qt${QT_VERSION_MAJOR}::3DExtras)
+    #Qt${QT_VERSION_MAJOR}::3DCore
+    #Qt${QT_VERSION_MAJOR}::3DExtras
+    Qt${QT_VERSION_MAJOR}::Quick
+    Qt${QT_VERSION_MAJOR}::QuickWidgets)
 
 set_target_properties(editor PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
