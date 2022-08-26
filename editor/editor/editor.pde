@@ -6,6 +6,13 @@ ControlP5 cp5;
 
 ScrollableList list;
 
+float xpos= 0;
+float ypos= 0;
+float zpos= 0;
+
+int last_mouseX = 0;
+int last_mouseY = 0;
+
 float i = 0;
 
 ArrayList<Cube> frames = new ArrayList<Cube>();
@@ -32,17 +39,13 @@ void setup() {
 void draw() {
   background(50);
   lights();
-  print(width);
-  print("\n");
-  print(height);
-  print("\n");
   
   pushMatrix();
   
   translate(width*3/5, height/2-30,0);
-  rotateX(0);
-  rotateY(90);
-  rotateZ(i);
+  rotateX(xpos);
+  rotateY(ypos);
+  rotateZ(zpos);
   int spacing = 90;
   
   for (int k = -2; k <= 2 ; k++) {
@@ -76,10 +79,12 @@ void draw() {
   
   pushMatrix();
   
+  
+  
   translate(width-60, height-60, 0);
-  rotateX(0);
-  rotateY(90);
-  rotateZ(i);
+  rotateX(xpos);
+  rotateY(ypos);
+  rotateZ(zpos);
   
   // making toggle cube ## experimental
   pushMatrix();
@@ -96,50 +101,39 @@ void draw() {
   
   popMatrix();
   
-  i += 0.01;
+  //i += 0.01;
   
   line(from_x, from_y, to_x, to_y);
+  
+  
+  //camera(xpos, ypos, zpos, width/2, height/2, 0, 0, -1, 0);
+  
+  //rotation++;
+  
+  // cube rotation
+  if (mouseButton==LEFT) { 
+    float orbitRadius= (last_mouseX-mouseX)/2;
+    xpos += (float(last_mouseY-mouseY)/3)/100;
+    ypos += (cos(radians(0))*(-1)*orbitRadius)/100;
+    zpos = (sin(radians(0))*orbitRadius)/100;
+  }
+  
+  print(last_mouseX-mouseX);
+  
+  last_mouseX = mouseX;
+  last_mouseY = mouseY;
 }
 
 void mousePressed(){
    if (mouse_pressed) {
      
    }
-  
-  if (mouseButton==LEFT) { 
-    from_x = mouseX;
-    from_y = mouseY;
-    mouse_pressed = true;
-  }
 }
 
 void UI() {
   cp5 = new ControlP5(this);
   var arial = createFont("arial",20);
   
-  // create a new button with name 'buttonA'
-  cp5.addButton("Press me")
-     .setValue(0)
-     .setPosition(10,10)
-     .setSize(200,19)
-     ;
-     
-  
-  cp5.addTextfield("input")
-     .setPosition(20,100)
-     .setSize(200,40)
-     .setFont(arial)
-     .setFocus(true)
-     .setColor(color(255,0,0))
-     ;
-     
-   cp5.addTextlabel("label")
-                    .setText("A single ControlP5 textlabel, in yellow.")
-                    .setPosition(100,50)
-                    .setColorValue(0xffffff00)
-                    .setFont(createFont("Georgia",20))
-                    ;
-                    
   // ListVIew for the Frames
   ArrayList l = new ArrayList();
   
@@ -148,8 +142,8 @@ void UI() {
   }
   
   list = cp5.addScrollableList("Layers")
-     .setPosition(0, 0)
-     .setSize(150, height)
+     .setPosition(5, 5)
+     .setSize(150, height-5)
      .setBarHeight(40)
      .setItemHeight(30)
      .addItems(l)
@@ -158,8 +152,66 @@ void UI() {
   list.onRelease(new CallbackListener() {
   public void controlEvent(CallbackEvent theEvent) {
     list.setOpen(true);
-  }
-});
+    }
+  });
+  
+  // new Frame Button
+  cp5.addButton("New Frame")
+     .setValue(0)
+     .setPosition(165, 5)
+     .setSize(150,40)
+     ;
+     
+  // delete Frame Button
+  cp5.addButton("Delete Frame")
+     .setValue(0)
+     .setPosition(165, 55)
+     .setSize(150,40)
+     ;
+     
+  // set FrameTime
+  cp5.addTextfield("Frame Time")
+     .setPosition(165, 105)
+     .setSize(150,40)
+     .setFont(arial)
+     .setFocus(true)
+     .setColor(color(255,0,0))
+     ;
+     
+   // set FrameTime
+  cp5.addTextfield("File Name")
+     .setPosition(165, height-155)
+     .setSize(150,40)
+     .setFont(arial)
+     .setFocus(true)
+     .setColor(color(255,0,0))
+     ;
+     
+  // delete Frame Button
+  cp5.addButton("Save File")
+     .setValue(0)
+     .setPosition(165, height-95)
+     .setSize(150,40)
+     //.setColorBackground(color(255, 255, 255))
+     ////.setColorForeground(color(0, 0, 0))
+     //.setColorActive(color(10, 10, 10))
+     ;
+     
+  // delete Frame Button
+  cp5.addButton("Open File")
+     .setValue(0)
+     .setPosition(165, height-45)
+     .setSize(150,40)
+     ;
+     
+   //cp5.addTextlabel("label")
+   //                 .setText("A single ControlP5 textlabel, in yellow.")
+   //                 .setPosition(100,50)
+   //                 .setColorValue(0xffffff00)
+   //                 .setFont(createFont("Georgia",20))
+   //                 ;
+                    
+  
 }
 
 void updateFrames() {
