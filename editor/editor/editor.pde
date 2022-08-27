@@ -2,100 +2,75 @@
 
 import controlP5.*;
 
+// UI
 ControlP5 cp5;
 
 ScrollableList list;
 
-int tx = 0;
-int ty = 0;
-
+// rotation
 float xpos= 0;
 float ypos= 0;
 float zpos= 0;
 
+// mouse values for rotation
 int last_mouseX = 0;
 int last_mouseY = 0;
 
-float i = 0;
-
+// frames
 ArrayList<Cube> frames = new ArrayList<Cube>();
 int selectedFrame;
 
-int from_x, from_y = 0;
-int to_x, to_y = 0;
-
-boolean mouse_pressed = false;
 
 void setup() {
+  // meta setup
   size(1250, 780, P3D);
-  surface.setResizable(true);
-  camera(0, 0, 0, width*3/5, height/2-30, 0.0, 
-       0.0, 1.0, 0.0);
-  
-  
-  //translateMore(width*3/5, height/2,0);
-  
-  frames.add(new Cube());
-  selectedFrame = 0;
+  surface.setResizable(true);  
   
   UI();
+  
+  // initial frame
+  frames.add(new Cube());
+  selectedFrame = 0;
 }
 
 void draw() {
-  tx = 0;
-  ty = 0;
   background(50);
   lights();
   
+  // cube
   pushMatrix();
   
-  translateMore(width*3/5, height/2-70,0);
-  rotateX(xpos);
-  rotateY(ypos);
+  translate(width*3/5, height/2-70,0);
+  rotateX(xpos-0.3);
+  rotateY(ypos-PI/5);
   rotateZ(zpos);
   
   frames.get(selectedFrame).update();
   
-  
-  translateMore(-width*3/5, -height/2-70,0);
-  
   popMatrix();
-  
-  pushMatrix();
-  
-  
-  
-  translateMore(width-60, height-60, 0);
-  rotateX(xpos);
-  rotateY(ypos);
-  rotateZ(zpos);
   
   // making toggle cube ## experimental
   pushMatrix();
+  
+  translate(width-60, height-60, 0);
+  rotateX(xpos-0.3);
+  rotateY(ypos-PI/5);
+  rotateZ(zpos);
+  
   fill(255, 255, 255, 150);
   box(40);
-  translateMore(-20, -20, 0);
+  translate(-20, -20, 0);
   fill(255, 0, 0);
   box(10, 10, 40);
-  translateMore(0, 0, -20);
+  translate(0, 0, -20);
   rotateX(PI/2);
   box(15, 15, 15);
-  popMatrix();
-  // end toggle cube
   
   popMatrix();
-  
-  //i += 0.01;
-  
-  line(from_x, from_y, to_x, to_y);
-  
-  
-  //camera(xpos, ypos, zpos, width/2, height/2, 0, 0, -1, 0);
-  
-  //rotation++;
-  frames.get(selectedFrame).cubeMoving(false);
   
   // cube rotation
+  frames.get(selectedFrame).cubeMoving(false);
+  
   if (mousePressed && !frames.get(selectedFrame).LedSelected()) { 
     frames.get(selectedFrame).cubeMoving(true);
     
@@ -109,12 +84,7 @@ void draw() {
   last_mouseY = mouseY;
 }
 
-void mousePressed(){
-   if (mouse_pressed) {
-     
-   }
-}
-
+// UI
 void UI() {
   cp5 = new ControlP5(this);
   var arial = createFont("arial",20);
@@ -205,13 +175,4 @@ void updateFrames() {
     new_frames.add("Frame: " + str(i));
   }
   list.addItems(new_frames);
-}
-
-void translateMore(float x, float y, float z) {
-  
-  translate(x, y, z);
-  
-  tx += x;
-  ty += y;
-
 }
