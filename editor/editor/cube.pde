@@ -8,13 +8,14 @@ class Cube {
   
   LED[][][] layers = new LED[5][5][5];
   boolean mousePress = false;
+  boolean cubeMoving = false;
 
   public Cube() {
     for (int k = 0; k < 5; k++) {
       for (int j = 0; j < 5; j++) {
         for (int i = 0; i < 5; i++) {
           
-    print("hi");
+          print("hi");
           layers[i][j][k] = LED.OFF;
       
         }
@@ -114,7 +115,7 @@ class Cube {
         }
       }
       
-      if (mousePressed && !mousePress){
+      if (mousePressed && !mousePress && !cubeMoving){
                   
         mousePress = true;
 
@@ -133,6 +134,14 @@ class Cube {
   
   private boolean mouseCollision(int x, int y, int z) {
      return (mousePressed && dist(mouseX, mouseY, screenX(x, y, z), screenY(x, y, z)) < 15);
+  }
+  
+  public boolean LedSelected() {
+    return mousePress;
+  }
+  
+  public void cubeMoving(boolean state){
+    cubeMoving = state;
   }
   
   

@@ -19,7 +19,7 @@ int last_mouseY = 0;
 float i = 0;
 
 ArrayList<Cube> frames = new ArrayList<Cube>();
-int selected_frame;
+int selectedFrame;
 
 int from_x, from_y = 0;
 int to_x, to_y = 0;
@@ -36,7 +36,7 @@ void setup() {
   //translateMore(width*3/5, height/2,0);
   
   frames.add(new Cube());
-  selected_frame = 0;
+  selectedFrame = 0;
   
   UI();
 }
@@ -54,7 +54,7 @@ void draw() {
   rotateY(ypos);
   rotateZ(zpos);
   
-  frames.get(selected_frame).update();
+  frames.get(selectedFrame).update();
   
   
   translateMore(-width*3/5, -height/2-70,0);
@@ -93,9 +93,12 @@ void draw() {
   //camera(xpos, ypos, zpos, width/2, height/2, 0, 0, -1, 0);
   
   //rotation++;
+  frames.get(selectedFrame).cubeMoving(false);
   
   // cube rotation
-  if (mousePressed) { 
+  if (mousePressed && !frames.get(selectedFrame).LedSelected()) { 
+    frames.get(selectedFrame).cubeMoving(true);
+    
     float orbitRadius= (last_mouseX-mouseX)/2;
     xpos += (float(last_mouseY-mouseY)/3)/100;
     ypos += (cos(radians(0))*(-1)*orbitRadius)/100;
