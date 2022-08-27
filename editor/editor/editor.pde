@@ -6,6 +6,9 @@ ControlP5 cp5;
 
 ScrollableList list;
 
+int tx = 0;
+int ty = 0;
+
 float xpos= 0;
 float ypos= 0;
 float zpos= 0;
@@ -16,6 +19,7 @@ int last_mouseY = 0;
 float i = 0;
 
 ArrayList<Cube> frames = new ArrayList<Cube>();
+int selected_frame;
 
 int from_x, from_y = 0;
 int to_x, to_y = 0;
@@ -29,51 +33,31 @@ void setup() {
        0.0, 1.0, 0.0);
   
   
-  //translate(width*3/5, height/2,0);
+  //translateMore(width*3/5, height/2,0);
   
-  //frames.add(new Cube());
+  frames.add(new Cube());
+  selected_frame = 0;
   
   UI();
 }
 
 void draw() {
+  tx = 0;
+  ty = 0;
   background(50);
   lights();
   
   pushMatrix();
   
-  translate(width*3/5, height/2-30,0);
+  translateMore(width*3/5, height/2-70,0);
   rotateX(xpos);
   rotateY(ypos);
   rotateZ(zpos);
-  int spacing = 90;
   
-  for (int k = -2; k <= 2 ; k++) {
-    for (int j = -2; j <= 2; j++) {
-      for (int i = -2; i <= 2; i++) {
-        
-        pushMatrix();
-        
-        translate(k*spacing, j*spacing, i*spacing);
-        
-        
-        noStroke();
-        fill(0,0,0,70);
-        sphere(width/100);
-        //fill(0,255,0,128);
-        
-        popMatrix();
-        
-        //layers[i][j][k] = 0;
-      
-      }
-    }
-  }
+  frames.get(selected_frame).update();
   
   
-  translate(0, 3*spacing, 0);
-  
-  box(400, 50, 400);
+  translateMore(-width*3/5, -height/2-70,0);
   
   popMatrix();
   
@@ -81,7 +65,7 @@ void draw() {
   
   
   
-  translate(width-60, height-60, 0);
+  translateMore(width-60, height-60, 0);
   rotateX(xpos);
   rotateY(ypos);
   rotateZ(zpos);
@@ -90,10 +74,10 @@ void draw() {
   pushMatrix();
   fill(255, 255, 255, 150);
   box(40);
-  translate(-20, -20, 0);
+  translateMore(-20, -20, 0);
   fill(255, 0, 0);
   box(10, 10, 40);
-  translate(0, 0, -20);
+  translateMore(0, 0, -20);
   rotateX(PI/2);
   box(15, 15, 15);
   popMatrix();
@@ -111,14 +95,12 @@ void draw() {
   //rotation++;
   
   // cube rotation
-  if (mouseButton==LEFT) { 
+  if (mousePressed) { 
     float orbitRadius= (last_mouseX-mouseX)/2;
     xpos += (float(last_mouseY-mouseY)/3)/100;
     ypos += (cos(radians(0))*(-1)*orbitRadius)/100;
     zpos = (sin(radians(0))*orbitRadius)/100;
   }
-  
-  print(last_mouseX-mouseX);
   
   last_mouseX = mouseX;
   last_mouseY = mouseY;
@@ -174,7 +156,6 @@ void UI() {
      .setPosition(165, 105)
      .setSize(150,40)
      .setFont(arial)
-     .setFocus(true)
      .setColor(color(255,0,0))
      ;
      
@@ -183,7 +164,6 @@ void UI() {
      .setPosition(165, height-155)
      .setSize(150,40)
      .setFont(arial)
-     .setFocus(true)
      .setColor(color(255,0,0))
      ;
      
@@ -222,4 +202,13 @@ void updateFrames() {
     new_frames.add("Frame: " + str(i));
   }
   list.addItems(new_frames);
+}
+
+void translateMore(float x, float y, float z) {
+  
+  translate(x, y, z);
+  
+  tx += x;
+  ty += y;
+
 }
