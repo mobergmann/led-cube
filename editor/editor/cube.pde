@@ -28,6 +28,26 @@ class Cube {
     }
   }
   
+  // create from JSON
+  public Cube(JSONArray json) {
+    
+    for (int k = 0; k < 5; k++) {
+      JSONArray y = json.getJSONArray(k);
+      for (int j = 0; j < 5; j++) {
+        JSONArray x = y.getJSONArray(j);
+        for (int i = 0; i < 5; i++) {
+          
+          if (x.getBoolean(i))
+            layers[i][j][k] = LED.ON;
+          else 
+            layers[i][j][k] = LED.OFF;
+            
+      
+        }
+      }
+    }
+  }
+  
   public void update() {
     
     // list of leds that are within the hitbox of the mouse

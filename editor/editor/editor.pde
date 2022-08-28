@@ -31,7 +31,7 @@ ArrayList<Cube> frames = new ArrayList<Cube>();
 int selectedFrame;
 
 // file system
-String SAVEDIR = "data/";
+String SAVEDIR = "../../assets/files/";
 ArrayList<String> jsonFiles = new ArrayList<String>();
 
 boolean isOpen = false;
@@ -106,7 +106,6 @@ void draw() {
   try {
     if (playSequence) {
       if (millis()-time >= int(frameTimeTf.getText())) {
-        println(playSequence);
         selectedFrame++;
         selectedFrame = selectedFrame % frames.size();
         time = millis();
@@ -251,10 +250,18 @@ void UI() {
      .setSize(150,165)
      .setBarHeight(40)
      .setItemHeight(30)
+     .setOpen(false)
      ;
      
   openFileList.onRelease(new CallbackListener() {
     void controlEvent(CallbackEvent theEvent) {
+      
+      if (playSequence){
+        openFileList.setOpen(false);
+      
+        return;
+      }
+        
       File[] files = listFiles(SAVEDIR);
       ArrayList<String> items = new ArrayList<String>();
       
@@ -334,10 +341,30 @@ void saveJSONFile() {
 
 void openJSONFile(String fileName) {
   try {
-    JSONObject json = loadJSONObject(SAVEDIR+fileName+".json");
     
-  
+    JSONObject json = loadJSONObject(SAVEDIR+fileName);
+    
+    JSONArray _frames = json.getJSONArray("frames");
+    
+    frames.clear();
+    selectedFrame = 0;
+    
+    for (int i = 0; i < _frames.size(); i++) {
+      
+      JSONObject _frame = _frames.getJSONObject(i);
+      
+      frameTimeTf.setText(str(_frame.getInt("frame-time")));
+      
+      JSONArray layers = _frame.getJSONArray("layers");
+      
+      frames.add(new Cube(layers));
+      
+    }
+    
+    updateFrames();
+    
+    
   } catch(Exception e) {
-  
+    println("file load exception " + e);
   }
 }
