@@ -95,6 +95,7 @@ void draw() {
   last_mouseX = mouseX;
   last_mouseY = mouseY;
   
+  // handle play button
   try {
     if (playSequence) {
       if (millis()-time >= int(frameTimeTf.getText())) {
@@ -106,10 +107,7 @@ void draw() {
       }
     }
   }
-  catch(Exception e) {
-  }
-
-  
+  catch(Exception e) {}
 }
 
 // UI
