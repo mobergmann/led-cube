@@ -1,12 +1,22 @@
 #include <QApplication>
-#include <QPushButton>
+#include <QSurfaceFormat>
+
+#include "include/mainwindow.h"
 
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    QPushButton button("Hello world!", nullptr);
-    button.resize(200, 100);
-    button.show();
-    return QApplication::exec();
+
+    QSurfaceFormat format;
+    format.setDepthBufferSize(24);
+    format.setStencilBufferSize(8);
+    format.setVersion(3, 2);
+    format.setProfile(QSurfaceFormat::CoreProfile);
+    format.setSamples(4);
+    QSurfaceFormat::setDefaultFormat(format);
+
+    MainWindow w;
+    w.show();
+    return a.exec();
 }
