@@ -74,8 +74,7 @@ class Cube {
       if (mousePressed && !mousePress && !cubeMoving){
                   
         mousePress = true;
-
-        print("collision");
+        
         layers[(int)minPoint.x][(int)minPoint.y][(int)minPoint.z] = layers[(int)minPoint.x][(int)minPoint.y][(int)minPoint.z] == LED.OFF ? LED.ON : LED.OFF;
       }
     }

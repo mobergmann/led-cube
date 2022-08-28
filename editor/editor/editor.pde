@@ -9,8 +9,13 @@ Button newFrameButton;
 Button deleteFrameButton;
 Button saveFileButton;
 Button openFileButton;
+Button playButton;
 Textfield frameTimeTf;
 Textfield fileNameTf;
+
+// play sequence
+boolean playSequence = false;
+int time = millis();
 
 // rotation
 float xpos= 0;
@@ -89,6 +94,22 @@ void draw() {
   
   last_mouseX = mouseX;
   last_mouseY = mouseY;
+  
+  try {
+    if (playSequence) {
+      if (millis()-time >= int(frameTimeTf.getText())) {
+        println(playSequence);
+        selectedFrame++;
+        selectedFrame = selectedFrame % frames.size();
+        time = millis();
+        updateFrames();
+      }
+    }
+  }
+  catch(Exception e) {
+  }
+
+  
 }
 
 // UI
@@ -109,6 +130,9 @@ void UI() {
   public void controlEvent(CallbackEvent theEvent) {
     list.setOpen(true);
     
+    if (playSequence)
+      return;
+    
     selectedFrame = (int)list.getValue();
     }
   });
@@ -121,10 +145,14 @@ void UI() {
      ;
      
   newFrameButton.onRelease(new CallbackListener() {
-  public void controlEvent(CallbackEvent theEvent) {
-    selectedFrame++;
-    frames.add(selectedFrame, new Cube());
-    updateFrames();
+  void controlEvent(CallbackEvent theEvent) {
+    
+      if (playSequence)
+        return;
+        
+      selectedFrame++;
+      frames.add(selectedFrame, new Cube());
+      updateFrames();
     }
   });
      
@@ -138,14 +166,26 @@ void UI() {
      ;
       
   deleteFrameButton.onRelease(new CallbackListener() {
-  public void controlEvent(CallbackEvent theEvent) {
-    frames.remove(frames.get(selectedFrame));
-    updateFrames();
+    void controlEvent(CallbackEvent theEvent) {
+      
+      if (playSequence)
+        return;
+        
+      frames.remove(frames.get(selectedFrame));
+      
+      if (selectedFrame >= frames.size()) {
+        selectedFrame = frames.size()-1;
+      }
+      if (frames.size() == 0) {
+        frames.add(new Cube());
+        selectedFrame = 0;
+      }
+      updateFrames();
     }
   });
      
   // set frametime
-  cp5.addTextfield("Frame Time (ms)")
+  frameTimeTf = cp5.addTextfield("Frame Time (ms)")
      .setPosition(5, 105)
      .setSize(150,40)
      .setFont(arial)
@@ -153,8 +193,30 @@ void UI() {
      .setValue("1000")
      ;
      
+   // play sequence button
+  playButton = cp5.addButton("Play")
+     .setValue(0)
+     .setPosition(5, 160)
+     .setSize(150,40)
+     ;
+      
+  playButton.onRelease(new CallbackListener() {
+    void controlEvent(CallbackEvent theEvent) {
+      
+      if (playSequence) {
+        playSequence = false;
+        playButton.setLabel("Play");
+      }
+      else {
+        playSequence = true;
+        playButton.setLabel("Pause");
+        time = millis();
+      }
+    }
+  });
+     
    // set file name
-  cp5.addTextfield("File Name")
+  fileNameTf = cp5.addTextfield("File Name")
      .setPosition(5, height-155)
      .setSize(150,40)
      .setFont(arial)
@@ -162,7 +224,7 @@ void UI() {
      ;
      
   // save file button
-  cp5.addButton("Save File")
+  saveFileButton = cp5.addButton("Save File")
      .setValue(0)
      .setPosition(5, height-95)
      .setSize(150,40)
@@ -172,20 +234,11 @@ void UI() {
      ;
      
   // open file button
-  cp5.addButton("Open File")
+  openFileButton = cp5.addButton("Open File")
      .setValue(0)
      .setPosition(5, height-45)
      .setSize(150,40)
      ;
-     
-   //cp5.addTextlabel("label")
-   //                 .setText("A single ControlP5 textlabel, in yellow.")
-   //                 .setPosition(100,50)
-   //                 .setColorValue(0xffffff00)
-   //                 .setFont(createFont("Georgia",20))
-   //                 ;
-                    
-  
 }
 
 void updateFrames() {
