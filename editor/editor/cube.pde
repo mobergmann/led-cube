@@ -156,4 +156,31 @@ class Cube {
   public void cubeMoving(boolean state){
     cubeMoving = state;
   }
+  
+  public JSONArray toJSON(){
+    
+    JSONArray layer = new JSONArray();
+    
+    for (int k = 0; k < 5 ; k++) { // layer
+      JSONArray y = new JSONArray();
+      
+      for (int j = 0; j < 5; j++) { // y
+      
+        JSONArray x = new JSONArray();
+      
+        for (int i = 0; i < 5; i++) { // x
+          
+          if (layers[i][j][k] == LED.ON)
+            x.setBoolean(i, true);
+          else
+            x.setBoolean(i, false);
+          
+        }
+        y.setJSONArray(j, x);
+      }
+      layer.setJSONArray(k, y);
+    }
+    
+    return layer;
+  }
 }

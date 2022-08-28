@@ -192,7 +192,7 @@ void UI() {
      ;
      
    // play sequence button
-  playButton = cp5.addButton("Play")
+   playButton = cp5.addButton("Play")
      .setValue(0)
      .setPosition(5, 160)
      .setSize(150,40)
@@ -231,12 +231,26 @@ void UI() {
      //.setColorActive(color(10, 10, 10))
      ;
      
+  saveFileButton.onRelease(new CallbackListener() {
+    void controlEvent(CallbackEvent theEvent) {
+      
+      saveJSONFile();
+    }
+  });
+     
   // open file button
   openFileButton = cp5.addButton("Open File")
      .setValue(0)
      .setPosition(5, height-45)
      .setSize(150,40)
      ;
+     
+  openFileButton.onRelease(new CallbackListener() {
+    void controlEvent(CallbackEvent theEvent) {
+      
+      openJSONFile();
+    }
+  });
 }
 
 void updateFrames() {
@@ -249,4 +263,36 @@ void updateFrames() {
   }
   list.addItems(new_frames);
   list.setLabel("Frame: " + str(selectedFrame+1));
+}
+
+void saveJSONFile() {
+  try {
+    
+    JSONObject json = new JSONObject();
+    
+    JSONArray values = new JSONArray();
+    
+    int i = 0;
+    for (Cube frame : frames) {
+  
+      JSONObject _frame = new JSONObject();
+      
+      _frame.setInt("frame-time", int(frameTimeTf.getText()));
+      
+      _frame.setJSONArray("layers", frame.toJSON());
+  
+      values.setJSONObject(i++, _frame);
+    }
+    
+    json.setJSONArray("frames", values);
+  
+    saveJSONObject(json, "data/"+fileNameTf.getText()+".json");
+    
+  } catch(Exception e) {
+    println("file save exception");
+  }
+}
+
+void openJSONFile() {
+  
 }
