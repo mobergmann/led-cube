@@ -6,29 +6,26 @@
 #include <QOpenGLFunctions>
 #include <QOpenGLPaintDevice>
 
+#include "Models/Led.h"
+#include "Models/Cube.h"
 
-//QT_BEGIN_NAMESPACE
-//class QPainter;
-//class QOpenGLContext;
-//class QOpenGLPaintDevice;
-//QT_END_NAMESPACE
 
 class CustomOpenGLWidget: public QOpenGLWidget, protected QOpenGLFunctions
 {
 Q_OBJECT
+
 private:
-    QOpenGLContext *m_context = nullptr;
-    QOpenGLPaintDevice *m_device = nullptr;
+    QColor m_background;
+    Cube m_cube;
 
 public:
     explicit CustomOpenGLWidget(QWidget *parent = nullptr);
-    ~CustomOpenGLWidget();
+    ~CustomOpenGLWidget() override;
 
-    virtual void render(QPainter *painter);
-    virtual void render();
-
-    virtual void initialize();
-
+protected:
+    void initializeGL() override;
+    void resizeGL(int w, int h) override;
+    void paintGL() override;
 };
 
 #endif //CUSTOMOPENGLWIDGET_H
