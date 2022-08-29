@@ -170,6 +170,103 @@ class Cube {
     box(100, 3, 30);
   }
   
+  private void shift(boolean dir, String axis) {
+    LED tmp[][] = new LED[5][5];
+    
+    int[] i = {0, 0, 0};
+    
+    int axisInt = 2;
+    
+    if (axis == "x")
+      axisInt = 0;
+    else if (axis == "y")
+      axisInt = 1;
+    
+    if (dir) { // positive change
+    
+      for (i[0] = 0; i[0] < 5 ; i[0]++) { // layer
+        
+        for (i[1] = 0; i[1] < 5; i[1]++) { // y
+        
+          for (i[2] = 0; i[2] < 5; i[2]++) { // x
+          
+            if (i[axisInt]==0){
+              
+              if (axisInt == 0)
+                tmp[i[1]][i[2]] = layers[i[0]][i[1]][i[2]];
+              else if (axisInt == 1)
+                tmp[i[0]][i[2]] = layers[i[0]][i[1]][i[2]];
+              else
+                tmp[i[0]][i[1]] = layers[i[0]][i[1]][i[2]];
+            }
+          
+            if (i[axisInt]==4){
+              if (axisInt == 0)
+                layers[i[0]][i[1]][i[2]] = tmp[i[1]][i[2]];
+              else if (axisInt == 1)
+                layers[i[0]][i[1]][i[2]] = tmp[i[0]][i[2]];
+              else
+                layers[i[0]][i[1]][i[2]] = tmp[i[0]][i[1]];
+              
+            } else {
+            
+              if (axisInt == 0)
+                layers[i[0]][i[1]][i[2]] = layers[i[0]+1][i[1]][i[2]];
+              else if (axisInt == 1)
+                layers[i[0]][i[1]][i[2]] = layers[i[0]][i[1]+1][i[2]];
+              else
+                layers[i[0]][i[1]][i[2]] = layers[i[0]][i[1]][i[2]+1];
+            }
+          }
+        }
+      }
+    } else { // negative change
+      
+      for (i[0] = 4; i[0] >= 0; i[0]--) { // layer
+        
+        for (i[1] = 4; i[1] >= 0; i[1]--) { // y
+        
+          for (i[2] = 4; i[2] >= 0; i[2]--) { // x
+    
+      
+            if (i[axisInt]==4){
+              if (axisInt == 0)
+                tmp[i[1]][i[2]] = layers[i[0]][i[1]][i[2]];
+              else if (axisInt == 1)
+                tmp[i[0]][i[2]] = layers[i[0]][i[1]][i[2]];
+              else
+                tmp[i[0]][i[1]] = layers[i[0]][i[1]][i[2]];
+              
+            }
+            
+            if (i[axisInt] == 0){
+              if (axisInt == 0)
+                layers[0][i[1]][i[2]] = tmp[i[1]][i[2]];
+              else if (axisInt == 1)
+                layers[i[0]][0][i[2]] = tmp[i[0]][i[2]];
+              else
+                layers[i[0]][i[1]][0] = tmp[i[0]][i[1]];
+            
+            } else {
+            
+              if (axisInt == 0)
+                layers[i[0]][i[1]][i[2]] = layers[i[0]-1][i[1]][i[2]];
+              else if (axisInt == 1)
+                layers[i[0]][i[1]][i[2]] = layers[i[0]][i[1]-1][i[2]];
+              else
+                layers[i[0]][i[1]][i[2]] = layers[i[0]][i[1]][i[2]-1];
+                
+            
+            }
+            
+            
+            
+          }
+        }
+      }
+    }
+  }
+  
   private boolean mouseCollision(int x, int y, int z) {
      return (mousePressed && dist(mouseX, mouseY, screenX(x, y, z), screenY(x, y, z)) < 15);
   }

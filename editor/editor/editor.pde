@@ -12,6 +12,12 @@ ScrollableList openFileList;
 Button playButton;
 Textfield frameTimeTf;
 Textfield fileNameTf;
+Button pushX;
+Button popX;
+Button pushY;
+Button popY;
+Button pushZ;
+Button popZ;
 
 // play sequence
 boolean playSequence = false;
@@ -134,9 +140,7 @@ void UI() {
      .setSize(150, height-5)
      .setBarHeight(40)
      .setItemHeight(30)
-     ;
-     
-  frameList.onRelease(new CallbackListener() {
+     .onRelease(new CallbackListener() {
   public void controlEvent(CallbackEvent theEvent) {
     frameList.setOpen(true);
     
@@ -152,9 +156,7 @@ void UI() {
      .setValue(0)
      .setPosition(5, 5)
      .setSize(150,40)
-     ;
-     
-  newFrameButton.onRelease(new CallbackListener() {
+     .onRelease(new CallbackListener() {
   void controlEvent(CallbackEvent theEvent) {
     
       if (playSequence)
@@ -173,9 +175,7 @@ void UI() {
      .setValue(0)
      .setPosition(5, 55)
      .setSize(150,40)
-     ;
-      
-  deleteFrameButton.onRelease(new CallbackListener() {
+     .onRelease(new CallbackListener() {
     void controlEvent(CallbackEvent theEvent) {
       
       if (playSequence)
@@ -208,9 +208,7 @@ void UI() {
      .setValue(0)
      .setPosition(5, 160)
      .setSize(150,40)
-     ;
-      
-  playButton.onRelease(new CallbackListener() {
+     .onRelease(new CallbackListener() {
     void controlEvent(CallbackEvent theEvent) {
       
       if (playSequence) {
@@ -224,6 +222,72 @@ void UI() {
       }
     }
   });
+  
+  // shift cube buttons
+   pushX = cp5.addButton("+X")
+     .setValue(0)
+     .setPosition(5, 210)
+     .setSize(45,40)
+     .onRelease(new CallbackListener() {
+    void controlEvent(CallbackEvent theEvent) {
+      frames.get(selectedFrame).shift(true, "x");
+    }
+  });
+  
+   popX = cp5.addButton("-X")
+     .setValue(0)
+     .setPosition(5, 260)
+     .setSize(45,40)
+     .onRelease(new CallbackListener() {
+    void controlEvent(CallbackEvent theEvent) {
+      frames.get(selectedFrame).shift(false, "x");
+      
+    }
+  });
+  
+   pushY = cp5.addButton("+Y")
+     .setValue(0)
+     .setPosition(55, 210)
+     .setSize(45,40)
+     .onRelease(new CallbackListener() {
+    void controlEvent(CallbackEvent theEvent) {
+      frames.get(selectedFrame).shift(true, "y");
+    }
+  });
+  
+   popY = cp5.addButton("-Y")
+     .setValue(0)
+     .setPosition(55, 260)
+     .setSize(45,40)
+     .onRelease(new CallbackListener() {
+    void controlEvent(CallbackEvent theEvent) {
+      frames.get(selectedFrame).shift(false, "y");
+      
+    }
+  });
+  
+   pushZ = cp5.addButton("+Z")
+     .setValue(0)
+     .setPosition(105, 210)
+     .setSize(45,40)
+     .onRelease(new CallbackListener() {
+    void controlEvent(CallbackEvent theEvent) {
+      frames.get(selectedFrame).shift(true, "z");
+    }
+  });
+  
+   popZ = cp5.addButton("-Z")
+     .setValue(0)
+     .setPosition(105, 260)
+     .setSize(45,40)
+     .onRelease(new CallbackListener() {
+    void controlEvent(CallbackEvent theEvent) {
+      frames.get(selectedFrame).shift(false, "z");
+      
+    }
+  });
+  
+  
      
    // set file name
   fileNameTf = cp5.addTextfield("File Name")
@@ -241,9 +305,7 @@ void UI() {
      //.setColorBackground(color(255, 255, 255))
      ////.setColorForeground(color(0, 0, 0))
      //.setColorActive(color(10, 10, 10))
-     ;
-     
-  saveFileButton.onRelease(new CallbackListener() {
+     .onRelease(new CallbackListener() {
     void controlEvent(CallbackEvent theEvent) {
       
       saveJSONFile();
@@ -257,9 +319,7 @@ void UI() {
      .setBarHeight(40)
      .setItemHeight(30)
      .setOpen(false)
-     ;
-     
-  openFileList.onRelease(new CallbackListener() {
+     .onRelease(new CallbackListener() {
     void controlEvent(CallbackEvent theEvent) {
       
       if (playSequence){
