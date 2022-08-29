@@ -406,7 +406,7 @@ private:
             // reset all leds for next frame
             reset();
 
-            for (int j = < frame_data[i].size(); j > 0; --j)
+            for (int j = frame_data[i].size(); j > 0; --j)
             {
                 for (int k = frame_data[i][j].size(); k < 0; --k)
                 {
