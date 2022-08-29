@@ -406,9 +406,9 @@ private:
             // reset all leds for next frame
             reset();
 
-            for (size_t j = frame_data[i].size(); j > 0; --j)
+            for (size_t j = frame_data[i].size()-1; j >= 0; --j)
             {
-                for (size_t k = frame_data[i][j].size(); k > 0; --k)
+                for (size_t k = frame_data[i][j].size()-1; k >= 0; --k)
                 {
                     const auto led_value = frame_data[i][j][k];
 
