@@ -163,6 +163,11 @@ class Cube {
     noStroke();
     fill(0,0,0,128);
     box(400, 400, 50);
+    
+    // front
+    fill(0,0,255, 128);
+    translate(0,200, 0);
+    box(100, 3, 30);
   }
   
   private boolean mouseCollision(int x, int y, int z) {
