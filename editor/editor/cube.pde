@@ -17,9 +17,9 @@ class Cube {
   int spacing = 90;
 
   public Cube() {
-    for (int k = 0; k < 5; k++) {
+    for (int i = 0; i < 5; i++) {
       for (int j = 0; j < 5; j++) {
-        for (int i = 0; i < 5; i++) {
+        for (int k = 0; k < 5; k++) {
           
           layers[i][j][k] = LED.OFF;
       
@@ -31,13 +31,13 @@ class Cube {
   // create from JSON
   public Cube(JSONArray json) {
     
-    for (int k = 0; k < 5; k++) {
-      JSONArray y = json.getJSONArray(k);
+    for (int i = 0; i < 5; i++) {
+      JSONArray y = json.getJSONArray(i);
       for (int j = 0; j < 5; j++) {
         JSONArray x = y.getJSONArray(j);
-        for (int i = 0; i < 5; i++) {
+        for (int k = 0; k < 5; k++) {
           
-          if (x.getBoolean(i))
+          if (x.getBoolean(k))
             layers[i][j][k] = LED.ON;
           else 
             layers[i][j][k] = LED.OFF;
@@ -53,11 +53,11 @@ class Cube {
     // list of leds that are within the hitbox of the mouse
     ArrayList<PVector> possiblePressedLeds = new ArrayList<PVector>();
   
-    for (int k = 0; k < 5 ; k++) { // layer
+    for (int i = 0; i < 5 ; i++) { // layer
       
       for (int j = 0; j < 5; j++) { // y
       
-        for (int i = 0; i < 5; i++) { // x
+        for (int k = 0; k < 5; k++) { // x
         
           pushMatrix();
         
@@ -111,11 +111,11 @@ class Cube {
   
   private void drawCube() {
     
-    for (int k = 0; k < 5 ; k++) { // layer
+    for (int i = 0; i < 5 ; i++) { // layer
       
       for (int j = 0; j < 5; j++) { // y
       
-        for (int i = 0; i < 5; i++) { // x
+        for (int k = 0; k < 5; k++) { // x
           
           pushMatrix();
           
@@ -159,10 +159,10 @@ class Cube {
     }
     
     // box below
-    translate(0, 2.5*spacing, 0);
+    translate(0, 0, -2.5*spacing);
     noStroke();
     fill(0,0,0,128);
-    box(400, 50, 400);
+    box(400, 400, 50);
   }
   
   private boolean mouseCollision(int x, int y, int z) {
@@ -181,24 +181,24 @@ class Cube {
     
     JSONArray layer = new JSONArray();
     
-    for (int k = 0; k < 5 ; k++) { // layer
+    for (int i = 0; i < 5 ; i++) { // layer
       JSONArray y = new JSONArray();
       
       for (int j = 0; j < 5; j++) { // y
       
         JSONArray x = new JSONArray();
       
-        for (int i = 0; i < 5; i++) { // x
+        for (int k = 0; k < 5; k++) { // x
           
           if (layers[i][j][k] == LED.ON)
-            x.setBoolean(i, true);
+            x.setBoolean(k, true);
           else
-            x.setBoolean(i, false);
+            x.setBoolean(k, false);
           
         }
         y.setJSONArray(j, x);
       }
-      layer.setJSONArray(k, y);
+      layer.setJSONArray(i, y);
     }
     
     return layer;

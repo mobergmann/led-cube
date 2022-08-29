@@ -60,8 +60,8 @@ void draw() {
   pushMatrix();
   
   translate(width*3/5, height/2-70,0);
-  rotateX(xpos-0.3);
-  rotateY(ypos-PI/5);
+  rotateX(xpos+1.56-0.3);
+  rotateY(ypos+0.64-PI/5);
   rotateZ(zpos);
   
   frames.get(selectedFrame).update();
@@ -72,8 +72,8 @@ void draw() {
   pushMatrix();
   
   translate(width-60, height-60, 0);
-  rotateX(xpos-0.3);
-  rotateY(ypos-PI/5);
+  rotateX(xpos+1.56-0.3);
+  rotateY(ypos+0.64-PI/5);
   rotateZ(zpos);
   
   fill(255, 255, 255, 150);
@@ -95,8 +95,8 @@ void draw() {
     
     float orbitRadius= (last_mouseX-mouseX)/2;
     xpos += (float(last_mouseY-mouseY)/3)/100;
-    ypos += (cos(radians(0))*(-1)*orbitRadius)/100;
-    zpos = (sin(radians(0))*orbitRadius)/100;
+    zpos += (cos(radians(0))*orbitRadius)/100;
+    ypos = (sin(radians(0))*orbitRadius)/100;
   }
   
   last_mouseX = mouseX;
@@ -114,6 +114,12 @@ void draw() {
     }
   }
   catch(Exception e) {}
+  
+  
+  frameList.setSize(150, height-5);
+  fileNameTf.setPosition(5, height-55);
+  saveFileButton.setPosition(5, height-105);
+  openFileList.setPosition(5, height-155);
 }
 
 // UI
