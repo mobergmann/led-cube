@@ -18,6 +18,10 @@ Button pushY;
 Button popY;
 Button pushZ;
 Button popZ;
+Button copy;
+Button paste;
+
+
 
 // play sequence
 boolean playSequence = false;
@@ -35,6 +39,7 @@ int last_mouseY = 0;
 // frames
 ArrayList<Cube> frames = new ArrayList<Cube>();
 int selectedFrame;
+Cube copyFrame = new Cube();
 
 // file system
 String SAVEDIR = "../../assets/files/";
@@ -167,13 +172,11 @@ void UI() {
       updateFrames();
     }
   });
-     
   
-     
   // delete frame button
   deleteFrameButton = cp5.addButton("Delete Frame")
      .setValue(0)
-     .setPosition(5, 55)
+     .setPosition(5, 105)
      .setSize(150,40)
      .onRelease(new CallbackListener() {
     void controlEvent(CallbackEvent theEvent) {
@@ -194,9 +197,100 @@ void UI() {
     }
   });
      
+  // copy frame button
+  copy = cp5.addButton("Copy Frame")
+     .setValue(0)
+     .setPosition(5, 55)
+     .setSize(70,40)
+     .onRelease(new CallbackListener() {
+    void controlEvent(CallbackEvent theEvent) {
+      if (playSequence)
+        return;
+        
+      copyFrame = new Cube(frames.get(selectedFrame));
+    }
+  });
+     
+  // paste frame button
+  paste = cp5.addButton("Paste Frame")
+     .setValue(0)
+     .setPosition(85, 55)
+     .setSize(70,40)
+     .onRelease(new CallbackListener() {
+    void controlEvent(CallbackEvent theEvent) {
+      if (playSequence)
+        return;
+        
+      selectedFrame++;
+      frames.add(selectedFrame, new Cube(copyFrame));
+      updateFrames();
+    }
+  });
+     
+  // place random button
+  paste = cp5.addButton("Place RND")
+     .setValue(0)
+     .setPosition(5, 360)
+     .setSize(70,40)
+     .onRelease(new CallbackListener() {
+    void controlEvent(CallbackEvent theEvent) {
+      if (playSequence)
+        return;
+        
+      frames.get(selectedFrame).placeRnd();
+    }
+  });
+     
+  // remove random button
+  paste = cp5.addButton("Remove RND")
+     .setValue(0)
+     .setPosition(85, 360)
+     .setSize(70,40)
+     .onRelease(new CallbackListener() {
+    void controlEvent(CallbackEvent theEvent) {
+      if (playSequence)
+        return;
+        
+      frames.get(selectedFrame).removeRnd();
+    }
+  });
+  
+  // remove random button
+  paste = cp5.addButton("Magic Button")
+     .setValue(0)
+     .setPosition(5, 410)
+     .setSize(150,40)
+     .onRelease(new CallbackListener() {
+    void controlEvent(CallbackEvent theEvent) {
+      if (playSequence)
+        return;
+        
+      for(int i = 0; i<125; i++){
+        frames.get(selectedFrame).placeRnd();
+        
+        copyFrame = new Cube(frames.get(selectedFrame));
+        
+        selectedFrame++;
+        frames.add(selectedFrame, new Cube(copyFrame));
+        updateFrames();
+        
+      }
+      
+      for(int i = 0; i<125; i++){
+        frames.get(selectedFrame).removeRnd();
+        
+        copyFrame = new Cube(frames.get(selectedFrame));
+        
+        selectedFrame++;
+        frames.add(selectedFrame, new Cube(copyFrame));
+        updateFrames();
+      }
+    }
+  });
+     
   // set frametime
   frameTimeTf = cp5.addTextfield("Frame Time (ms)")
-     .setPosition(5, 105)
+     .setPosition(5, 155)
      .setSize(150,40)
      .setFont(arial)
      .setColor(color(255,255,255))
@@ -206,7 +300,7 @@ void UI() {
    // play sequence button
    playButton = cp5.addButton("Play")
      .setValue(0)
-     .setPosition(5, 160)
+     .setPosition(5, 210)
      .setSize(150,40)
      .onRelease(new CallbackListener() {
     void controlEvent(CallbackEvent theEvent) {
@@ -226,7 +320,7 @@ void UI() {
   // shift cube buttons
    pushX = cp5.addButton("+X")
      .setValue(0)
-     .setPosition(5, 210)
+     .setPosition(5, 260)
      .setSize(45,40)
      .onRelease(new CallbackListener() {
     void controlEvent(CallbackEvent theEvent) {
@@ -236,7 +330,7 @@ void UI() {
   
    popX = cp5.addButton("-X")
      .setValue(0)
-     .setPosition(5, 260)
+     .setPosition(5, 310)
      .setSize(45,40)
      .onRelease(new CallbackListener() {
     void controlEvent(CallbackEvent theEvent) {
@@ -247,7 +341,7 @@ void UI() {
   
    pushY = cp5.addButton("+Y")
      .setValue(0)
-     .setPosition(55, 210)
+     .setPosition(55, 260)
      .setSize(45,40)
      .onRelease(new CallbackListener() {
     void controlEvent(CallbackEvent theEvent) {
@@ -257,7 +351,7 @@ void UI() {
   
    popY = cp5.addButton("-Y")
      .setValue(0)
-     .setPosition(55, 260)
+     .setPosition(55, 310)
      .setSize(45,40)
      .onRelease(new CallbackListener() {
     void controlEvent(CallbackEvent theEvent) {
@@ -268,7 +362,7 @@ void UI() {
   
    pushZ = cp5.addButton("+Z")
      .setValue(0)
-     .setPosition(105, 210)
+     .setPosition(105, 260)
      .setSize(45,40)
      .onRelease(new CallbackListener() {
     void controlEvent(CallbackEvent theEvent) {
@@ -278,7 +372,7 @@ void UI() {
   
    popZ = cp5.addButton("-Z")
      .setValue(0)
-     .setPosition(105, 260)
+     .setPosition(105, 310)
      .setSize(45,40)
      .onRelease(new CallbackListener() {
     void controlEvent(CallbackEvent theEvent) {

@@ -28,6 +28,22 @@ class Cube {
     }
   }
   
+  public Cube(Cube copy) {
+    
+    for (int i = 0; i < 5; i++) {
+      for (int j = 0; j < 5; j++) {
+        for (int k = 0; k < 5; k++) {
+          
+          layers[i][j][k] = copy.layers[i][j][k];
+      
+        }
+      }
+    }
+    
+    mousePress = copy.mousePress;
+    cubeMoving = copy.cubeMoving;
+  }
+  
   // create from JSON
   public Cube(JSONArray json) {
     
@@ -170,7 +186,95 @@ class Cube {
     box(100, 3, 30);
   }
   
-  private void shift(boolean dir, String axis) {
+  public void placeRnd() {
+    
+    int countOn = 0;
+    
+    for (int i = 0; i < 5 ; i++) { // layer
+      
+      for (int j = 0; j < 5; j++) { // y
+      
+        for (int k = 0; k < 5; k++) { // x
+        
+          if (layers[i][j][k] == LED.ON)
+            countOn++;
+        
+        }
+      }
+    }
+    
+    int rndIndex = (int)random(125-countOn);
+    int c = 0;
+    
+    for (int i = 0; i < 5 ; i++) { // layer
+      
+      for (int j = 0; j < 5; j++) { // y
+      
+        for (int k = 0; k < 5; k++) { // x
+        
+          if (layers[i][j][k] == LED.ON)
+            continue;
+        
+          if (c == rndIndex) {
+            
+            layers[i][j][k] = LED.ON;
+            
+            return;
+          }
+            
+          c++;
+        
+        }
+      }
+    }
+    
+  }
+  
+  public void removeRnd() {
+    
+    int countOff = 0;
+    
+    for (int i = 0; i < 5 ; i++) { // layer
+      
+      for (int j = 0; j < 5; j++) { // y
+      
+        for (int k = 0; k < 5; k++) { // x
+        
+          if (layers[i][j][k] != LED.ON)
+            countOff++;
+        
+        }
+      }
+    }
+    
+    int rndIndex = (int)random(125-countOff);
+    int c = 0;
+    
+    for (int i = 0; i < 5 ; i++) { // layer
+      
+      for (int j = 0; j < 5; j++) { // y
+      
+        for (int k = 0; k < 5; k++) { // x
+        
+          if (layers[i][j][k] != LED.ON)
+            continue;
+        
+          if (c == rndIndex) {
+            
+            layers[i][j][k] = LED.OFF;
+            
+            return;
+          }
+            
+          c++;
+        
+        }
+      }
+    }
+    
+  }
+  
+  public void shift(boolean dir, String axis) {
     LED tmp[][] = new LED[5][5];
     
     int[] i = {0, 0, 0};
