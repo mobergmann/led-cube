@@ -175,14 +175,14 @@ class Cube {
     
     int[] i = {0, 0, 0};
     
-    int axisInt = 2;
+    int axisInt = 1;
     
     if (axis == "x")
-      axisInt = 0;
+      axisInt = 2;
     else if (axis == "y")
-      axisInt = 1;
+      axisInt = 0;
     
-    if (dir) { // positive change
+    if (!dir) { // positive change
     
       for (i[0] = 0; i[0] < 5 ; i[0]++) { // layer
         
