@@ -11,8 +11,8 @@
 #include <gpiod.hpp>
 #include <nlohmann/json.hpp>
 // Files
-#include "Button.h"
-#include "Frame.h"
+#include "include/Button.h"
+#include "include/Frame.h"
 
 
 namespace fs = std::filesystem;
