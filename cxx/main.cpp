@@ -410,7 +410,7 @@ private:
             {
                 for (int k = frame_data[i][j].size()-1; k >= 0; --k)
                 {
-                    const auto led_value = frame_data[i][j][k];
+                    const auto led_value = frame_data[i][k][j];
 
                     // turn on special pin if end of shift register reached (layer 5 and pin 25)
                     if (j == 4 && k == 4)
