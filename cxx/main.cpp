@@ -205,11 +205,11 @@ private:
             frame.frame_time = _frame["frame-time"];
 
             // layer data
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 5; ++i)
             {
-                for (int j = 0; j < 5; j++)
+                for (int j = 0; j < 5; ++j)
                 {
-                    for (int k = 0; k < 5; k++)
+                    for (int k = 0; k < 5; ++k)
                     {
                         const auto &value = _frame["layers"][i][j][k];
                         frame.data[i][j][k] = value;
@@ -406,9 +406,9 @@ private:
             // reset all leds for next frame
             reset();
 
-            for (int j = 0; j < frame_data[i].size(); ++j)
+            for (int j = frame_data[i].size()-1; j >= 0; --j)
             {
-                for (int k = 0; k < frame_data[i][j].size(); ++k)
+                for (int k = frame_data[i][j].size()-1; k >= 0; --k)
                 {
                     const auto led_value = frame_data[i][j][k];
 
