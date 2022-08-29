@@ -205,11 +205,11 @@ private:
             frame.frame_time = _frame["frame-time"];
 
             // layer data
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 5; ++i)
             {
-                for (int j = 0; j < 5; j++)
+                for (int j = 0; j < 5; ++j)
                 {
-                    for (int k = 0; k < 5; k++)
+                    for (int k = 0; k < 5; ++k)
                     {
                         const auto &value = _frame["layers"][i][j][k];
                         frame.data[i][j][k] = value;
