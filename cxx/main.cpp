@@ -401,14 +401,14 @@ private:
             return;
         }
 
-        for (int i = 0; i < frame_data.size(); ++i)
+        for (size_t i = 0; i < frame_data.size(); ++i)
         {
             // reset all leds for next frame
             reset();
 
-            for (int j = frame_data[i].size(); j > 0; --j)
+            for (size_t j = frame_data[i].size(); j > 0; --j)
             {
-                for (int k = frame_data[i][j].size(); k < 0; --k)
+                for (size_t k = frame_data[i][j].size(); k > 0; --k)
                 {
                     const auto led_value = frame_data[i][j][k];
 
