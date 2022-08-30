@@ -6,25 +6,40 @@
 #define LED_CUBE_BLUETOOTH_H
 
 #include <mutex>
+#include <thread>
 
 
 class Bluetooth
 {
 private:
     std::mutex m;
-public:
-    Bluetooth()
-    {
-        if (not m.try_lock())
-        {
-            throw std::runtime_error("Bluetooth still locked");
-        }
-    }
 
-    ~Bluetooth()
-    {
-        m.unlock();
-    }
+    std::thread blink_thread;
+    bool terminate_blink_thread = false;
+
+public:
+    Bluetooth();
+
+    ~Bluetooth();
+
+private:
+    void blink();
+
+    // void ();
+
+public:
+    void scan();
+
+    void connect();
+
+    void idle();
+
+    void receive();
+
+    void save();
+
+    void disconnect();
+
 };
 
 

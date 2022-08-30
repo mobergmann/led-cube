@@ -13,6 +13,7 @@
 // Files
 #include "include/Button.h"
 #include "include/Frame.h"
+#include "include/Bluetooth.h"
 
 
 namespace fs = std::filesystem;
@@ -26,6 +27,9 @@ private:
 
     /// boolean indicating if the led cube should be on
     bool cube_on;
+
+    /// bluetooth member managing bluetooth access
+    static Bluetooth* bl;
 
 #pragma region file management
     /// a list of all files in the data folder
@@ -143,19 +147,19 @@ public:
         line_pairing_led.request({line_pairing_led.name(), gpiod::line_request::DIRECTION_OUTPUT, 0}, 0);
         std::cout << "Pairing Mode LED acquired" << std::endl;
 
-        /// button for enabling pairing mode (pull down)
+        /// button for enabling pairing mode
         line_bluetooth = new Button(chip, 6);
         std::cout << "bluetooth pairing pin acquired" << std::endl;
 
-        /// button for iterating to next led setting (pull down)
+        /// button for iterating to next led setting
         line_next = new Button(chip, 4);
         std::cout << "Previous setting pin acquired" << std::endl;
 
-        /// button for iterating to previous led setting (pull up)
+        /// button for iterating to previous led setting
         line_previous = new Button(chip, 5);
         std::cout << "Next setting pin acquired" << std::endl;
 
-        /// button for enabling/ disabling the cube (pull up)
+        /// button for enabling/ disabling the cube
         line_power = new Button(chip, 7);
         std::cout << "power on/ off pin acquired" << std::endl;
 #pragma endregion
@@ -173,16 +177,25 @@ public:
 private:
     static void bluetooth_deamon(Main* m)
     {
-        for (int i = 0; i < 5; ++i)
+        try
         {
-            // blink bluetooth pairing led
-            m->line_pairing_led.set_value(1);
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-            m->line_pairing_led.set_value(0);
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        }
+            Main::bl = new Bluetooth();
 
-        m->update_file_list();
+            for (int i = 0; i < 5; ++i)
+            {
+                // blink bluetooth pairing led
+                m->line_pairing_led.set_value(1);
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                m->line_pairing_led.set_value(0);
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            }
+
+            m->update_file_list();
+        }
+        catch (const std::exception &e)
+        {
+            std::cout << "Error in Bluetooth communication: " << std::endl;
+        }
     }
 
 private:
