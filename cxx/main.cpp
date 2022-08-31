@@ -366,7 +366,7 @@ private:
      */
     bool poll()
     {
-        bool button_pressed = false;
+        bool button_pressed_flag = false;
 
         line_usb->poll([&](){
             std::cout << "file transfer button pressed" << std::endl;
@@ -380,6 +380,9 @@ private:
                 std::cerr << "Error while transferring: " << e.what() << std::endl;
             }
 
+            // update the file, to load newly added files
+            update_file_list();
+
             // todo maybe make ft pointer, so delete can be called explicitly
         });
 
@@ -387,14 +390,14 @@ private:
             std::cout << "previous setting button press" << std::endl;
             previous();
             parse_layout();
-            button_pressed = true;
+            button_pressed_flag = true;
         });
 
         line_next->poll([&](){
             std::cout << "next setting button press" << std::endl;
             next();
             parse_layout();
-            button_pressed = true;
+            button_pressed_flag = true;
         });
 
         line_power->poll([&](){
@@ -404,7 +407,7 @@ private:
             cube_on = not cube_on;
         });
 
-        return button_pressed;
+        return button_pressed_flag;
     }
 
     void set_leds(const layers_t &frame_data)
