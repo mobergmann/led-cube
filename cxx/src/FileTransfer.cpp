@@ -82,7 +82,7 @@ void FileTransfer::copy()
 
     for (const auto &i: configurations)
     {
-        fs::copy(i, custom_path);
+        fs::copy(i, custom_path, fs::copy_options::overwrite_existing);
     }
 }
 
