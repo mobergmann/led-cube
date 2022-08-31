@@ -10,13 +10,7 @@ find_library(GPIOD_LIBRARY gpiodcxx REQUIRED)
 find_package(Threads REQUIRED)
 
 set(PROJECT_SOURCES
-    Frame.h Button.h main.cpp Frame.h)
+        src/FileTransfer.cpp include/FileTransfer.h include/Frame.h include/Button.h main.cpp)
 
 add_executable(led_cube ${PROJECT_SOURCES})
 target_link_libraries(led_cube ${GPIOD_LIBRARY} nlohmann_json::nlohmann_json Threads::Threads stdc++fs)
-
-add_executable(test test.cpp)
-target_link_libraries(test ${GPIOD_LIBRARY} nlohmann_json::nlohmann_json Threads::Threads stdc++fs)
-
-add_executable(seq sequence.cpp)
-target_link_libraries(seq ${GPIOD_LIBRARY} nlohmann_json::nlohmann_json Threads::Threads stdc++fs)
