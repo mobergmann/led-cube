@@ -38,8 +38,8 @@ Die Reihenfolge dieser Liste stellt die verfügbaren Pins von oben nach unten da
 | Layer 5          | 25  | Pull Down     | Verbaut   |
 | Pairing LED      | 11  | Pull Down     | User Pins |
 | Bluetooth Button | 6   | Pull Up       | User Pins |
-| Next Button      | 5   | Pull Up       | User Pins |
-| Previous Button  | 4   | Pull Up       | User Pins |
+| Next Button      | 4   | Pull Up       | User Pins |
+| Previous Button  | 5   | Pull Up       | User Pins |
 | Power Button     | 7   | Pull Up       | User Pins |
 
 
