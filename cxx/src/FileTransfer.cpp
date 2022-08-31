@@ -11,9 +11,9 @@ extern int errno;
 
 std::mutex FileTransfer::mutex = std::mutex();
 
-const fs::path FileTransfer::default_path = "usr/share/led-cube/default";
+const fs::path FileTransfer::default_path = "/usr/share/led-cube";
 
-const fs::path FileTransfer::custom_path = "/var/lib/led-cube/config";
+const fs::path FileTransfer::custom_path = "/var/lib/led-cube";
 
 const fs::path FileTransfer::usb_path = "/dev/sda1";
 
