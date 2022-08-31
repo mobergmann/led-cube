@@ -1,5 +1,7 @@
 #include "../include/FileTransfer.h"
 
+#include <string>
+
 namespace mount
 {
 #include <sys/mount.h>
@@ -31,7 +33,7 @@ FileTransfer::FileTransfer(gpiod::line *blink_led) : blink_led(blink_led), termi
     blink_thread = new std::thread(FileTransfer::blink, blink_led, &terminate_thread);
 
     // mount usb
-    if (mount::mount(usb_path.c_str(), mount_path.c_str(), "ext4", 0, "")) // todo really ext4?
+    if (mount::mount(usb_path.c_str(), mount_path.c_str(), "vfat", 0, "")) // todo really ext4?
     {
         mutex.unlock(); // manually unlock, because destructor not called with throw in constructor
         throw std::runtime_error("error while mounting! errno: " + std::to_string(errno) + ": " + std::string(mount::strerror(errno)));
