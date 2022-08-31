@@ -11,15 +11,13 @@ extern int errno;
 
 std::mutex FileTransfer::mutex = std::mutex();
 
-const fs::path FileTransfer::base_path = fs::path(getenv("HOME")) / ".led-cube";
+const fs::path FileTransfer::default_path = "usr/share/led-cube/default";
 
-const fs::path FileTransfer::default_path = FileTransfer::base_path / "default";
-
-const fs::path FileTransfer::custom_path = FileTransfer::base_path / "config";
+const fs::path FileTransfer::custom_path = "/var/lib/led-cube/config";
 
 const fs::path FileTransfer::usb_path = "/dev/sda1";
 
-const fs::path FileTransfer::mount_path = "/mount/volume";
+const fs::path FileTransfer::mount_path = "/mnt/volume";
 
 FileTransfer::FileTransfer(gpiod::line *blink_led) : blink_led(blink_led), terminate_thread(false)
 {
@@ -35,34 +33,8 @@ FileTransfer::FileTransfer(gpiod::line *blink_led) : blink_led(blink_led), termi
     // mount usb
     if (mount::mount(usb_path.c_str(), mount_path.c_str(), "ext4", 0, "")) // todo really ext4?
     {
-        mutex.unlock(); // manually unlock, cause destructor not called with throw in constructor
+        mutex.unlock(); // manually unlock, because destructor not called with throw in constructor
         throw std::runtime_error("error while mounting! errno: " + std::to_string(errno) + ": " + std::string(mount::strerror(errno)));
-    }
-
-    try
-    {
-        // create directories if not existent
-        if (not fs::exists(base_path))
-        {
-            fs::create_directory(base_path);
-        }
-
-        // create directories if not existent
-        if (not fs::exists(default_path))
-        {
-            fs::create_directory(default_path);
-        }
-
-        // create directories if not existent
-        if (not fs::exists(custom_path))
-        {
-            fs::create_directory(custom_path);
-        }
-    }
-    catch (const std::exception &e)
-    {
-        mutex.unlock(); // manually unlock, cause destructor not called with throw in constructor
-        throw e;
     }
 }
 

@@ -83,6 +83,9 @@ private:
 public:
     Main() : cube_on(true), pin_special_val(false)
     {
+        // create all folders
+        init_fs();
+
         // get all files
         update_file_list();
 
@@ -172,6 +175,21 @@ public:
     }
 
 private:
+    static void init_fs()
+    {
+        // create directories if not existent
+        if (not fs::exists(FileTransfer::default_path))
+        {
+            fs::create_directories(FileTransfer::default_path);
+        }
+
+        // create directories if not existent
+        if (not fs::exists(FileTransfer::custom_path))
+        {
+            fs::create_directories(FileTransfer::custom_path);
+        }
+    }
+
     void parse_layout()
     {
         std::vector<Frame> _frames;
@@ -250,16 +268,15 @@ private:
         files.clear();
 
         // search all new files
-        std::string data_dir_path = fs::path(getenv("HOME")) / ".led-cube" / "custom";
-        std::string default_dir_path = fs::path(getenv("HOME")) / ".led-cube" / "default";
+
         // add default cube configurations
-        for (const auto &file: fs::recursive_directory_iterator(default_dir_path))
+        for (const auto &file: fs::recursive_directory_iterator(FileTransfer::default_path))
         {
             std::cout << "Found file: " << file.path() << std::endl;
             files.push_back(file.path());
         }
         // add custom cube configurations
-        for (const auto &file: fs::recursive_directory_iterator(data_dir_path))
+        for (const auto &file: fs::recursive_directory_iterator(FileTransfer::custom_path))
         {
             std::cout << "Found file: " << file.path() << std::endl;
             files.push_back(file.path());

@@ -25,9 +25,7 @@ private:
     /// boolean, if the blink thread should be terminated
     bool terminate_thread = false;
 
-    /// path to the program directory
-    const static fs::path base_path;
-
+public:
     /// path to the default directory
     const static fs::path default_path;
 
