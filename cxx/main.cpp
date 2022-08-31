@@ -175,7 +175,7 @@ public:
     }
 
 private:
-    static void init_fs()
+    void init_fs()
     {
         // create directories if not existent
         if (not fs::exists(FileTransfer::default_path))
