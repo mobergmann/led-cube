@@ -1,11 +1,23 @@
 # led-cube
 
-## Dependencies
+## Build
+### Dependencies
 Diese Programme müssen installiert sein um das Projekt zu kompilieren.
+- build-essential 
+- cmake 
 - libgpiod-dev
-- cmake
-- g++
 
+### Build
+Führe das `configure` skript mit root rechten aus. Dies übernimmt die kompilierung (für debian/ raspi Systeme) und die installation.
+```
+./configure
+```
+
+### Pack
+Soll das Projekt durch einen Installer/ Packet installiert werden, dann geht dies mit CPack:
+```
+cpack -C "Release" -G "STGZ;TGZ"
+```
 
 ## Pins
 ### User Pins
