@@ -9,10 +9,10 @@ add_subdirectory(dependencies/json)
 # find_library(GPIOD_LIBRARY gpiodcxx REQUIRED)
 find_package(Threads REQUIRED)
 
-set(GPIOD_DIR ${CMAKE_CURRENT_SOURCE_DIR}/depedencies/libgpiod)
-set(GPIOD_BIN ${CMAKE_CURRENT_BINARY_DIR}/depedencies/libgpiod)
-set(GPIOD_STATIC_LIB ${CMAKE_CURRENT_BINARY_DIR}/depedencies/libgpiod/lib/libgpiodcxx.a)
-set(GPIOD_INCLUDES ${CMAKE_CURRENT_BINARY_DIR}/depedencies/libgpiod/include)
+set(GPIOD_DIR ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/libgpiod)
+set(GPIOD_BIN ${CMAKE_CURRENT_BINARY_DIR}/dependencies/libgpiod)
+set(GPIOD_STATIC_LIB ${CMAKE_CURRENT_BINARY_DIR}/dependencies/libgpiod/lib/libgpiodcxx.a)
+set(GPIOD_INCLUDES ${CMAKE_CURRENT_BINARY_DIR}/dependencies/libgpiod/include)
 ExternalProject_Add(libgpiod
         PREFIX ${GPIOD_BIN}
         SOURCE_DIR ${GPIOD_DIR}
