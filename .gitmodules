@@ -1,6 +1,6 @@
 [submodule "cxx/depedencies/json"]
-	path = cxx/depedencies/json
+	path = cxx/dependencies/json
 	url = https://github.com/nlohmann/json.git
 [submodule "cxx/depedencies/libgpiod"]
-	path = cxx/depedencies/libgpiod
+	path = cxx/dependencies/libgpiod
 	url = https://git.kernel.org/pub/scm/libs/libgpiod/libgpiod.git
