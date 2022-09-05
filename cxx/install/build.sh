@@ -17,7 +17,7 @@ BINARIES_DIR="$SCRIPT_DIR/bin"
 
 
 # install dependencies
-#sudo apt install build-essential cmake libgpiod-dev -y
+sudo apt install build-essential cmake libgpiod-dev -y
 
 # build
 echo -n "Building Project ... "
@@ -40,7 +40,7 @@ echo "Done"
 echo -n "Downloading dependency ... "
 {
     cd "$BINARIES_DIR"/ || exit
-    #apt download libgpiod2
+    apt download libgpiod2
     # wget http://ftp.de.debian.org/debian/pool/main/libg/libgpiod/libgpiod2_1.6.2-1_armel.deb
 } &> /dev/null
 echo "Done"
