@@ -93,7 +93,7 @@ public:
         parse_layout();
 
         // init chip
-        chip = gpiod::chip("gpiochip0", gpiod::chip::OPEN_BY_NAME);
+        chip = gpiod::chip("gpiochip0");
 
 #pragma region aquire lines
 #pragma region layers
