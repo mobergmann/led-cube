@@ -4,7 +4,7 @@ project(led_cube)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_subdirectory(depedencies/json)
+add_subdirectory(dependencies/json)
 
 find_library(GPIOD_LIBRARY gpiodcxx REQUIRED)
 find_package(Threads REQUIRED)
