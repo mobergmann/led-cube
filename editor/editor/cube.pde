@@ -159,7 +159,7 @@ class Cube {
           // draw the leds
           if (layers[i][j][k] == LED.OFF) {
             noStroke();
-            fill(100,100,100,70);
+            fill(200,200,200,70);
             sphere(width/100);
             
           } else if (layers[i][j][k] == LED.ON) {
@@ -369,6 +369,57 @@ class Cube {
         }
       }
     }
+  }
+  
+  private boolean tst = true;
+  
+  public Cube gameOfLife(Cube last) {
+    
+     for (int i = 0; i < 5 ; i++) { // layer
+      
+      for (int j = 0; j < 5; j++) { // y
+      
+        for (int k = 0; k < 5; k++) { // x
+        
+          int count = 0;
+          
+        
+          for (int x = -1; x<2; x++) {
+            for (int y = -1; y<2; y++) {
+              for (int z = -1; z<2; z++) {
+                
+                if (x == 0 && y == 0 && z == 0)
+                  continue;
+                
+                LED check = last.layers[(i+x+5)%5][(j+y+5)%5][(k+z+5)%5];
+                
+                
+                if (check == LED.ON)
+                  count++;
+              }
+            }
+          }
+          
+          if (tst)
+            println(count);
+          
+          
+          if (tst)
+            tst = false;
+          
+          
+          if (count >= 5 && count <= 10) {
+            layers[i][j][k] = LED.ON;
+          } else {
+            layers[i][j][k] = LED.OFF;
+          }
+          
+          
+        }
+      }
+    }
+    
+    return this;
   }
   
   private boolean mouseCollision(int x, int y, int z) {

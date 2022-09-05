@@ -255,7 +255,7 @@ void UI() {
     }
   });
   
-  // remove random button
+  // Magic button
   paste = cp5.addButton("Magic Button")
      .setValue(0)
      .setPosition(5, 410)
@@ -265,26 +265,22 @@ void UI() {
       if (playSequence)
         return;
         
-      for(int i = 0; i<125; i++){
+      println("help");
+        
+      // magic code here
+      
+      for (int i = 0; i<65; i++) {
+        
         frames.get(selectedFrame).placeRnd();
-        
-        copyFrame = new Cube(frames.get(selectedFrame));
-        
-        selectedFrame++;
-        frames.add(selectedFrame, new Cube(copyFrame));
-        updateFrames();
-        
       }
       
-      for(int i = 0; i<125; i++){
-        frames.get(selectedFrame).removeRnd();
+      for(int i = 0; i<200; i++) {
         
-        copyFrame = new Cube(frames.get(selectedFrame));
-        
+        frames.add(new Cube().gameOfLife(frames.get(selectedFrame)));
         selectedFrame++;
-        frames.add(selectedFrame, new Cube(copyFrame));
         updateFrames();
       }
+      
     }
   });
      
