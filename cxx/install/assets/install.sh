@@ -1,31 +1,55 @@
 # ensure running as root (source: https://electrictoolbox.com/check-user-root-sudo-before-running/)
 if [ `whoami` != root ]; then
-    echo Please run this script as root or using sudo
+    echo "Please run this script as root or using sudo"
     exit
 fi
 
+
+
 # declare variables
-BINARY_DIR=binaries
-CONFIG_DIR=/usr/share/led-cube
-DEFAULT_DIR=/var/lib/led-cube
-INSTALL_DIR=/usr/local/led-cube
-ASSET_DIR=assets/files
-SERVICE_FILE=/etc/systemd/system/led-cube.service
+START_DIR=$(pwd)
+
+# get path of script (if called from other location)
+# source: https://stackoverflow.com/a/1638397/11186407
+SCRIPT=$(readlink -f "$0")
+SCRIPT_DIR=$(dirname "$SCRIPT")
+
+BINARIES_DIR="$SCRIPT_DIR/bin"
+ASSET_DIR="$SCRIPT_DIR/assets"
+CONFIG_DIR="$SCRIPT_DIR/configurations"
+
+SYS_INSTALL_DIR=/usr/local/led-cube
+SYS_DEFAULT_DIR=/usr/share/led-cube
+SYS_CONFIG_DIR=/var/lib/led-cube
+SYS_SERVICE_FILE=/etc/systemd/system/led-cube.service
+
+
+
+# create user config folder
+mkdir -p "$SYS_CONFIG_DIR"
+# set permissions only for program
+chmod --recursive 666 $SYS_CONFIG_DIR
+
+# create program default config folder
+mkdir -p "$SYS_DEFAULT_DIR"
+# copy default files over
+cp -r "$ASSET_DIR/" "$SYS_DEFAULT_DIR/"
+# set permissions
+chmod --recursive 444 $SYS_DEFAULT_DIR
+
+
 
 # install dpkg binaries
+sudo dpkg -i "$BINARIES_DIR/libgpiod2*.deb"
+
+# move program to install dir
+mkdir -p "$SYS_INSTALL_DIR"
+echo cp "$BINARIES_DIR/led_cube" "$SYS_INSTALL_DIR/"
+cp "$BINARIES_DIR/led_cube" "$SYS_INSTALL_DIR/"
 
 
-# move cube configuration-files
-mkdir -p $CONFIG_DIR
-mkdir -p $DEFAULT_DIR
-cp $ASSET_DIR/* $DEFAULT_DIR
-chmod --recursive 444 $DEFAULT_DIR
-#chmod --recursive 444 $CONFIG_DIR
-
-# move binaries
-mkdir -p $INSTALL_DIR
-cp $BUILD_DIR $INSTALL_DIR
 
 # create systemd service
-cat led-cube.service > $SERVICE_FILE
+cat "$ASSET_DIR/led-cube.service" > $SYS_SERVICE_FILE
+# start systemd service
 systemctl --now enable led-cube.service
