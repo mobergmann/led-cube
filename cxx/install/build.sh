@@ -1,19 +1,24 @@
 # only run as root (source: https://electrictoolbox.com/check-user-root-sudo-before-running/)
 if [ `whoami` == root ]; then
-    echo Please run this script as root or using sudo
+    echo "Please don't run this script as root or using sudo"
     exit
 fi
 
-# todo exit if not on raspi
+
+# todo clean usb and assets
+
 
 # declare variables
 START_DIR=$(pwd)
+
 # get path of script (if called from other location)
 # source: https://stackoverflow.com/a/1638397/11186407
 SCRIPT=$(readlink -f "$0")
 SCRIPT_DIR=$(dirname "$SCRIPT")
+
 BUILD_DIR="$SCRIPT_DIR/../build"
 BINARIES_DIR="$SCRIPT_DIR/bin"
+
 
 
 # install dependencies
