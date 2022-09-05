@@ -5,8 +5,6 @@ if [ `whoami` == root ]; then
 fi
 
 
-# todo clean usb and assets
-
 
 # declare variables
 START_DIR=$(pwd)
@@ -19,6 +17,9 @@ SCRIPT_DIR=$(dirname "$SCRIPT")
 BUILD_DIR="$SCRIPT_DIR/../build"
 BINARIES_DIR="$SCRIPT_DIR/bin"
 
+
+# clean
+rm -rf "$BINARIES_DIR"
 
 
 # install dependencies
@@ -51,6 +52,7 @@ echo -n "Downloading dependency ... "
 echo "Done"
 
 
+
 # ask user if also want to install to usb
 # source: https://stackoverflow.com/a/27875395/11186407
 echo "Do you want to create a install stick (please make sure you have an USB inserted as /dev/sda1)? [Y|n]"
@@ -70,6 +72,8 @@ fi
 MOUNT_DIR=/mnt
 USB_DIR="$MOUNT_DIR/cube"
 
+# clean usb/ previous installation
+sudo rm -rf "$USB_DIR"
 
 echo -n "Moving files to usb ... "
 
