@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iostream>
 #include <algorithm>
+#include <algorithm>
 #include <exception>
 #include <filesystem>
 // Dependencies
@@ -294,11 +295,49 @@ private:
         }
     }
 
+    void del()
+    {
+        // if only one or fewer elements in list => no save deletion possible
+        if (files.size() <= 1)
+        {
+            std::cout << "Only one config present: " << std::endl;
+            return;
+        }
+
+        // if file is in default dir, then it cannot be deleted
+        if (current_file.starts_with(FileTransfer::default_path.string()))
+        {
+            // todo use cerr
+            std::cout << "File cannot be deleted, because it is in default dir" << std::endl;
+            return;
+        }
+
+        // search element in list, if not exits use fallback option
+        std::string tmp = current_file;
+
+        // set current file to next elem
+        next();
+
+        try
+        {
+            fs::remove(tmp);
+        }
+        catch (std::exception &e)
+        {
+            // todo use cerr
+            std::cout << "Error while deleting file: " << e.what() << std::endl;
+            return;
+        }
+
+        std::cout << "New Configuration: " << current_file << std::endl;
+    }
+
     void next()
     {
         // if only one or fewer elements in list => no scrolling possible
         if (files.size() <= 1)
         {
+            std::cout << "Only one config present: " << std::endl;
             return;
         }
 
@@ -332,6 +371,7 @@ private:
         // if only one or fewer elements in list => no scrolling possible
         if (files.size() <= 1)
         {
+            std::cout << "Only one config present: " << std::endl;
             return;
         }
 
@@ -366,38 +406,48 @@ private:
      */
     bool poll()
     {
-        bool next_prev_button_pressed_flag = false;
+        bool skip_frame_flag = false;
 
-        line_usb->poll([&](){
-            std::cout << "file transfer button pressed" << std::endl;
-            try
+        line_usb->poll([&]()
             {
-                FileTransfer ft(&line_blink_led);
-                ft.copy();
+                std::cout << "file transfer button pressed" << std::endl;
+                try
+                {
+                    FileTransfer ft(&line_blink_led);
+                    ft.copy();
+                }
+                catch (const std::exception &e)
+                {
+                    std::cerr << "Error while transferring: " << e.what() << std::endl;
+                }
+
+                // update the file, to load newly added files
+                update_file_list();
+
+                // todo maybe make ft pointer, so delete can be called explicitly
+            },
+            std::chrono::milliseconds(5), [&](){
+                std::cout << "delete button triggered" << std::endl;
+                del();
+                update_file_list();
+                parse_layout();
+                skip_frame_flag = true;
             }
-            catch (const std::exception &e)
-            {
-                std::cerr << "Error while transferring: " << e.what() << std::endl;
-            }
+        );
 
-            // update the file, to load newly added files
-            update_file_list();
-
-            // todo maybe make ft pointer, so delete can be called explicitly
-        });
-
-        line_previous->poll([&](){
+        line_previous->poll([&]()
+        {
             std::cout << "previous setting button press" << std::endl;
             previous();
             parse_layout();
-            next_prev_button_pressed_flag = true;
+            skip_frame_flag = true;
         });
 
         line_next->poll([&](){
             std::cout << "next setting button press" << std::endl;
             next();
             parse_layout();
-            next_prev_button_pressed_flag = true;
+            skip_frame_flag = true;
         });
 
         line_power->poll([&](){
@@ -407,7 +457,7 @@ private:
             cube_on = not cube_on;
         });
 
-        return next_prev_button_pressed_flag;
+        return skip_frame_flag;
     }
 
     void set_leds(const layers_t &frame_data)
