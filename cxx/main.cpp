@@ -370,10 +370,12 @@ private:
 
         line_usb->poll([&](){
             std::cout << "file transfer button pressed" << std::endl;
+
+            FileTransfer *ft;
             try
             {
-                FileTransfer ft(&line_blink_led);
-                ft.copy();
+                ft = new FileTransfer(&line_blink_led);
+                ft->copy();
             }
             catch (const std::exception &e)
             {
@@ -384,6 +386,7 @@ private:
             update_file_list();
 
             // todo maybe make ft pointer, so delete can be called explicitly
+            delete ft;
         });
 
         line_previous->poll([&](){
