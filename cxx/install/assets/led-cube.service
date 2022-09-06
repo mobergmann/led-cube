@@ -1,0 +1,12 @@
+[Unit]
+Description=3D LED-Cube program
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/local/led-cube/led_cube
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
