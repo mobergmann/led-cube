@@ -32,7 +32,7 @@ chmod --recursive 666 $SYS_CONFIG_DIR
 # create program default config folder
 mkdir -p "$SYS_DEFAULT_DIR"
 # copy default files over
-cp -r "$CONFIG_DIR/" "$SYS_DEFAULT_DIR/"
+cp -r "$CONFIG_DIR/." "$SYS_DEFAULT_DIR/"
 # set permissions only for program
 chmod --recursive 100 "$SYS_DEFAULT_DIR"
 
