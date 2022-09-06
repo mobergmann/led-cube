@@ -30,7 +30,7 @@ echo -n "Building Project ... "
 {
     cd "$SCRIPT_DIR"/.. || exit
     cmake -B "$BUILD_DIR/"
-    cmake --build "$BUILD_DIR/"
+    cmake --build "$BUILD_DIR/" --config Release
 } &> /dev/null
 echo "Done"
 
@@ -46,8 +46,8 @@ echo "Done"
 echo -n "Downloading dependency ... "
 {
     cd "$BINARIES_DIR"/ || exit
-    apt download libgpiod2
-    # wget http://ftp.de.debian.org/debian/pool/main/libg/libgpiod/libgpiod2_1.6.2-1_armel.deb
+    # apt download libgpiod2 # only avaiable on debian (but probably also building on debian...)
+    wget -O libgpiod2.deb http://ftp.de.debian.org/debian/pool/main/libg/libgpiod/libgpiod2_1.6.2-1_armhf.deb
 } &> /dev/null
 echo "Done"
 

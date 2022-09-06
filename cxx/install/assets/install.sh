@@ -39,7 +39,7 @@ chmod --recursive 100 "$SYS_DEFAULT_DIR"
 
 
 # install dpkg binaries
-sudo dpkg -i "$BINARIES_DIR/libgpiod2*.deb"
+dpkg -i "$BINARIES_DIR/"libgpiod2*.deb
 
 # move program to install dir
 mkdir -p "$SYS_INSTALL_DIR"
