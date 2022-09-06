@@ -260,7 +260,6 @@ private:
     }
 #pragma endregion
 
-    // todo this can lead to problems with threads
     void update_file_list()
     {
         std::string tmp = current_file;
@@ -381,12 +380,10 @@ private:
             {
                 std::cerr << "Error while transferring: " << e.what() << std::endl;
             }
+            delete ft;
 
             // update the file, to load newly added files
             update_file_list();
-
-            // todo maybe make ft pointer, so delete can be called explicitly
-            delete ft;
         });
 
         line_previous->poll([&](){

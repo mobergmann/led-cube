@@ -2,17 +2,19 @@
 
 #include <string>
 #include <iostream>
+#include <cstring>
 
 namespace mount
 {
 #include <sys/mount.h>
 #include <errno.h>
-#include <string.h>
 
 extern int errno;
 };
 
 std::mutex FileTransfer::mutex = std::mutex();
+
+bool FileTransfer::terminate_thread = false;
 
 const fs::path FileTransfer::default_path = "/usr/share/led-cube";
 
@@ -22,7 +24,7 @@ const fs::path FileTransfer::usb_path = "/dev/sda1";
 
 const fs::path FileTransfer::mount_path = "/mnt/volume";
 
-FileTransfer::FileTransfer(gpiod::line *blink_led) : blink_led(blink_led), terminate_thread(false)
+FileTransfer::FileTransfer(gpiod::line *blink_led) : blink_led(blink_led)
 {
     // singleton
     if (not mutex.try_lock())
@@ -31,24 +33,24 @@ FileTransfer::FileTransfer(gpiod::line *blink_led) : blink_led(blink_led), termi
     }
 
     // begin blink thread
-    blink_thread = new std::thread(FileTransfer::blink, blink_led, &terminate_thread);
+    blink_thread = new std::thread(FileTransfer::blink, blink_led);
 
     // mount usb
     if (mount::mount(usb_path.c_str(), mount_path.c_str(), "vfat", 0, ""))
     {
         mutex.unlock(); // manually unlock, because destructor not called with throw in constructor
-        throw std::runtime_error("error while mounting! errno: " + std::to_string(errno) + ": " + std::string(mount::strerror(errno)));
+        throw std::runtime_error("error while mounting! errno: " + std::to_string(errno) + ": " + std::string(std::strerror(errno)));
     }
 }
 
 FileTransfer::~FileTransfer()
 {
+    std::cout << "Thread delete signal send" << std::endl;
+
     // terminate blink thread
-    terminate_thread = true;
+    FileTransfer::terminate_thread = true;
     blink_thread->join();
     delete blink_thread;
-
-    std::cout << "del thread" << std::endl;
 
     // umount usb
     mount::umount(mount_path.c_str());
@@ -89,30 +91,26 @@ void FileTransfer::copy()
     }
 }
 
-void FileTransfer::blink(gpiod::line *blink_led, const bool *terminate)
+void FileTransfer::blink(gpiod::line *blink_led)
 {
-    while (true)
+    // blink for 1 second on and off.
+    // If terminate flag set to true, then quit blinking
+    bool led_val = true;
+    while (FileTransfer::terminate_thread)
     {
         // turn on led
-        blink_led->set_value(1);
+        blink_led->set_value(led_val);
 
-        if (*terminate)
-        {
-            std::cout << "terminate = true" << std::endl;
-            return;
-        }
         // wait
         std::this_thread::sleep_for(std::chrono::seconds(1));
 
-        // turn off led
-        blink_led->set_value(0);
-
-        if (*terminate)
-        {
-            std::cout << "terminate = true" << std::endl;
-            return;
-        }
-        // wait
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        led_val = not led_val;
     }
+
+    // set terminate flag to default value
+    FileTransfer::terminate_thread = false;
+    // turn off led after blinking
+    blink_led->set_value(0);
+
+    std::cout << "quiting blink thread" << std::endl;
 }

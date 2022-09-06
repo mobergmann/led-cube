@@ -23,7 +23,7 @@ private:
     /// thread which makes the transferring led blink
     std::thread *blink_thread;
     /// boolean, if the blink thread should be terminated
-    bool terminate_thread = false;
+    static bool terminate_thread;
 
 public:
     /// path to the default directory
@@ -44,7 +44,7 @@ private:
      * @param blink_led gpio line, which should be blinked
      * @param terminate pointer to the terminate boolean
      */
-    static void blink(gpiod::line *blink_led, const bool *terminate);
+    static void blink(gpiod::line *blink_led);
 
 public:
     FileTransfer() = delete;
