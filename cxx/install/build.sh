@@ -46,8 +46,8 @@ echo "Done"
 echo -n "Downloading dependency ... "
 {
     cd "$BINARIES_DIR"/ || exit
-    # apt download libgpiod2 # only avaiable on debian (but probably also building on debian...)
-    wget -O libgpiod2.deb http://ftp.de.debian.org/debian/pool/main/libg/libgpiod/libgpiod2_1.6.2-1_armhf.deb
+    apt-get download libgpiod2 --download-only # only avaiable on debian (but probably also building on debian...)
+    # wget -O libgpiod2.deb http://ftp.de.debian.org/debian/pool/main/libg/libgpiod/libgpiod2_1.6.2-1_armhf.deb
 } &> /dev/null
 echo "Done"
 
