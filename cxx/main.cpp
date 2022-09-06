@@ -366,7 +366,7 @@ private:
      */
     bool poll()
     {
-        bool button_pressed_flag = false;
+        bool next_prev_button_pressed_flag = false;
 
         line_usb->poll([&](){
             std::cout << "file transfer button pressed" << std::endl;
@@ -390,14 +390,14 @@ private:
             std::cout << "previous setting button press" << std::endl;
             previous();
             parse_layout();
-            button_pressed_flag = true;
+            next_prev_button_pressed_flag = true;
         });
 
         line_next->poll([&](){
             std::cout << "next setting button press" << std::endl;
             next();
             parse_layout();
-            button_pressed_flag = true;
+            next_prev_button_pressed_flag = true;
         });
 
         line_power->poll([&](){
@@ -407,7 +407,7 @@ private:
             cube_on = not cube_on;
         });
 
-        return button_pressed_flag;
+        return next_prev_button_pressed_flag;
     }
 
     void set_leds(const layers_t &frame_data)
