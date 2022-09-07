@@ -60,7 +60,7 @@ public:
     /**
      * Stops the blink and unmounts the USB stick and releases the singleton
      */
-    ~FileTransfer();
+    virtual ~FileTransfer();
 
     /**
      * Copy all json files from the usb to locale storage,
