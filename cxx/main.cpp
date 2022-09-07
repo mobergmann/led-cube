@@ -428,6 +428,8 @@ private:
             },
             std::chrono::milliseconds(5), [&](){
                 std::cout << "delete button triggered" << std::endl;
+                return;
+
                 del();
                 update_file_list();
                 parse_layout();

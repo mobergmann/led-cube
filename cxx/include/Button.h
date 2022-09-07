@@ -4,6 +4,7 @@
 // System Libraries
 #include <string>
 #include <chrono>
+#include <iostream>
 #include <functional>
 // Custom Libraries
 #include <gpiod.hpp>
