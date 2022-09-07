@@ -31,6 +31,7 @@ Switch to the to-install-Raspi and plug in the prepared USB, then run:
 mount /dev/sda1 /mnt
 cd /mnt/cube
 sudo sh install.sh
+reboot
 ```
 
 ## Pins
