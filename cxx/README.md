@@ -22,7 +22,7 @@ Go into your Compilation-Raspi and run:
 git clone --recurse-submodules git@github.com:mobergmann/led-cube.git
 cd led-cube/cxx/install
 # plug in a USB-Stick
-sh build.sh # watch out for I/O
+./build.sh # watch out for I/O
             # enter your (sudo) password
             # press y to install to usb
 ```
@@ -30,7 +30,7 @@ Switch to the to-install-Raspi and plug in the prepared USB, then run:
 ```bash
 mount /dev/sda1 /mnt
 cd /mnt/cube
-sh install.sh
+sudo sh install.sh
 ```
 
 ## Pins
