@@ -27,6 +27,7 @@ const fs::path FileTransfer::mount_path = "/mnt";
 
 void FileTransfer::copy(gpiod::line *blink_led)
 {
+#pragma region init
     // singleton
     if (not mutex.try_lock())
     {
@@ -34,7 +35,7 @@ void FileTransfer::copy(gpiod::line *blink_led)
     }
 
     // begin blink thread
-    std::thread* blink_thread = new std::thread(FileTransfer::blink, blink_led);
+    auto* blink_thread = new std::thread(FileTransfer::blink, blink_led);
 
     // mount usb
     if (mount::mount(usb_path.c_str(), mount_path.c_str(), "vfat", 0, ""))
@@ -42,9 +43,9 @@ void FileTransfer::copy(gpiod::line *blink_led)
         mutex.unlock(); // manually unlock, because destructor not called with throw in constructor
         throw std::runtime_error("error while mounting! errno: " + std::to_string(errno) + ": " + std::string(std::strerror(errno)));
     }
+#pragma endregion
 
-
-
+#pragma region copy files
     /**
      * Get all json files from usb
      */
@@ -73,9 +74,9 @@ void FileTransfer::copy(gpiod::line *blink_led)
     {
         fs::copy(i, custom_path, fs::copy_options::overwrite_existing);
     }
+#pragma endregion
 
-
-
+#pragma region finalize
     std::cout << "Thread delete signal send" << std::endl;
 
     // terminate blink thread
@@ -92,6 +93,7 @@ void FileTransfer::copy(gpiod::line *blink_led)
 
     // unlock usb mutex, so another transfer can be made
     mutex.unlock();
+#pragma endregion
 }
 
 void FileTransfer::blink(gpiod::line *blink_led)
