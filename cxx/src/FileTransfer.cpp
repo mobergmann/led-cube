@@ -96,7 +96,7 @@ void FileTransfer::blink(gpiod::line *blink_led)
     // blink for 1 second on and off.
     // If terminate flag set to true, then quit blinking
     bool led_val = true;
-    while (FileTransfer::terminate_thread)
+    while (not FileTransfer::terminate_thread)
     {
         // turn on led
         blink_led->set_value(led_val);
