@@ -34,7 +34,7 @@ void FileTransfer::copy(gpiod::line *blink_led)
     }
 
     // begin blink thread
-    std::thread blink_thread(FileTransfer::blink, blink_led);
+    std::thread* blink_thread = new std::thread(FileTransfer::blink, blink_led);
 
     // mount usb
     if (mount::mount(usb_path.c_str(), mount_path.c_str(), "vfat", 0, ""))
@@ -80,7 +80,8 @@ void FileTransfer::copy(gpiod::line *blink_led)
 
     // terminate blink thread
     FileTransfer::terminate_thread = true;
-    blink_thread.join();
+    blink_thread->join();
+    delete blink_thread;
 
     // umount usb
     if (mount::umount(mount_path.c_str()))
