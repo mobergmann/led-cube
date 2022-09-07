@@ -61,11 +61,11 @@ public:
 
     /**
      *
-     * @param press_callback
+     * @param short_press_callback
      * @param long_press_time
      * @param long_press_callback
      */
-    void poll(const std::function<void()> &press_callback,
+    void poll(const std::function<void()> &short_press_callback,
               const std::chrono::milliseconds long_press_time, const std::function<void()> &long_press_callback);
 
     /**

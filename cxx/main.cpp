@@ -426,7 +426,7 @@ private:
 
                 // todo maybe make ft pointer, so delete can be called explicitly
             },
-            std::chrono::milliseconds(5), [&](){
+            std::chrono::milliseconds(3000), [&](){
                 std::cout << "delete button triggered" << std::endl;
                 return;
 

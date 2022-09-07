@@ -72,16 +72,16 @@ Button::Button(const gpiod::chip &chip, int line_number)
     line.request({line.name(), gpiod::line_request::DIRECTION_INPUT, 0}, 1);
 }
 
-void Button::poll(const std::function<void()> &press_callback,
+void Button::poll(const std::function<void()> &short_press_callback,
                   const std::chrono::milliseconds long_press_time, const std::function<void()> &long_press_callback)
 {
     // if button press detected
-    if (is_rising_edge())
+    if (is_falling_edge())
     {
         std::cout << "rising edge" << std::endl;
         start_time = std::chrono::steady_clock::now();
     }
-    if (is_falling_edge())
+    if (is_rising_edge())
     {
         std::cout << "falling edge" << std::endl;
         // call callback function
@@ -95,7 +95,7 @@ void Button::poll(const std::function<void()> &press_callback,
         }
         else
         {
-            press_callback();
+            short_press_callback();
         }
     }
 }
