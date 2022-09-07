@@ -370,17 +370,14 @@ private:
         line_usb->poll([&](){
             std::cout << "file transfer button pressed" << std::endl;
 
-            FileTransfer *ft;
             try
             {
-                ft = new FileTransfer(&line_blink_led);
-                ft->copy();
+                FileTransfer::copy(&line_blink_led);
             }
             catch (const std::exception &e)
             {
                 std::cerr << "Error while transferring: " << e.what() << std::endl;
             }
-            delete ft;
 
             // update the file, to load newly added files
             update_file_list();

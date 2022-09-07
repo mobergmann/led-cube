@@ -24,7 +24,8 @@ const fs::path FileTransfer::usb_path = "/dev/sda1";
 
 const fs::path FileTransfer::mount_path = "/mnt/volume";
 
-FileTransfer::FileTransfer(gpiod::line *blink_led) : blink_led(blink_led)
+
+void FileTransfer::copy(gpiod::line *blink_led)
 {
     // singleton
     if (not mutex.try_lock())
@@ -33,7 +34,7 @@ FileTransfer::FileTransfer(gpiod::line *blink_led) : blink_led(blink_led)
     }
 
     // begin blink thread
-    blink_thread = new std::thread(FileTransfer::blink, blink_led);
+    std::thread blink_thread(FileTransfer::blink, blink_led);
 
     // mount usb
     if (mount::mount(usb_path.c_str(), mount_path.c_str(), "vfat", 0, ""))
@@ -41,26 +42,9 @@ FileTransfer::FileTransfer(gpiod::line *blink_led) : blink_led(blink_led)
         mutex.unlock(); // manually unlock, because destructor not called with throw in constructor
         throw std::runtime_error("error while mounting! errno: " + std::to_string(errno) + ": " + std::string(std::strerror(errno)));
     }
-}
 
-FileTransfer::~FileTransfer()
-{
-    std::cout << "Thread delete signal send" << std::endl;
 
-    // terminate blink thread
-    FileTransfer::terminate_thread = true;
-    blink_thread->join();
-    delete blink_thread;
 
-    // umount usb
-    mount::umount(mount_path.c_str());
-
-    // unlock usb mutex, so another transfer can be made
-    mutex.unlock();
-}
-
-void FileTransfer::copy()
-{
     /**
      * Get all json files from usb
      */
@@ -89,6 +73,24 @@ void FileTransfer::copy()
     {
         fs::copy(i, custom_path, fs::copy_options::overwrite_existing);
     }
+
+
+
+    std::cout << "Thread delete signal send" << std::endl;
+
+    // terminate blink thread
+    FileTransfer::terminate_thread = true;
+    blink_thread.join();
+
+    // umount usb
+    if (mount::umount(mount_path.c_str()))
+    {
+        mutex.unlock(); // manually unlock, because destructor not called with throw in constructor
+        throw std::runtime_error("error while unmounting! errno: " + std::to_string(errno) + ": " + std::string(std::strerror(errno)));
+    }
+
+    // unlock usb mutex, so another transfer can be made
+    mutex.unlock();
 }
 
 void FileTransfer::blink(gpiod::line *blink_led)
