@@ -18,12 +18,12 @@ private:
     static std::mutex mutex;
 
     /// pointer to the blink led
-    gpiod::line* blink_led;
+//    gpiod::line* blink_led;
 
     /// thread which makes the transferring led blink
     std::thread *blink_thread;
     /// boolean, if the blink thread should be terminated
-    bool terminate_thread = false;
+    static bool terminate_thread;
 
 public:
     /// path to the default directory
@@ -44,29 +44,18 @@ private:
      * @param blink_led gpio line, which should be blinked
      * @param terminate pointer to the terminate boolean
      */
-    static void blink(gpiod::line *blink_led, const bool *terminate);
+    static void blink(gpiod::line *blink_led);
 
-public:
     FileTransfer() = delete;
 
-    /**
-     * Initializes the singleton. If an instance is already running, throws a `runtime_error`.
-     * Checks if all config folders are present and created them if not.
-     * Mounts the USB stick.
-     * @param blink_led
-     */
-    FileTransfer(gpiod::line *blink_led);
+    ~FileTransfer() = delete;
 
-    /**
-     * Stops the blink and unmounts the USB stick and releases the singleton
-     */
-    ~FileTransfer();
-
+public:
     /**
      * Copy all json files from the usb to locale storage,
      * Only the root folder will be scanned (not recursive)
      */
-    void copy();
+    static void copy(gpiod::line *blink_led);
 };
 
 #endif //LED_CUBE_FILETRANSFER_H

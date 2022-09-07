@@ -260,7 +260,6 @@ private:
     }
 #pragma endregion
 
-    // todo this can lead to problems with threads
     void update_file_list()
     {
         std::string tmp = current_file;
@@ -370,10 +369,10 @@ private:
 
         line_usb->poll([&](){
             std::cout << "file transfer button pressed" << std::endl;
+
             try
             {
-                FileTransfer ft(&line_blink_led);
-                ft.copy();
+                FileTransfer::copy(&line_blink_led);
             }
             catch (const std::exception &e)
             {
@@ -382,8 +381,6 @@ private:
 
             // update the file, to load newly added files
             update_file_list();
-
-            // todo maybe make ft pointer, so delete can be called explicitly
         });
 
         line_previous->poll([&](){
