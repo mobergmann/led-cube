@@ -29,7 +29,8 @@ private:
     gpiod::line line;
 
     /// the last value of the rising/ falling edge
-    bool edge;
+    bool r_edge;
+    bool f_edge;
 
     /// the last state of the button
     bool last_state;

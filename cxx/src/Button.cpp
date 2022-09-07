@@ -26,19 +26,18 @@ bool Button::get_value()
 
 bool Button::is_falling_edge()
 {
-    if (get_value() != edge) // edge
+    if (get_value() != f_edge) // edge
     {
-        if (not edge) // rising edge
+        if (not f_edge) // rising edge
         {
 
-            edge = true;
-            return false;
+            f_edge = true;
         }
         else // falling edge
         {
-            edge = false;
-            return true;
+            f_edge = false;
         }
+        return not f_edge;
     }
     else // no edge
     {
@@ -48,18 +47,17 @@ bool Button::is_falling_edge()
 
 bool Button::is_rising_edge()
 {
-    if (get_value() != edge)
+    if (get_value() != r_edge)
     {
-        if (not edge) // rising edge
+        if (not r_edge) // rising edge
         {
-            edge = true;
-            return true;
+            r_edge = true;
         }
         else // falling edge
         {
-            edge = false;
-            return false;
+            r_edge = false;
         }
+        return r_edge;
     }
     else // no edge
     {
@@ -82,7 +80,7 @@ void Button::poll(const std::function<void()> &press_callback,
     {
         start_time = std::chrono::steady_clock::now();
     }
-    else if (is_falling_edge())
+    if (is_falling_edge())
     {
         // call callback function
         //  long press cb, when long press,
