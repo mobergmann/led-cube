@@ -34,15 +34,16 @@ void FileTransfer::copy(gpiod::line *blink_led)
         throw std::runtime_error("File transfer already in process");
     }
 
-    // begin blink thread
-    auto* blink_thread = new std::thread(FileTransfer::blink, blink_led);
-
     // mount usb
     if (mount::mount(usb_path.c_str(), mount_path.c_str(), "vfat", 0, ""))
     {
         mutex.unlock(); // manually unlock, because destructor not called with throw in constructor
         throw std::runtime_error("error while mounting! errno: " + std::to_string(errno) + ": " + std::string(std::strerror(errno)));
     }
+
+    // begin blink thread
+    auto* blink_thread = new std::thread(FileTransfer::blink, blink_led);
+
 #pragma endregion
 
 #pragma region copy files
