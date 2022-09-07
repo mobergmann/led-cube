@@ -22,7 +22,7 @@ const fs::path FileTransfer::custom_path = "/var/lib/led-cube";
 
 const fs::path FileTransfer::usb_path = "/dev/sda1";
 
-const fs::path FileTransfer::mount_path = "/mnt/volume";
+const fs::path FileTransfer::mount_path = "/mnt";
 
 
 void FileTransfer::copy(gpiod::line *blink_led)
