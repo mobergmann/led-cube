@@ -261,7 +261,6 @@ private:
     }
 #pragma endregion
 
-    // todo this can lead to problems with threads
     void update_file_list()
     {
         std::string tmp = current_file;
@@ -408,29 +407,27 @@ private:
     {
         bool skip_frame_flag = false;
 
-        line_usb->poll([&]()
-            {
+        line_usb->poll([&](){
                 std::cout << "file transfer button pressed" << std::endl;
                 try
                 {
-                    FileTransfer ft(&line_blink_led);
-                    ft.copy();
+                    FileTransfer::copy(&line_blink_led);
                 }
-                catch (const std::exception &e)
+                catch (const std::runtime_error &e)
                 {
                     std::cerr << "Error while transferring: " << e.what() << std::endl;
                 }
 
                 // update the file, to load newly added files
                 update_file_list();
-
-                // todo maybe make ft pointer, so delete can be called explicitly
             },
             std::chrono::milliseconds(3000), [&](){
                 std::cout << "delete button triggered" << std::endl;
+
                 del();
                 update_file_list();
                 parse_layout();
+
                 skip_frame_flag = true;
             }
         );
@@ -438,22 +435,28 @@ private:
         line_previous->poll([&]()
         {
             std::cout << "previous setting button press" << std::endl;
+
             previous();
             parse_layout();
+
             skip_frame_flag = true;
         });
 
         line_next->poll([&](){
             std::cout << "next setting button press" << std::endl;
+
             next();
             parse_layout();
+
             skip_frame_flag = true;
         });
 
         line_power->poll([&](){
             std::cout << "switch on/ off button press" << std::endl;
+
             reset();
             store();
+
             cube_on = not cube_on;
         });
 
