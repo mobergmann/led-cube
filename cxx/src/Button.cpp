@@ -102,7 +102,8 @@ void Button::poll(const std::function<void()> &short_press_callback,
 
 void Button::poll(const std::function<void()> &press_callback)
 {
-    poll(press_callback, std::chrono::milliseconds(0), {});
+    // calls the press_callback on short press and also on long press, because it doesn't matter
+    poll(press_callback, std::chrono::milliseconds(100000), press_callback);
 }
 
 void Button::poll(const std::chrono::milliseconds long_press_time, const std::function<void()> &long_press_callback)
