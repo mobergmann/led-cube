@@ -21,8 +21,6 @@ Button popZ;
 Button copy;
 Button paste;
 
-
-
 // play sequence
 boolean playSequence = false;
 int time = millis();
@@ -80,23 +78,23 @@ void draw() {
   popMatrix();
   
   // making toggle cube ## experimental
-  pushMatrix();
+  //pushMatrix();
   
-  translate(width-60, height-60, 0);
-  rotateX(xpos+1.56-0.3);
-  rotateY(ypos+0.64-PI/5);
-  rotateZ(zpos);
+  //translate(width-60, height-60, 0);
+  //rotateX(xpos+1.56-0.3);
+  //rotateY(ypos+0.64-PI/5);
+  //rotateZ(zpos);
   
-  fill(255, 255, 255, 150);
-  box(40);
-  translate(-20, -20, 0);
-  fill(255, 0, 0);
-  box(10, 10, 40);
-  translate(0, 0, -20);
-  rotateX(PI/2);
-  box(15, 15, 15);
+  //fill(255, 255, 255, 150);
+  //box(40);
+  //translate(-20, -20, 0);
+  //fill(255, 0, 0);
+  //box(10, 10, 40);
+  //translate(0, 0, -20);
+  //rotateX(PI/2);
+  //box(15, 15, 15);
   
-  popMatrix();
+  //popMatrix();
   
   // cube rotation
   frames.get(selectedFrame).cubeMoving(false);
@@ -265,21 +263,8 @@ void UI() {
       if (playSequence)
         return;
         
-      println("help");
-        
       // magic code here
       
-      for (int i = 0; i<65; i++) {
-        
-        frames.get(selectedFrame).placeRnd();
-      }
-      
-      for(int i = 0; i<200; i++) {
-        
-        frames.add(new Cube().gameOfLife(frames.get(selectedFrame)));
-        selectedFrame++;
-        updateFrames();
-      }
       
     }
   });
@@ -455,6 +440,7 @@ void UI() {
   });
 }
 
+// updates the UI frame list
 void updateFrames() {
   frameList.clear();
   int i = 1;
