@@ -40,7 +40,7 @@ int selectedFrame;
 Cube copyFrame = new Cube();
 
 // file system
-String SAVEDIR = "../../assets/files/";
+String SAVEDIR = System.getProperty("user.home") + "/Downloads/";
 ArrayList<String> jsonFiles = new ArrayList<String>();
 
 boolean isOpen = false;
