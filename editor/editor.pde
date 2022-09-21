@@ -8,7 +8,7 @@ ScrollableList frameList;
 Button newFrameButton;
 Button deleteFrameButton;
 Button saveFileButton;
-ScrollableList openFileList;
+Button openFileButton;
 Button playButton;
 Textfield frameTimeTf;
 Textfield fileNameTf;
@@ -128,7 +128,7 @@ void draw() {
   frameList.setSize(150, height-5);
   fileNameTf.setPosition(5, height-55);
   saveFileButton.setPosition(5, height-105);
-  openFileList.setPosition(5, height-155);
+  openFileButton.setPosition(5, height-155);
 }
 
 // UI
@@ -383,58 +383,24 @@ void UI() {
      .onRelease(new CallbackListener() {
     void controlEvent(CallbackEvent theEvent) {
       
-      saveJSONFile();
+      selectFolder("Select a folder to process:", "saveJSONFile");
     }
   });
      
   // open file button
-  openFileList = cp5.addScrollableList("Open File")
+  openFileButton = cp5.addButton("Open File")
+     .setValue(0)
      .setPosition(5, height-155)
-     .setSize(150,165)
-     .setBarHeight(40)
-     .setItemHeight(30)
-     .setOpen(false)
+     .setSize(150,40)
      .onRelease(new CallbackListener() {
     void controlEvent(CallbackEvent theEvent) {
       
       if (playSequence){
-        openFileList.setOpen(false);
       
         return;
       }
-        
-      File[] files = listFiles(SAVEDIR);
-      ArrayList<String> items = new ArrayList<String>();
       
-      for (File file : files) {
-        items.add(file.getName());
-      }
-      
-      if (!isOpen){
-        
-        openFileList.clear();
-        openFileList.addItems(items);
-        
-        openFileList.setOpen(false);
-        openFileList.setOpen(true);
-        
-      }
-      else {
-        if (int(openFileList.getValue()) != lastOpen && openFileList.getLabel() != "Open File") {
-          
-          lastOpen = int(openFileList.getValue());
-          
-          openJSONFile(items.get(int(openFileList.getValue())));
-          
-        }
-        else {
-          openFileList.setLabel("Open File");
-          lastOpen = -1;
-        }
-        
-      }
-      
-      isOpen = !isOpen;
+      selectInput("Select a file to process:", "openJSONFile");
       
     }
   });
@@ -453,7 +419,18 @@ void updateFrames() {
   frameList.setLabel("Frame: " + str(selectedFrame+1));
 }
 
-void saveJSONFile() {
+void saveJSONFile(File file) {
+  
+  if (file == null) {
+    println("Window was closed or the user hit cancel.");
+    return;
+  }
+  
+  if (fileNameTf.getText().length() == 0) {
+    println("Empty Filename.");
+    return;
+  }
+  
   try {
     
     JSONObject json = new JSONObject();
@@ -474,17 +451,23 @@ void saveJSONFile() {
     
     json.setJSONArray("frames", values);
   
-    saveJSONObject(json, SAVEDIR+fileNameTf.getText()+".json");
+    saveJSONObject(json, file.getAbsolutePath()+"/"+fileNameTf.getText()+".json");
     
   } catch(Exception e) {
     println("file save exception");
   }
 }
 
-void openJSONFile(String fileName) {
+void openJSONFile(File file) {
+  
+  if (file == null) {
+    println("Window was closed or the user hit cancel.");
+    return;
+  }
+  
   try {
     
-    JSONObject json = loadJSONObject(SAVEDIR+fileName);
+    JSONObject json = loadJSONObject(file);
     
     JSONArray _frames = json.getJSONArray("frames");
     
