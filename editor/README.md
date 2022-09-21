@@ -40,13 +40,13 @@ Hiermit kann eine Random LED aus bzw. angestellt werden.
 In Processing kann hierfür ein Individuelles Script erstellt werden mit dem Frames automatisch erstellt werden können. Hierzu einfach in Zeile 266 in der editor.pde Datei eigenen Code hinzufügen. 
 
 ### Open File
-Hier kann eine schon existierende .json Datei ausgewählt werden. Der standart Ordner ist Downloads. 
+Hier kann eine schon existierende .json Datei ausgewählt werden. 
 
 ### File Name
-Hier kann der Name der Datei bearbeitet werden. Dateien mit dem selben Namen werden überschrieben.
+Hier kann der Name der Datei bearbeitet werden. Dateien mit dem selben Namen werden überschrieben. Um eine Datei zu Speichern muss sie einen Namen besitzen.
 
 ### Save File
-Hiermit wird die Datei gespeichert. Der standart Ordner ist Downloads.
+Hiermit wird die Datei gespeichert. Dazu muss vorher ein Ordner ausgewählt werden in dem diese gespeichert wird.
 
 ### Frame List
 Hier kann zwischen den einzelnen Frames hin und hergeschaltet werden. In dem Head wird der aktuell ausgewählte Frame angeszeigt.
