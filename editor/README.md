@@ -2,9 +2,9 @@
 
 ## Dependencies
 
-Processing 
+[Processing](https://processing.org/download)
 
-ControlP5
+[ControlP5](https://www.sojamo.de/libraries/controlP5/)
 
 ## Install ControlP5
 
