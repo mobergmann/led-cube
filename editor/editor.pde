@@ -39,14 +39,6 @@ ArrayList<Cube> frames = new ArrayList<Cube>();
 int selectedFrame;
 Cube copyFrame = new Cube();
 
-// file system
-String SAVEDIR = System.getProperty("user.home") + "/Downloads/";
-ArrayList<String> jsonFiles = new ArrayList<String>();
-
-boolean isOpen = false;
-int lastOpen = -1;
-
-
 void setup() {
   // meta setup
   size(1250, 780, P3D);
@@ -485,6 +477,11 @@ void openJSONFile(File file) {
       frames.add(new Cube(layers));
       
     }
+    
+    String[] path = file.getAbsolutePath().split("/");
+    String name = path[path.length-1];
+    
+    fileNameTf.setText(name.substring(0, name.length()-5));
     
     updateFrames();
     
