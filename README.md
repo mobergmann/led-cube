@@ -1,12 +1,10 @@
 # led-cube
 
-This Repo consists of the main Program, an Editor and Assets for the PCB and 3D-Print models.
+Diese Reposetory beinhaltet:
+1. Main Programm: Programm, das auf dem Pi läuft, die Konfiguration lädt und die LEDs ansteuert
+2. Editor: Programm, mit dem man Konfiguration selbst erstellen kann
+3. Assets: Dateien, die für den Bau den Cubes relevant sind
 
-# Program
-More information on the Program, the usage and the installation can be found in the _README_ in the `cxx` folder.
+Die Dokumentation kann in dem `doc` Ordner gefunden werden. 
+Ein guter Einstieg in die Doku ist die `doc/README.md` Datei.
 
-# Editor
-More information on the Editor, the usage and the installation can be found in the _README_ in the `editor` folder.
-
-# Assets
-The Assets used can be found in the `assets` folder, or in the corresponding sub-folders.
