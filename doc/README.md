@@ -38,6 +38,26 @@ Um die Installation durchzuführen brauchst du einen Pi mit Internetzugang, da d
 Du kannst mit den passenden Tools auch auf den Pi verzichten, aber dies ist relativ aufwending und wird hier nicht genauer erklärt.
 Möchtest du dennoch *ohne Pi* oder *ohne Internetzugang* versuchen zu kompilieren, dann solltest du wissen, dass du für das *main program* die `libgpiod2` Abhängigkeit brauchst und *zum kompilieren* die `libgpiod-dev` Abhängigkeit.
 
+
+#### Befehle
+On the Compile-Pi run:
+```bash
+git clone --recurse-submodules git@github.com:mobergmann/led-cube.git
+cd led-cube/cxx/install
+# plug in a USB-Stick
+./build.sh # watch out for I/O
+            # enter your (sudo) password
+            # press y to install to usb
+```
+
+Switch to the Cube-Pi, plug in the prepared USB and then run:
+```bash
+mount /dev/sda1 /mnt
+cd /mnt/cube
+sudo sh install.sh
+reboot
+```
+
 #### Build
 Benutzt du aber den Pi, dann kannst du einfach die Repo (mit den submodules) Klonen und das `cxx/build/build.sh` Skript ausführen.
 Stelle sicher, dass du einen USB Stick in den kompilier-Pi eingesteckt hast und bestätige während des Skriptes, ob die Dateien auf den Stick geschrieben werden sollen mit ja.

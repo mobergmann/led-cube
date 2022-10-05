@@ -14,25 +14,7 @@ Das Skript `build.sh` sollte auf einem Raspi ausgeführt werden, damit die kompi
 Sie sollten auch einen USB-Stick in den Raspi stecken, denn das Skript kann auch einen USB-Stick präparieren, sodass man mit diesem den Raspi einfach aufsetzen kann.
 
 ### Installation
-Die Programme können einfach installiert werden, indem man den präparierten USB-Stick in den aufzusetzenden Raspi steckt, diesen Mounted und dann das `install.sh` Skript ausführt. Man kann es direkt auf dem USB-Stick ausführen, indem man es mit `sh install.sh` ausführt.
-
-### Befehle
-Go into your Compilation-Raspi and run:
-```bash
-git clone --recurse-submodules git@github.com:mobergmann/led-cube.git
-cd led-cube/cxx/install
-# plug in a USB-Stick
-./build.sh # watch out for I/O
-            # enter your (sudo) password
-            # press y to install to usb
-```
-Switch to the to-install-Raspi and plug in the prepared USB, then run:
-```bash
-mount /dev/sda1 /mnt
-cd /mnt/cube
-sudo sh install.sh
-reboot
-```
+Für die Installation siehe die [Dokumentation](../doc/README.md#kompilieren--installiere).
 
 ## Pins
 ### User Pins
