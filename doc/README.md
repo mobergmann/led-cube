@@ -57,7 +57,7 @@ The installation also includes the entry and activation as a system service, so 
 
 #### Commands
 On the Compile-Pi run:
-``bash
+```bash
 git clone --recurse-submodules git@github.com:mobergmann/led-cube.git
 cd led-cube/cxx/install
 # plug in a USB stick
@@ -67,7 +67,7 @@ cd led-cube/cxx/install
 ```
 
 Switch to the Cube-Pi, plug in the prepared USB, and then run:
-``bash
+```bash
 mount /dev/sda1 /mnt
 cd /mnt/cube
 sudo sh install.sh
