@@ -1,10 +1,10 @@
 # led-cube
 
-Diese Reposetory beinhaltet:
-1. Main Programm: Programm, das auf dem Pi läuft, die Konfiguration lädt und die LEDs ansteuert
-2. Editor: Programm, mit dem man Konfiguration selbst erstellen kann
-3. Assets: Dateien, die für den Bau den Cubes relevant sind
+This repository contains:
+1. main program: program that runs on the Pi, loads the configuration, and controls the LEDs
+2. editor: program to create configuration by yourself
+3. assets: files that are relevant for building the cubes
+4. documentation: guide on how to assemble the cube, how to compile and install and use the main program and the editor
 
-Die Dokumentation kann in dem `doc` Ordner gefunden werden.
-Ein guter Einstieg in die Doku ist die [`doc/README.md`](./doc/README.md) Datei.
-
+The documentation can be found in the `doc` folder.
+A good entry point to the documentation is the [`doc/README.md`](./doc/README.md) file.

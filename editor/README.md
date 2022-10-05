@@ -8,45 +8,45 @@
 
 ## Install ControlP5
 
-Zum Einbinden von ControlP5. ControlP5 downloaden und entpacken. Danach in den Sketchbook Ordner von Processing ziehen.
-Danach muss Processing neu gestartet werden.
+To install ControlP5. Download ControlP5 and unzip it. Then drag it into the Sketchbook folder of Processing.
+After that Processing has to be restarted.
 
-## Programm
+## Program
 
 ### Cube / LED Toggle
-Einzelne LEDs können durch einfaches anklicken bearbeitet werden. 
-Der Cube lässt sich ausserdem durch ziehen der Maus drehen.
+Individual LEDs can be edited by simply clicking on them. 
+The cube can also be rotated by dragging the mouse.
 
 ### New Frame
-Ein neuer leerer Frame kann angelegt werden.
-Dieser wird immer unter dem aktuell ausgewählten angelegt.
+A new empty frame can be created.
+This is always created under the currently selected one.
 
 ### Copy / Paste Frame
-Damit kann der aktuelle Frame kopiert und an anderer stelle eingefügt werden.
+The current frame can be copied and pasted to another location.
 
 ### Delete Frame
-Zum löschen des aktuellen Frames
+To delete the current frame
 
 ### Frame Time
-Hier kann die Zeit bis zum nächsten Frame eingestellt werden. Default: 1ms
+The time until the next frame can be set here. Default: 1ms
 
 ### X / Y / Z
-Mit diesen Knöpfen lässt sich der aktuelle Frame in eine Richtung verschieben.
+These buttons can be used to move the current frame in one direction.
 
 ### Place / Remove RND (Random)
-Hiermit kann eine Random LED aus bzw. angestellt werden.
+A random LED can be switched off or on with this button.
 
 ### Magic Button
-In Processing kann hierfür ein Individuelles Script erstellt werden mit dem Frames automatisch erstellt werden können. Hierzu einfach in Zeile 266 in der editor.pde Datei eigenen Code hinzufügen. 
+In Processing, an individual script can be created for this purpose with which frames can be created automatically. Simply add your code in line 266 in the editor.pde file. 
 
 ### Open File
-Hier kann eine schon existierende .json Datei ausgewählt werden. 
+An existing .json file can be selected here. 
 
 ### File Name
-Hier kann der Name der Datei bearbeitet werden. Dateien mit dem selben Namen werden überschrieben. Um eine Datei zu Speichern muss sie einen Namen besitzen.
+Here you can edit the name of the file. Files with the same name will be overwritten. To save a file, it must have a name.
 
 ### Save File
-Hiermit wird die Datei gespeichert. Dazu muss vorher ein Ordner ausgewählt werden in dem diese gespeichert wird.
+The file is saved here. A folder must be selected beforehand in which the file will be saved.
 
 ### Frame List
-Hier kann zwischen den einzelnen Frames hin und hergeschaltet werden. In dem Head wird der aktuell ausgewählte Frame angeszeigt.
+Here you can switch back and forth between the individual frames. The currently selected frame is displayed in the head.

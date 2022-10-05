@@ -1,76 +1,76 @@
-# Dokumentation
-Dies ist die Dokumentation zu dem 3D LED Cube.
-Hier wird dokumentiert, wie man den Cube zusammenbaut, dafür benötigte Assets, wie man das Program kompiliert und auf den Cube installiert, wie man den Editor benutzt und wie man den Cube benutzt.
+# Documentation
+This is the documentation for the 3D LED Cube.
+Here is documented how to assemble the cube, the assets needed for it, how to compile the program and install it on the cube, how to use the editor, and how to use the cube.
 
 ## Assets
-Für den Zusammenbau werden ein paar Assets benötigt, die hier zusammengefasst werden sollen.
+For the assembly, a few assets are needed, which are summarized here.
 
 ### PCB
-In dem `assets/PCB` Ordner sind die KiCad Dateien für den PCB enthalten. Diesen müsst ihr anfertigen lassen/ bestellen.
+In the `assets/PCB` folder is the KiCad files for the PCB. 
+You will need to have this made/ordered.
 
 ### 3D Print
-In dem `assets/3D-Print` Ordner sind die STL Dateien, die ihr Drucken müsst.
+In the `assets/3D-Print` folder are the STL files for the cube exterior.
+You will need to have these printed.
 
 
 ## Assemble
-Siehe die [`assemble.md` Datei](./assemble.md) für mehr infromationen, wie man den Cube zusammenbaut.
+See the [`assemble.md` file](./assemble.md) for more information on how to assemble the cube.
 
 ## Main Program
-Das "Main Program" ist das Program, welches auf dem Pi durchgängig läuft um auf I/O Eingaben durch die Knöppfe zu reagieren und die aktuelle Konfiguration durchgängig Frame für Frame anzuzeigen.
+The "Main Program" is the program that runs continuously on the Pi to respond to I/O input from the buttons and to display the current configuration frame by frame.
 
-### Knöpfe Funktion
-Es gibt verscheidene Knöpfe.
-- **Sync Button**: Der Sync Button lädt Dateien von einen eingesteckten USB Stick persistent in den internen Speicher.
-  Dabei werden, wenn Dateien, den gleichen Namen haben wie Dateien, die schon auf dem Cube sind überschrieben.
-  Die LED neben dem Sync-Button blinkt, wie lange der transfer statt findet (dies sollte nicht allzu lang dauern).
-- **Previous-/ Next Button**: Der Previous und Next Button schaltet zwischen den Konfigurationen durch, die er gespeichert hat.
-  Previous schaltet eine Konfiguration zurück und Next eine Konfiguration weiter.
-- **On/ Off Button**: Schaltet die LEDs aus, aber die Frames werden weiter simuliert.
-- **Reset Button**: Der Reset Button ist ein Spezial-Button, dessen funktionalität nur durch das Lange drücken - mindestens 3 Sekunden - des *Sync-Buttons* erhalten werden kann.
-  Dann wird die aktuelle Konfiguration aus dem persistent Speicher gelöscht und das nächste Program wird geladen Es können nur vom dem Benutzer selbst hochgeladene Konfiguration gelöscht werden, vorinstallierte Programme werden nicht gelöscht.
+### Buttons Function
+There are several buttons.
+- **Sync Button**: The Sync button persistently loads files from an inserted USB stick into the internal memory.
+  If files have the same name as files that are already on the cube, they will be overwritten.
+  The LED next to the Sync button will blink to indicate how long the transfer will take (this should not take too long).
+- **Previous-/ Next Button**: The Previous and Next button toggles between the configurations it has stored.
+  Previous toggles back one configuration and Next toggles forward one configuration.
+- **On/ Off Button**: Turns off the LEDs, but continues to simulate the frames.
+- **Reset Button**: The Reset Button is a special button, whose functionality can only be obtained by pressing the *Sync Button* for a long time - at least 3 seconds.
+Then the current configuration is deleted from the persistent storage and the next program is loaded. Only configurations uploaded by the user can be deleted, and pre-installed programs cannot be deleted.
 
-### Kompilieren & Installieren
-Um die Installation möglicht einfach zu gestalten haben wir ein paar Skripte in dem `cxx/install/` Ordner hinzugefütgt.
-1. ein build skript
-2. ein install skript
+### Compile & Install
+To make the installation as easy as possible we have added a few scripts in the `cxx/install/` folder.
+1. build script
+2. install script
 
-Um die Installation durchzuführen brauchst du einen Pi mit Internetzugang, da du es für das Betriebsystem und die Architektur kompilieren musst.
-Du kannst mit den passenden Tools auch auf den Pi verzichten, aber dies ist relativ aufwending und wird hier nicht genauer erklärt.
-Möchtest du dennoch *ohne Pi* oder *ohne Internetzugang* versuchen zu kompilieren, dann solltest du wissen, dass du für das *main program* die `libgpiod2` Abhängigkeit brauchst und *zum kompilieren* die `libgpiod-dev` Abhängigkeit.
+To do the installation you need a Pi with internet access because you have to compile it for the operating system and architecture.
+You can also do without the Pi with the right tools, but this is relatively complex and will not be explained here.
+If you still want to try to compile *without Pi* or *without internet access*, you should know that you need the `libgpiod2` dependency for the *main program* and the `libgpiod-dev` dependency *to compile*.
 
+#### Build
+But if you use the Pi, you can simply clone the repo (with the submodules) and run the `cxx/build/build.sh` script.
+Make sure you have a USB stick plugged into the compile pi and confirm during the script if you want the files to be written to the stick with yes.
+If your USB stick cannot be found, then it can be because it is not accessible under the `/dev/sda1` path.
+In this case, you can change the path from `/dev/sda1` to your path in the script.
 
-#### Befehle
+#### Install
+If you have installed the programs from the build to the USB stick, then you can put the stick into your LED-Cube-Pi.
+On the USB you should find a `cube/` folder, where you can also find an `install.sh` file.
+You have to execute this file to install the program on the Pi.
+
+The installation also includes the entry and activation as a system service, so that the program starts automatically when the Pi is started.
+
+#### Commands
 On the Compile-Pi run:
-```bash
+``bash
 git clone --recurse-submodules git@github.com:mobergmann/led-cube.git
 cd led-cube/cxx/install
-# plug in a USB-Stick
+# plug in a USB stick
 ./build.sh # watch out for I/O
             # enter your (sudo) password
             # press y to install to usb
 ```
 
-Switch to the Cube-Pi, plug in the prepared USB and then run:
-```bash
+Switch to the Cube-Pi, plug in the prepared USB, and then run:
+``bash
 mount /dev/sda1 /mnt
 cd /mnt/cube
 sudo sh install.sh
 reboot
 ```
 
-#### Build
-Benutzt du aber den Pi, dann kannst du einfach die Repo (mit den submodules) Klonen und das `cxx/build/build.sh` Skript ausführen.
-Stelle sicher, dass du einen USB Stick in den kompilier-Pi eingesteckt hast und bestätige während des Skriptes, ob die Dateien auf den Stick geschrieben werden sollen mit ja.
-Kann dein USB Stick nicht gefunden werden, dann kann es daran liegen, dass dieser nicht erreichbar unter dem `/dev/sda1` Pfad ist.
-In diesem Fall, kannst du im Skript den Pfad von `/dev/sda1` zu deinen Pfad ändern.
-
-#### Install
-Wenn du die Programme von dem Build auf den USB Stick hast spielen lassen, dann kannst du den Stick in deinen LED-Cube-Pi stecken.
-Auf dem Stick sollte sich ein `cube/` Ordner finden, in dem sich unter anderem auch eine `install.sh` Datei befindet.
-Diese Datei musst du nun ausführen, damit das Program auf dem Pi installiert wird.
-
-Die Installation umfasst auch das eintragen und aktivieren als System Service,  sodass wenn der Pi gestartet wird das Program automaitsch auch startet.
-
-
 ## Editor
-Siehe die [`/editor/README.md` Datei](../editor/README.md) für mehr Informationen, wie man den Editor kompiliert und bedient.
+See the [`/editor/README.md` file](../editor/README.md) for more information on how to compile and use the editor.
