@@ -36,9 +36,11 @@ To make the installation as easy as possible we have added a few scripts in the 
 1. build script
 2. install script
 
-To do the installation you need a Pi with internet access because you have to compile it for the operating system and architecture.
-You can also do without the Pi with the right tools, but this is relatively complex and will not be explained here.
-If you still want to try to compile *without Pi* or *without internet access*, you should know that you need the `libgpiod2` dependency for the *main program* and the `libgpiod-dev` dependency *to compile*.
+If you dont want to compile the program you can simply download a Release, unzip it into the USB and continue with the *Install* step.
+
+If you want to compile the program yourself you need a Pi with internet access because you have to compile it for the operating system and architecture of the Pi.
+You can also compile the code without a Pi with the right tools, but this is relatively complex and will not be explained here.
+If you still want to try to compile *without Pi* or *without internet access*, you should know that you need the `libgpiod2` dependency for the *main program* and the `libgpiod-dev` dependency *for compilation*.
 
 #### Build
 But if you use the Pi, you can simply clone the repo (with the submodules) and run the `cxx/build/build.sh` script.
