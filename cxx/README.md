@@ -1,47 +1,22 @@
-# C++ Program
+# Main Program
 
 ## Dependencies
-Diese Programme müssen installiert sein, um das Projekt zu kompilieren.
+These dependencies must be installed to compile the project
 - libgpiod-dev
 - cmake
 - g++
 
-## Installieren
-Um das Program auf einem Raspi zu installieren, gibt es einige Skripte im `install` folder, die die Installation vereinfachen sollten.
-
-### Kompilation
-Das Skript `build.sh` sollte auf einem Raspi ausgeführt werden, damit die kompilierte Datei auch auf diesen läuft (und einige Befehle sind Betriebssystem abhängig).
-Sie sollten auch einen USB-Stick in den Raspi stecken, denn das Skript kann auch einen USB-Stick präparieren, sodass man mit diesem den Raspi einfach aufsetzen kann.
-
-### Installation
-Die Programme können einfach installiert werden, indem man den präparierten USB-Stick in den aufzusetzenden Raspi steckt, diesen Mounted und dann das `install.sh` Skript ausführt. Man kann es direkt auf dem USB-Stick ausführen, indem man es mit `sh install.sh` ausführt.
-
-### Befehle
-Go into your Compilation-Raspi and run:
-```bash
-git clone --recurse-submodules git@github.com:mobergmann/led-cube.git
-cd led-cube/cxx/install
-# plug in a USB-Stick
-./build.sh # watch out for I/O
-            # enter your (sudo) password
-            # press y to install to usb
-```
-Switch to the to-install-Raspi and plug in the prepared USB, then run:
-```bash
-mount /dev/sda1 /mnt
-cd /mnt/cube
-sudo sh install.sh
-reboot
-```
+## Install
+For an installation guide see the [documentation](../doc/README.md#compile--install).
 
 ## Pins
 ### User Pins
-Eine Liste von Pins, die dem Benutzer zur Verfügung stehen.
-Die Reihenfolge dieser Liste stellt die verfügbaren Pins von oben nach unten dar.
+A list of pins available to the user.
+The order of this list represents the available pins from top to bottom.
 - 8
 - 7
-- 2 (funktioniert nicht)
-- 3 (funktioniert nicht)
+- 2 (does not work)
+- 3 (does not work)
 - 4
 - 11
 - 5
@@ -50,33 +25,33 @@ Die Reihenfolge dieser Liste stellt die verfügbaren Pins von oben nach unten da
 - 26
 - 16
 
-### Belegung
-| Bezeichnung      | Pin | Power-on Pull | Ort       |
+### Assignment
+| Designation | Pin | Power-on Pull | Location |
 |------------------|-----|---------------|-----------|
-| Datain           | 12  | Pull Down     | Verbaut   |
-| Special Pin      | 13  | Pull Down     | Verbaut   |
-| Shift Clock      | 14  | Pull Down     | Verbaut   |
-| Store Clock      | 15  | Pull Down     | Verbaut   |
-| Reset Pin        | 18  | Pull Down     | Verbaut   |
-| Layer 1          | 20  | Pull Down     | Verbaut   |
-| Layer 2          | 21  | Pull Down     | Verbaut   |
-| Layer 3          | 23  | Pull Down     | Verbaut   |
-| Layer 4          | 24  | Pull Down     | Verbaut   |
-| Layer 5          | 25  | Pull Down     | Verbaut   |
-| Pairing LED      | 11  | Pull Down     | User Pins |
-| Bluetooth Button | 6   | Pull Up       | User Pins |
-| Next Button      | 4   | Pull Up       | User Pins |
-| Previous Button  | 5   | Pull Up       | User Pins |
-| Power Button     | 7   | Pull Up       | User Pins |
+| Datain | 12 | Pull Down | Installed |
+| Special Pin | 13 | Pull Down | Built-in |
+| Shift Clock | 14 | Pull Down | Built-in |
+| Store Clock | 15 | Pull Down | Built |
+| Reset Pin | 18 | Pull Down | Built |
+| Layer 1 | 20 | Pull Down | Built |
+| Layer 2 | 21 | Pull Down | Built |
+| Layer 3 | 23 | Pull Down | Built |
+| Layer 4 | 24 | Pull Down | Built |
+| Layer 5 | 25 | Pull Down | Built |
+| Pairing LED | 11 | Pull Down | User Pins |
+| Bluetooth Button | 6 | Pull Up | User Pins |
+| Next Button | 4 | Pull Up | User Pins |
+| Previous Button | 5 | Pull Up | User Pins |
+| Power Button | 7 | Pull Up | User Pins |
 
 
-## Programm
-### Dateiformat
-Die Programmeingaben sind im [JSON](https://www.json.org/json-de.html) Format.  
-Es wird jeder Frame mit der anzuzeigenden Zeit angegeben.  
-Die Daten werden als 3D-Array angegeben.
+## Program
+### file format
+The configurations are in [JSON](https://www.json.org/json-de.html) format.  
+Each frame is specified with the time to be displayed.  
+The data is specified as a 3D array.
 
-Eine Programmeingabe, die den Cube eine Sekunde voll aufleuchten lässt und danach eine Sekunde dunkel bleibt, kann z.B. wie folgt aussehen:
+For example, a configurations that causes the cube to light up fully for one second and then remain dark for one second might look like the following:
 ```json
 {
   "frames": [
@@ -164,18 +139,18 @@ Eine Programmeingabe, die den Cube eine Sekunde voll aufleuchten lässt und dana
 }
 ```
 
-In der Eingabe muss es ein Attribut geben vom Typen Array, welches den namen `frames` hat.
-Dies hält eine Menge von Frame Objekten.
+In the input there must be an attribute of type array, which has the name `frames`.
+This holds a set of frame objects.
 
-Jedes Frame Objekt hat ein Integer Attribut `frame-time`. Dieses gibt in millisekunden an, wie lange der Frame sichtbar sein soll.
+Each frame object has an integer attribute `frame-time`. This specifies in milliseconds how long the frame should be visible.
 
-In dem Attribut `layers` ist ein 3D Array, von der Größe 5x5x5.  
-Die erste Dimension stellt die Layer dar (die Schichten von unten nach oben).
-Jeder Layer, somit die zweite Dimension, besteht aus 5 sogenannten Lines.
-Jede Line besteht wiederrum aus 5 boolean Werten. Diese kodieren, ob eine LED an, oder aus sein soll.
+In the attribute `layers` is a 3D array, of size 5x5x5.  
+The first dimension represents the layers (the layers from bottom to top).
+Each layer, thus the second dimension, consists of 5 so-called lines.
+Each line consists of 5 boolean values. 
+These code whether an LED should be on or off.
 
-Die LED an der Position `layers[1][2][3]` stellt somit die LED dar, die im ersten Layer (von unten nach oben), in der Zweiten Line (von vorne nach hinten) und an der dritten Stelle (von links nach rechts) ist.
+The LED at the position 'layers[1][2][3]` thus represents the LED that is in the first layer (from bottom to top), in the second line (from front to back) and in the third position (from left to right).
 
-### Programme laden
-Die Programme (die `json` Dateien), die ein Benutzer im Cube anzeigen lassen möchte, müssen in dem Ordner `~/.led-cube/custom` vorhanden sein.
-
+### Loading configurations
+The configuration (the `json` files) that a user wants to display in the cube must be present in the folder `~/.led-cube/custom`.
