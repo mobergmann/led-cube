@@ -41,6 +41,8 @@
 The PCB was designed so that you can usually tell which components go where. 
 Additional reference: The components come to the following places
 
+![PCB](images/PCBres.png)
+
 1. 100 Ohm resistors
 2. 74HC595 shift register and matching sockets
 3. 2N222A transistors
